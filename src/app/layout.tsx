@@ -1,10 +1,6 @@
+import { ColorSchemeScript, MantineProvider, mantineHtmlProps } from '@mantine/core';
 import type { Metadata } from 'next';
-import { Roboto } from 'next/font/google';
 import './globals.css';
-
-const roboto = Roboto({
-    variable: '--font-roboto-sans'
-});
 
 export const metadata: Metadata = {
     title: 'App'
@@ -16,8 +12,13 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang='en'>
-            <body className={`${roboto.variable} antialiased`}>{children}</body>
+        <html lang='en' {...mantineHtmlProps}>
+            <head>
+                <ColorSchemeScript />
+            </head>
+            <body>
+                <MantineProvider>{children}</MantineProvider>
+            </body>
         </html>
     );
 }
