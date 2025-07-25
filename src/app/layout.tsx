@@ -4,6 +4,7 @@ import { getServerSession } from 'next-auth';
 import Providers from './providers';
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
+import { Layout } from './components/Layout';
 
 type Props = {
     children: ReactNode;
@@ -22,7 +23,9 @@ export default async function RootLayout({ children }: Props) {
                 <ColorSchemeScript />
             </head>
             <body>
-                <Providers session={session}>{children}</Providers>
+                <Providers session={session}>
+                    <Layout>{children}</Layout>
+                </Providers>
             </body>
         </html>
     );

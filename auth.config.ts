@@ -13,7 +13,7 @@ const env = envSchema.parse(process.env);
 
 function getDebugUser(username?: string, password?: string) {
     return username === 'admin' && password === 'admin'
-        ? { id: '1', name: 'admin' }
+        ? { id: '1', name: 'admin', email: 'admin@example.com' }
         : null;
 }
 
