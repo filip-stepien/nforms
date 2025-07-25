@@ -1,0 +1,39 @@
+services:
+  keycloak-db:
+    image: postgres
+    container_name: keycloak-db
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - keycloak-network
+
+  keycloak:
+    image: keycloak/keycloak
+    container_name: keycloak
+    command: start-dev --import-realm
+    environment:
+      KC_HOSTNAME: localhost
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-db/keycloak
+      KC_DB_USERNAME: admin
+      KC_DB_PASSWORD: admin
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+    ports:
+      - 8080:8080
+    depends_on:
+      - keycloak-db
+    volumes:
+      - ./keycloak/:/opt/keycloak/data/import
+    networks:
+      - keycloak-network
+
+volumes:
+  postgres-data:
+
+networks:
+  keycloak-network:

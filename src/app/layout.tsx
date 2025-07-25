@@ -1,23 +1,28 @@
-import { ColorSchemeScript, MantineProvider, mantineHtmlProps } from '@mantine/core';
-import type { Metadata } from 'next';
 import './globals.css';
+import { ColorSchemeScript, mantineHtmlProps } from '@mantine/core';
+import { getServerSession } from 'next-auth';
+import Providers from './providers';
+import type { Metadata } from 'next';
+import type { ReactNode } from 'react';
+
+type Props = {
+    children: ReactNode;
+};
 
 export const metadata: Metadata = {
     title: 'App'
 };
 
-export default function RootLayout({
-    children
-}: Readonly<{
-    children: React.ReactNode;
-}>) {
+export default async function RootLayout({ children }: Props) {
+    const session = await getServerSession();
+
     return (
         <html lang='en' {...mantineHtmlProps}>
             <head>
                 <ColorSchemeScript />
             </head>
             <body>
-                <MantineProvider>{children}</MantineProvider>
+                <Providers session={session}>{children}</Providers>
             </body>
         </html>
     );
