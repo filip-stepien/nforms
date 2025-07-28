@@ -1,7 +1,9 @@
-import { Flex, TextInput, NativeSelect, Checkbox, Stack } from '@mantine/core';
-import { ChangeEventHandler, ReactNode, useState } from 'react';
-import { FieldSettingsButton } from './FieldSettingsButton';
-import { OptionCreator } from './OptionCreator';
+import { Flex, TextInput, NativeSelect, Stack } from '@mantine/core';
+import { ChangeEventHandler, ReactNode, useImperativeHandle, useRef, useState, Ref } from 'react';
+import { DefaultFieldSettingsRef, FieldSettingsButton } from './FieldSettingsButton';
+import { FieldOption, OptionCreator, OptionCreatorRef } from './OptionCreator';
+import { DefaultFieldSettings } from './DefaultFieldSettingsList';
+import { TextFieldSettings, TextFieldSettingsList } from './TextFieldSettingsList';
 
 export enum FieldType {
     TEXT = 'Text',
@@ -10,50 +12,74 @@ export enum FieldType {
     MULTI_SELECT = 'Multi select'
 }
 
+export type FormFieldRef = {
+    getTitle: () => string;
+    getType: () => FieldType;
+    getSettings: () => DefaultFieldSettings | (DefaultFieldSettings & TextFieldSettings) | null;
+    getOptions: () => FieldOption[] | null;
+};
+
 type FieldSetting = {
     fieldType: FieldType;
-    settings?: ReactNode[];
-    controls?: ReactNode[];
+    settings?: ReactNode;
+    controls?: ReactNode;
 };
 
-type FormFieldProps = {
-    onInputTypeChange?: (inputType: FieldType) => void;
-};
+export function FormField({ ref }: { ref?: Ref<FormFieldRef> }) {
+    const [textFieldSettings, setTextFieldSettings] = useState<TextFieldSettings>({
+        analyseSentiment: true,
+        extractKeywords: true,
+        summarize: true
+    });
 
-export function FormField(props: FormFieldProps) {
-    const { onInputTypeChange } = props;
+    const titleRef = useRef<HTMLInputElement>(null);
+    const defaultSettingsRef = useRef<DefaultFieldSettingsRef>(null);
+    const optionCreatorRef = useRef<OptionCreatorRef>(null);
 
     const fieldSettings: FieldSetting[] = [
         {
             fieldType: FieldType.TEXT,
-            settings: [
-                <Checkbox label='Summarize' description='Generate summaries of user responses' />,
-                <Checkbox
-                    label='Analyse sentiment'
-                    description='Analyze whether responses are positive, negative, neutral or irrelevant'
-                />,
-                <Checkbox
-                    label='Extract keywords'
-                    description='Extract important keywords from user answers'
+            settings: (
+                <TextFieldSettingsList
+                    settings={textFieldSettings}
+                    onSettingsChange={setTextFieldSettings}
                 />
-            ]
+            )
         },
         {
             fieldType: FieldType.SINGLE_SELECT,
-            controls: [<OptionCreator />]
+            controls: <OptionCreator ref={optionCreatorRef} />
         }
     ];
 
-    const [currentFieldSettings, setCurrentFieldSettings] = useState<FieldSetting | undefined>(
-        fieldSettings.at(0)
+    const [currentFieldType, setCurrentFieldType] = useState<FieldType>(FieldType.TEXT);
+    const currentFieldSettings = fieldSettings.find(
+        setting => setting.fieldType === currentFieldType
+    );
+
+    useImperativeHandle(
+        ref,
+        () => ({
+            getTitle: () => titleRef.current?.value ?? '',
+            getType: () => currentFieldType,
+            getOptions: () => optionCreatorRef.current?.getOptions() ?? null,
+            getSettings: () => {
+                const defaultSettings = defaultSettingsRef.current?.getDefaultSettings();
+
+                if (!defaultSettings) {
+                    return null;
+                }
+
+                return currentFieldType === FieldType.TEXT
+                    ? { ...defaultSettings, ...textFieldSettings }
+                    : defaultSettings;
+            }
+        }),
+        [currentFieldType]
     );
 
     const handleInputTypeChange: ChangeEventHandler<HTMLSelectElement> = event => {
-        const newFieldType = event.target.value as FieldType;
-        onInputTypeChange?.(newFieldType);
-
-        const newFieldSettings = fieldSettings.find(setting => setting.fieldType === newFieldType);
-        setCurrentFieldSettings(newFieldSettings);
+        setCurrentFieldType(event.target.value as FieldType);
     };
 
     return (
@@ -62,6 +88,7 @@ export function FormField(props: FormFieldProps) {
                 label='Question title'
                 placeholder='e.g. How would you describe your experience with our product?'
                 className='flex-1'
+                ref={titleRef}
             />
             <Flex align='end' gap='sm'>
                 <NativeSelect
@@ -70,13 +97,12 @@ export function FormField(props: FormFieldProps) {
                     className='flex-1'
                     onChange={handleInputTypeChange}
                 />
-                <FieldSettingsButton settings={currentFieldSettings?.settings} />
+                <FieldSettingsButton
+                    ref={defaultSettingsRef}
+                    settings={currentFieldSettings?.settings}
+                />
             </Flex>
-            <Stack>
-                {currentFieldSettings?.controls?.map((control, i) => (
-                    <div key={i}>{control}</div>
-                ))}
-            </Stack>
+            <Stack>{currentFieldSettings?.controls}</Stack>
         </Flex>
     );
 }

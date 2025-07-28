@@ -3,16 +3,16 @@ import { Ref, useState, useImperativeHandle, ChangeEventHandler, MouseEventHandl
 import { v4 as uuid } from 'uuid';
 
 export type OptionCreatorRef = {
-    getOptions: () => OptionControl[];
+    getOptions: () => FieldOption[];
 };
 
-type OptionControl = {
+export type FieldOption = {
     id: string;
     content: string;
 };
 
 export function OptionCreator({ ref }: { ref?: Ref<OptionCreatorRef> }) {
-    const [options, setOptions] = useState<OptionControl[]>([]);
+    const [options, setOptions] = useState<FieldOption[]>([]);
 
     useImperativeHandle(
         ref,

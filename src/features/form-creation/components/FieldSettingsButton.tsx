@@ -1,12 +1,35 @@
-import { Menu, ActionIcon, Switch, Stack } from '@mantine/core';
+import { Menu, ActionIcon, Stack } from '@mantine/core';
 import { IconAdjustments } from '@tabler/icons-react';
-import { ReactNode } from 'react';
+import { ReactNode, Ref, useImperativeHandle, useState } from 'react';
+import { DefaultFieldSettings, DefaultFieldSettingsList } from './DefaultFieldSettingsList';
+import { TextFieldSettings } from './TextFieldSettingsList';
 
-type FieldSettingsButtonProps = {
-    settings?: ReactNode[];
+export type DefaultFieldSettingsRef = {
+    getDefaultSettings: () => DefaultFieldSettings;
 };
 
-export function FieldSettingsButton({ settings }: FieldSettingsButtonProps) {
+export type TextFieldSettingsRef = {
+    getSettings: () => TextFieldSettings;
+};
+
+type FieldSettingsButtonProps = {
+    settings?: ReactNode;
+    ref?: Ref<DefaultFieldSettingsRef>;
+};
+
+export function FieldSettingsButton({ settings, ref }: FieldSettingsButtonProps) {
+    const [defaultSettings, setDefaultSettings] = useState<DefaultFieldSettings>({
+        required: true
+    });
+
+    useImperativeHandle(
+        ref,
+        () => ({
+            getDefaultSettings: () => defaultSettings
+        }),
+        [defaultSettings]
+    );
+
     return (
         <Menu shadow='md' width={300} position='bottom-end'>
             <Menu.Target>
@@ -16,15 +39,14 @@ export function FieldSettingsButton({ settings }: FieldSettingsButtonProps) {
             </Menu.Target>
             <Menu.Dropdown>
                 <Menu.Label>Input settings</Menu.Label>
-                <Switch defaultChecked label='Required' className='p-sm' />
+                <DefaultFieldSettingsList
+                    settings={defaultSettings}
+                    onSettingChange={setDefaultSettings}
+                />
                 {settings && (
                     <>
                         <Menu.Divider />
-                        <Stack className='p-sm'>
-                            {settings?.map((opt, i) => (
-                                <div key={i}>{opt}</div>
-                            ))}
-                        </Stack>
+                        <Stack className='p-sm'>{settings}</Stack>
                     </>
                 )}
             </Menu.Dropdown>
