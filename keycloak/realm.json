@@ -509,14 +509,7 @@
             "authenticationFlowBindingOverrides": {},
             "fullScopeAllowed": false,
             "nodeReRegistrationTimeout": 0,
-            "defaultClientScopes": [
-                "web-origins",
-                "acr",
-                "roles",
-                "profile",
-                "basic",
-                "email"
-            ],
+            "defaultClientScopes": ["web-origins", "acr", "roles", "profile", "basic", "email"],
             "optionalClientScopes": [
                 "address",
                 "phone",
@@ -565,14 +558,7 @@
                     "config": {}
                 }
             ],
-            "defaultClientScopes": [
-                "web-origins",
-                "acr",
-                "roles",
-                "profile",
-                "basic",
-                "email"
-            ],
+            "defaultClientScopes": ["web-origins", "acr", "roles", "profile", "basic", "email"],
             "optionalClientScopes": [
                 "address",
                 "phone",
@@ -608,14 +594,7 @@
             "authenticationFlowBindingOverrides": {},
             "fullScopeAllowed": true,
             "nodeReRegistrationTimeout": 0,
-            "defaultClientScopes": [
-                "web-origins",
-                "acr",
-                "roles",
-                "profile",
-                "basic",
-                "email"
-            ],
+            "defaultClientScopes": ["web-origins", "acr", "roles", "profile", "basic", "email"],
             "optionalClientScopes": [
                 "address",
                 "phone",
@@ -650,14 +629,7 @@
             "authenticationFlowBindingOverrides": {},
             "fullScopeAllowed": false,
             "nodeReRegistrationTimeout": 0,
-            "defaultClientScopes": [
-                "web-origins",
-                "acr",
-                "roles",
-                "profile",
-                "basic",
-                "email"
-            ],
+            "defaultClientScopes": ["web-origins", "acr", "roles", "profile", "basic", "email"],
             "optionalClientScopes": [
                 "address",
                 "phone",
@@ -706,14 +678,7 @@
             "authenticationFlowBindingOverrides": {},
             "fullScopeAllowed": true,
             "nodeReRegistrationTimeout": -1,
-            "defaultClientScopes": [
-                "web-origins",
-                "acr",
-                "roles",
-                "profile",
-                "basic",
-                "email"
-            ],
+            "defaultClientScopes": ["web-origins", "acr", "roles", "profile", "basic", "email"],
             "optionalClientScopes": [
                 "address",
                 "phone",
@@ -748,14 +713,7 @@
             "authenticationFlowBindingOverrides": {},
             "fullScopeAllowed": false,
             "nodeReRegistrationTimeout": 0,
-            "defaultClientScopes": [
-                "web-origins",
-                "acr",
-                "roles",
-                "profile",
-                "basic",
-                "email"
-            ],
+            "defaultClientScopes": ["web-origins", "acr", "roles", "profile", "basic", "email"],
             "optionalClientScopes": [
                 "address",
                 "phone",
@@ -813,14 +771,7 @@
                     }
                 }
             ],
-            "defaultClientScopes": [
-                "web-origins",
-                "acr",
-                "roles",
-                "profile",
-                "basic",
-                "email"
-            ],
+            "defaultClientScopes": ["web-origins", "acr", "roles", "profile", "basic", "email"],
             "optionalClientScopes": [
                 "address",
                 "phone",

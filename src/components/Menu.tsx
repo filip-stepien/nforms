@@ -1,12 +1,7 @@
 import { ActionIcon, Divider, Flex, Group, Tooltip } from '@mantine/core';
 import { UserButton } from './UserButton';
 import Link from 'next/link';
-import {
-    Icon,
-    IconClipboardData,
-    IconDashboard,
-    IconPlus
-} from '@tabler/icons-react';
+import { Icon, IconClipboardData, IconDashboard, IconPlus } from '@tabler/icons-react';
 
 const MENU_ITEMS: MenuItemProps[] = [
     {
@@ -64,20 +59,13 @@ export function Menu({ menuFormItems = [] }: MenuProps) {
             <Divider className='mt-0' />
             <Flex direction='column' className='p-sm'>
                 {MENU_ITEMS.map((item, i) => (
-                    <MenuItem
-                        key={i}
-                        icon={item.icon}
-                        title={item.title}
-                        href={item.href}
-                    />
+                    <MenuItem key={i} icon={item.icon} title={item.title} href={item.href} />
                 ))}
             </Flex>
             <Divider className='mt-0' />
             <Flex direction='column' className='p-sm'>
                 <Flex justify='space-between' className='pb-1'>
-                    <span className='text-xs text-font-secondary pl-1'>
-                        Last forms
-                    </span>
+                    <span className='text-xs text-font-secondary pl-1'>Last forms</span>
                     <Tooltip label='Create new form' withArrow position='right'>
                         <ActionIcon variant='default' size={18}>
                             <IconPlus size={12} stroke={1.5} />
@@ -90,11 +78,7 @@ export function Menu({ menuFormItems = [] }: MenuProps) {
                     </span>
                 ) : (
                     menuFormItems.map((item, i) => (
-                        <MenuFormItem
-                            key={i}
-                            title={item.title}
-                            href={item.href}
-                        />
+                        <MenuFormItem key={i} title={item.title} href={item.href} />
                     ))
                 )}
             </Flex>

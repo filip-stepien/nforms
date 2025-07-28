@@ -38,10 +38,7 @@ const authOptions: AuthOptions = {
                 }
             },
             async authorize(credentials) {
-                return getDebugUser(
-                    credentials?.username,
-                    credentials?.password
-                );
+                return getDebugUser(credentials?.username, credentials?.password);
             }
         }),
         KeycloakProvider({

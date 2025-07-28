@@ -1,4 +1,4 @@
-import './globals.css';
+import '@/globals.css';
 import { ColorSchemeScript, mantineHtmlProps } from '@mantine/core';
 import { getServerSession } from 'next-auth';
 import type { Metadata } from 'next';

@@ -23,12 +23,7 @@ export function Layout({ children }: Props) {
             className='p-md'
         >
             <AppShell.Header className='flex items-center'>
-                <Burger
-                    opened={opened}
-                    onClick={toggle}
-                    hiddenFrom='sm'
-                    className='pl-md'
-                />
+                <Burger opened={opened} onClick={toggle} hiddenFrom='sm' className='pl-md' />
             </AppShell.Header>
             <AppShell.Navbar>
                 <Menu />

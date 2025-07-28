@@ -3,12 +3,7 @@ import Avatar from 'react-avatar';
 import { ReactNode } from 'react';
 import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
-import {
-    Icon,
-    IconChevronRight,
-    IconLogout,
-    IconSettings
-} from '@tabler/icons-react';
+import { Icon, IconChevronRight, IconLogout, IconSettings } from '@tabler/icons-react';
 
 const USER_MENU_ENTRIES: UserMenuEntry[] = [
     {
@@ -96,18 +91,12 @@ export function UserButton() {
             <UnstyledButton className='p-sm hover:bg-hover flex gap-sm items-center'>
                 <Avatar name={data?.user?.name ?? ''} size='40px' round />
                 <Flex direction='column' flex={1}>
-                    <div className='text-sm font-medium'>
-                        {data?.user?.name}
-                    </div>
+                    <div className='text-sm font-medium'>{data?.user?.name}</div>
                     <div className='text-sm font-lighter text-font-secondary'>
                         {data?.user?.email}
                     </div>
                 </Flex>
-                <IconChevronRight
-                    size={14}
-                    stroke={1.5}
-                    className='justify-self-end'
-                />
+                <IconChevronRight size={14} stroke={1.5} className='justify-self-end' />
             </UnstyledButton>
         </UserMenu>
     );
