@@ -1,39 +1,21 @@
 import { Stack, Flex, TextInput, ActionIcon, CloseIcon, Button } from '@mantine/core';
-import { Ref, useState, useImperativeHandle, ChangeEventHandler, MouseEventHandler } from 'react';
-import { v4 as uuid } from 'uuid';
+import { Ref, ChangeEventHandler, MouseEventHandler } from 'react';
+import { OptionCreatorRef, useOptionCreator } from '../hooks/useOptionCreator';
 
-export type OptionCreatorRef = {
-    getOptions: () => FieldOption[];
+type Props = {
+    ref?: Ref<OptionCreatorRef>;
 };
 
-export type FieldOption = {
-    id: string;
-    content: string;
-};
-
-export function OptionCreator({ ref }: { ref?: Ref<OptionCreatorRef> }) {
-    const [options, setOptions] = useState<FieldOption[]>([]);
-
-    useImperativeHandle(
-        ref,
-        () => ({
-            getOptions: () => options
-        }),
-        [options]
-    );
-
-    const handleAddOption = () => {
-        setOptions(prev => [...prev, { id: uuid(), content: '' }]);
-    };
+export function OptionCreator({ ref }: Props) {
+    const { options, addOption, updateOption, deleteOption } = useOptionCreator(ref);
 
     const handleOptionChange: ChangeEventHandler<HTMLInputElement> = event => {
         const { id, value } = event.target;
-        setOptions(prev => prev.map(opt => (opt.id === id ? { ...opt, content: value } : opt)));
+        updateOption(id, value);
     };
 
     const handleOptionDelete: MouseEventHandler<HTMLButtonElement> = event => {
-        const id = event.currentTarget.id;
-        setOptions(prev => prev.filter(opt => opt.id !== id));
+        deleteOption(event.currentTarget.id);
     };
 
     return (
@@ -60,7 +42,7 @@ export function OptionCreator({ ref }: { ref?: Ref<OptionCreatorRef> }) {
                         </ActionIcon>
                     </Flex>
                 ))}
-                <Button onClick={handleAddOption}>+ Add option</Button>
+                <Button onClick={addOption}>+ Add option</Button>
             </Stack>
         </div>
     );

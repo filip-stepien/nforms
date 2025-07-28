@@ -1,5 +1,5 @@
 import { Stack, Checkbox } from '@mantine/core';
-import { ChangeEvent, Ref, useImperativeHandle, useState } from 'react';
+import { ChangeEvent } from 'react';
 
 export type TextFieldSettings = {
     summarize: boolean;
@@ -7,14 +7,12 @@ export type TextFieldSettings = {
     extractKeywords: boolean;
 };
 
-type TextFieldSettingsListProps = {
+type Props = {
     settings: TextFieldSettings;
     onSettingsChange: (settings: TextFieldSettings) => void;
 };
 
-export function TextFieldSettingsList(props: TextFieldSettingsListProps) {
-    const { settings, onSettingsChange } = props;
-
+export function TextFieldSettingsList({ settings, onSettingsChange }: Props) {
     const handleSettingChange = (
         setting: keyof TextFieldSettings,
         event: ChangeEvent<HTMLInputElement>
@@ -28,19 +26,19 @@ export function TextFieldSettingsList(props: TextFieldSettingsListProps) {
                 label='Summarize'
                 description='Generate summaries of user responses'
                 checked={settings.summarize}
-                onChange={e => handleSettingChange('summarize', e)}
+                onChange={event => handleSettingChange('summarize', event)}
             />
             <Checkbox
                 label='Analyse sentiment'
                 description='Analyze whether responses are positive, negative, neutral or irrelevant'
                 checked={settings.analyseSentiment}
-                onChange={e => handleSettingChange('analyseSentiment', e)}
+                onChange={event => handleSettingChange('analyseSentiment', event)}
             />
             <Checkbox
                 label='Extract keywords'
                 description='Extract important keywords from user answers'
                 checked={settings.extractKeywords}
-                onChange={e => handleSettingChange('extractKeywords', e)}
+                onChange={event => handleSettingChange('extractKeywords', event)}
             />
         </Stack>
     );
