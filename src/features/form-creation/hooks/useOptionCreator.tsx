@@ -1,3 +1,4 @@
+import { useListState } from '@mantine/hooks';
 import { useImperativeHandle, useState, useCallback } from 'react';
 import { v4 as uuid } from 'uuid';
 
@@ -5,13 +6,18 @@ export type OptionCreatorRef = {
     getOptions: () => string[];
 };
 
-type FieldOption = {
+export type FieldOption = {
     id: string;
     content: string;
 };
 
 export function useOptionCreator(ref?: React.Ref<OptionCreatorRef>) {
-    const [options, setOptions] = useState<FieldOption[]>([]);
+    const [options, handlers] = useListState<FieldOption>([
+        {
+            id: uuid(),
+            content: ''
+        }
+    ]);
 
     useImperativeHandle(
         ref,
@@ -22,21 +28,29 @@ export function useOptionCreator(ref?: React.Ref<OptionCreatorRef>) {
     );
 
     const addOption = useCallback(() => {
-        setOptions(prev => [...prev, { id: uuid(), content: '' }]);
+        handlers.append({ id: uuid(), content: '' });
     }, []);
 
     const updateOption = useCallback((id: string, content: string) => {
-        setOptions(prev => prev.map(opt => (opt.id === id ? { ...opt, content } : opt)));
+        handlers.applyWhere(
+            opt => opt.id === id,
+            opt => ({ ...opt, content })
+        );
     }, []);
 
     const deleteOption = useCallback((id: string) => {
-        setOptions(prev => prev.filter(opt => opt.id !== id));
+        handlers.filter(opt => opt.id !== id);
+    }, []);
+
+    const reorderOption = useCallback((from: number, to: number) => {
+        handlers.reorder({ from, to });
     }, []);
 
     return {
         options,
         addOption,
         updateOption,
-        deleteOption
+        deleteOption,
+        reorderOption
     };
 }

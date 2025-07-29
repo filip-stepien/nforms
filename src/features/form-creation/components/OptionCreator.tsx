@@ -1,49 +1,48 @@
-import { Stack, Flex, TextInput, ActionIcon, CloseIcon, Button } from '@mantine/core';
-import { Ref, ChangeEventHandler, MouseEventHandler } from 'react';
 import { OptionCreatorRef, useOptionCreator } from '../hooks/useOptionCreator';
+import { DragDropContext, Droppable, OnDragEndResponder } from '@hello-pangea/dnd';
+import { OptionItem } from './OptionItem';
+import { Button, Flex } from '@mantine/core';
+import { Ref } from 'react';
 
 type Props = {
     ref?: Ref<OptionCreatorRef>;
 };
 
 export function OptionCreator({ ref }: Props) {
-    const { options, addOption, updateOption, deleteOption } = useOptionCreator(ref);
+    const { options, addOption, updateOption, deleteOption, reorderOption } = useOptionCreator(ref);
 
-    const handleOptionChange: ChangeEventHandler<HTMLInputElement> = event => {
-        const { id, value } = event.target;
-        updateOption(id, value);
-    };
-
-    const handleOptionDelete: MouseEventHandler<HTMLButtonElement> = event => {
-        deleteOption(event.currentTarget.id);
+    const handleOptionDragEnd: OnDragEndResponder<string> = ({ destination, source }) => {
+        reorderOption(source.index, destination?.index ?? source.index);
     };
 
     return (
         <div>
-            <div className='text-xs mb-xs text-font-secondary'>Enter options</div>
-            <Stack>
-                {options.map((opt, i) => (
-                    <Flex key={opt.id} align='center' gap='sm'>
-                        <TextInput
-                            id={opt.id}
-                            value={opt.content}
-                            onChange={handleOptionChange}
-                            placeholder={`Option ${i + 1}`}
-                            className='flex-1'
-                        />
-                        <ActionIcon
-                            id={opt.id}
-                            className='size-[36px]'
-                            variant='transparent'
-                            color='red'
-                            onClick={handleOptionDelete}
+            <span className='text-xs mb-xs text-font-secondary'>Enter options</span>
+            <DragDropContext onDragEnd={handleOptionDragEnd}>
+                <Droppable droppableId='droppable'>
+                    {provided => (
+                        <Flex
+                            direction='column'
+                            ref={provided.innerRef}
+                            {...provided.droppableProps}
                         >
-                            <CloseIcon />
-                        </ActionIcon>
-                    </Flex>
-                ))}
-                <Button onClick={addOption}>+ Add option</Button>
-            </Stack>
+                            {options.map((opt, i) => (
+                                <OptionItem
+                                    key={opt.id}
+                                    option={opt}
+                                    index={i}
+                                    onChange={updateOption}
+                                    onDelete={deleteOption}
+                                />
+                            ))}
+                            {provided.placeholder}
+                        </Flex>
+                    )}
+                </Droppable>
+            </DragDropContext>
+            <Button onClick={addOption} variant='transparent'>
+                + Add
+            </Button>
         </div>
     );
 }
