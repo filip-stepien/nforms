@@ -1,14 +1,17 @@
-import { Flex, TextInput, NativeSelect, Stack } from '@mantine/core';
+import { Flex, TextInput, NativeSelect, Stack, ActionIcon } from '@mantine/core';
 import { ChangeEventHandler, Ref } from 'react';
 import { FieldSettings } from './FieldSettings';
 import { FieldType } from '../hooks/useFormFieldConfiguration';
 import { FormFieldRef, useFormField } from '../hooks/useFormField';
+import { IconTrash, IconX } from '@tabler/icons-react';
+import { IconButton } from './IconButton';
 
 type Props = {
     ref?: Ref<FormFieldRef>;
+    onDelete?: () => void;
 };
 
-export function FormField({ ref }: Props) {
+export function FormField({ ref, onDelete }: Props) {
     const { titleRef, defaultSettingsRef, controlsComponent, settingsComponent, setFieldType } =
         useFormField(ref);
 
@@ -32,6 +35,7 @@ export function FormField({ ref }: Props) {
                     onChange={handleInputTypeChange}
                 />
                 <FieldSettings ref={defaultSettingsRef} settings={settingsComponent} />
+                <IconButton icon={IconTrash} variant='light' color='red' onClick={onDelete} />
             </Flex>
             <Stack>{controlsComponent}</Stack>
         </Flex>

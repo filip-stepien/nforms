@@ -1,7 +1,8 @@
 import { Draggable } from '@hello-pangea/dnd';
-import { TextInput, ActionIcon, CloseIcon } from '@mantine/core';
-import { IconGripVertical } from '@tabler/icons-react';
+import { TextInput } from '@mantine/core';
+import { IconGripVertical, IconX } from '@tabler/icons-react';
 import { FieldOption } from '../hooks/useOptionCreator';
+import { IconButton } from './IconButton';
 
 type Props = {
     option: FieldOption;
@@ -19,8 +20,8 @@ export function OptionItem({ option, index, onChange, onDelete }: Props) {
                     {...provided.draggableProps}
                     className='flex items-center gap-sm py-2'
                 >
-                    <div {...provided.dragHandleProps}>
-                        <IconGripVertical className='text-icon' />
+                    <div {...provided.dragHandleProps} className='w-[36px] grid place-items-center'>
+                        <IconGripVertical className='text-icon' stroke={1.5} size={20} />
                     </div>
                     <TextInput
                         value={option.content}
@@ -28,14 +29,12 @@ export function OptionItem({ option, index, onChange, onDelete }: Props) {
                         placeholder='Option...'
                         className='flex-1'
                     />
-                    <ActionIcon
-                        className='size-[36px]'
+                    <IconButton
+                        icon={IconX}
                         variant='transparent'
                         color='red'
                         onClick={() => onDelete(option.id)}
-                    >
-                        <CloseIcon />
-                    </ActionIcon>
+                    />
                 </div>
             )}
         </Draggable>

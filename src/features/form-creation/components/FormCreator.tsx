@@ -5,7 +5,7 @@ import { FormField } from './FormField';
 import { useDynamicFormFields } from '../hooks/useDynamicFormFields';
 
 export function FormCreator() {
-    const { fieldRefs, getFieldData, addField } = useDynamicFormFields();
+    const { fields, getFieldData, addField, deleteField } = useDynamicFormFields();
 
     return (
         <Stack gap='lg'>
@@ -14,8 +14,8 @@ export function FormCreator() {
                 description='Enter a title for your form. This will be visible to respondents.'
                 placeholder='e.g. Customer Satisfaction Survey'
             />
-            {fieldRefs.map((ref, i) => (
-                <FormField key={i} ref={ref} />
+            {fields.map(({ id, ref }) => (
+                <FormField key={id} ref={ref} onDelete={() => deleteField(id)} />
             ))}
             <Button variant='transparent' onClick={addField}>
                 + Add field

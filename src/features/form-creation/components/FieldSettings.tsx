@@ -3,6 +3,7 @@ import { IconAdjustments } from '@tabler/icons-react';
 import { ReactNode, Ref } from 'react';
 import { DefaultFieldSettingsList } from './DefaultFieldSettingsList';
 import { DefaultFieldSettingsRef, useDefaultFieldSettings } from '../hooks/useDefaultFieldSettings';
+import { IconButton } from './IconButton';
 
 type Props = {
     settings?: ReactNode;
@@ -15,9 +16,7 @@ export function FieldSettings({ settings, ref }: Props) {
     return (
         <Menu shadow='md' width={300} position='bottom-end'>
             <Menu.Target>
-                <ActionIcon variant='filled' className='size-[36px]'>
-                    <IconAdjustments stroke={1.5} size={20} />
-                </ActionIcon>
+                <IconButton variant='light' icon={IconAdjustments} />
             </Menu.Target>
             <Menu.Dropdown>
                 <Menu.Label>Input settings</Menu.Label>

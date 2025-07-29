@@ -1,19 +1,30 @@
-import { useRef, useCallback, createRef, RefObject } from 'react';
-import { useRerender } from './useRerender';
+import { useCallback, createRef, RefObject, useState } from 'react';
 import { FormFieldRef } from './useFormField';
+import { v4 as uuid } from 'uuid';
+import { useListState } from '@mantine/hooks';
+
+export type DynamicFormField = {
+    id: string;
+    ref: RefObject<FormFieldRef | null>;
+};
 
 export function useDynamicFormFields() {
-    const fieldRefs = useRef<RefObject<FormFieldRef | null>[]>([]);
-    const rerender = useRerender();
+    const [fields, handlers] = useListState<DynamicFormField>([]);
 
     const addField = useCallback(() => {
-        fieldRefs.current.push(createRef<FormFieldRef>());
-        rerender();
-    }, [rerender]);
+        handlers.append({
+            id: uuid(),
+            ref: createRef<FormFieldRef>()
+        });
+    }, []);
+
+    const deleteField = useCallback((id: string) => {
+        handlers.filter(field => field.id !== id);
+    }, []);
 
     const getFieldData = useCallback(() => {
-        return fieldRefs.current
-            .map(ref => ref.current)
+        return fields
+            .map(({ ref }) => ref.current)
             .filter(Boolean)
             .map(current => ({
                 title: current!.getTitle(),
@@ -21,11 +32,12 @@ export function useDynamicFormFields() {
                 options: current!.getOptions(),
                 settings: current!.getSettings()
             }));
-    }, []);
+    }, [fields]);
 
     return {
-        fieldRefs: fieldRefs.current,
+        fields,
         addField,
+        deleteField,
         getFieldData
     };
 }
