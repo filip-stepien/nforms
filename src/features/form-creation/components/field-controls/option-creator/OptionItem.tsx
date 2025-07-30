@@ -1,8 +1,8 @@
 import { Draggable } from '@hello-pangea/dnd';
 import { TextInput } from '@mantine/core';
 import { IconGripVertical, IconX } from '@tabler/icons-react';
-import { FieldOption } from '../hooks/useOptionCreator';
-import { IconButton } from './IconButton';
+import { IconButton } from '../../ui/IconButton';
+import { FieldOption } from './OptionCreator';
 
 type Props = {
     option: FieldOption;
@@ -21,7 +21,11 @@ export function OptionItem({ option, index, onChange, onDelete }: Props) {
                     className='flex items-center gap-sm py-2'
                 >
                     <div {...provided.dragHandleProps} className='w-[36px] grid place-items-center'>
-                        <IconGripVertical className='text-icon' stroke={1.5} size={20} />
+                        <IconGripVertical
+                            className='text-icon cursor-grab'
+                            stroke={1.5}
+                            size={20}
+                        />
                     </div>
                     <TextInput
                         value={option.content}

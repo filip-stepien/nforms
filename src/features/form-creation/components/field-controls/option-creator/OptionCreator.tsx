@@ -1,18 +1,25 @@
-import { OptionCreatorRef, useOptionCreator } from '../hooks/useOptionCreator';
 import { DragDropContext, Droppable, OnDragEndResponder } from '@hello-pangea/dnd';
-import { OptionItem } from './OptionItem';
 import { Button, Flex } from '@mantine/core';
-import { Ref } from 'react';
+import { OptionItem } from './OptionItem';
 
-type Props = {
-    ref?: Ref<OptionCreatorRef>;
+export type FieldOption = {
+    id: string;
+    content: string;
 };
 
-export function OptionCreator({ ref }: Props) {
-    const { options, addOption, updateOption, deleteOption, reorderOption } = useOptionCreator(ref);
+type Props = {
+    options: FieldOption[];
+    onOptionAdd: () => void;
+    onOptionUpdate: (id: string, content: string) => void;
+    onOptionDelete: (id: string) => void;
+    onOptionReorder: (from: number, to: number) => void;
+};
+
+export function OptionCreator(props: Props) {
+    const { options, onOptionAdd, onOptionDelete, onOptionUpdate, onOptionReorder } = props;
 
     const handleOptionDragEnd: OnDragEndResponder<string> = ({ destination, source }) => {
-        reorderOption(source.index, destination?.index ?? source.index);
+        onOptionReorder(source.index, destination?.index ?? source.index);
     };
 
     return (
@@ -26,13 +33,13 @@ export function OptionCreator({ ref }: Props) {
                             ref={provided.innerRef}
                             {...provided.droppableProps}
                         >
-                            {options.map((opt, i) => (
+                            {options?.map((opt, i) => (
                                 <OptionItem
                                     key={opt.id}
                                     option={opt}
                                     index={i}
-                                    onChange={updateOption}
-                                    onDelete={deleteOption}
+                                    onChange={onOptionUpdate}
+                                    onDelete={onOptionDelete}
                                 />
                             ))}
                             {provided.placeholder}
@@ -40,7 +47,7 @@ export function OptionCreator({ ref }: Props) {
                     )}
                 </Droppable>
             </DragDropContext>
-            <Button onClick={addOption} variant='transparent'>
+            <Button onClick={onOptionAdd} variant='transparent'>
                 + Add
             </Button>
         </div>

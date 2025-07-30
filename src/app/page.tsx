@@ -1,6 +1,6 @@
 'use client';
 
-import { FormCreator } from '@/features/form-creation/components/FormCreator';
+import { FormCreator } from '@/features/form-creation/components/form/FormCreator';
 
 export default function Home() {
     return (
