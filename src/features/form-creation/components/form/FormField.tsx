@@ -48,12 +48,7 @@ export function FormField(props: Props) {
     const controlsComponent: Record<FieldType, ReactNode> = {
         [FieldType.TEXT]: null,
         [FieldType.RATING]: (
-            <OptionCreator
-                {...getOptionCreatorProps(
-                    (controls as ControlsMap[FieldType.RATING]).options,
-                    onControlsChange
-                )}
-            />
+            <OptionCreator {...getOptionCreatorProps(controls?.options, onControlsChange)} />
         )
     };
 

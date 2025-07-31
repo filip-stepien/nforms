@@ -2,10 +2,22 @@
 
 import { Button, Stack, TextInput } from '@mantine/core';
 import { FormField } from './FormField';
-import { useFormFields } from '../../hooks/useFormFields';
+import { FieldType, useFormFields } from '../../hooks/useFormFields';
 
 export function FormCreator() {
-    const { fields, addField, setField, deleteField } = useFormFields();
+    const { fields, addField, setField, deleteField } = useFormFields([
+        {
+            id: '',
+            title: '',
+            type: FieldType.RATING,
+            settings: {
+                required: true
+            },
+            controls: {
+                options: []
+            }
+        }
+    ]);
 
     return (
         <Stack gap='lg'>

@@ -3,16 +3,16 @@ import { ControlsMap, FieldType } from '../hooks/useFormFields';
 import { v4 as uuid } from 'uuid';
 
 export function getOptionCreatorProps(
-    options: FieldOption[],
+    options: FieldOption[] = [],
     controlsChangeFn: (controls: ControlsMap[FieldType]) => void
 ) {
     return {
         options,
         onOptionAdd: () => {
-            controlsChangeFn?.({ options: [...options, { id: uuid(), content: '' }] });
+            controlsChangeFn({ options: [...options, { id: uuid(), content: '' }] });
         },
         onOptionUpdate: (id: string, content: string) => {
-            controlsChangeFn?.({
+            controlsChangeFn({
                 options: options.map(opt => (opt.id === id ? { ...opt, content } : opt))
             });
         },
@@ -20,10 +20,10 @@ export function getOptionCreatorProps(
             const updated = [...options];
             const [moved] = updated.splice(from, 1);
             updated.splice(to, 0, moved);
-            controlsChangeFn?.({ options: updated });
+            controlsChangeFn({ options: updated });
         },
         onOptionDelete: (id: string) => {
-            controlsChangeFn?.({ options: options.filter(opt => opt.id !== id) });
+            controlsChangeFn({ options: options.filter(opt => opt.id !== id) });
         }
     };
 }

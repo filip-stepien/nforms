@@ -1,6 +1,7 @@
 import { FieldOption } from '../components/field-controls/option-creator/OptionCreator';
 import { useListState } from '@mantine/hooks';
 import { v4 as uuid } from 'uuid';
+import { keysEqual, printKeysOrType } from '../lib/utils';
 
 export enum FieldType {
     TEXT = 'Text',
@@ -22,24 +23,33 @@ export type BaseSettings = {
 };
 
 export type TextSettings = BaseSettings & {
-    summarize: boolean;
     analyseSentiment: boolean;
     extractKeywords: boolean;
+    summarize: true;
 };
 
 export type OptionsControl = {
     options: FieldOption[];
 };
 
-type Field = {
-    id: string;
-    title: string;
-    type: FieldType;
-    controls: ControlsMap[FieldType];
-    settings: SettingsMap[FieldType];
+export type Field = {
+    [K in FieldType]: {
+        id: string;
+        title: string;
+        type: K;
+        controls: ControlsMap[K];
+        settings: SettingsMap[K];
+    };
+}[FieldType];
+
+type InitialFieldStates = {
+    [K in FieldType]: {
+        settings: SettingsMap[K];
+        controls: ControlsMap[K];
+    };
 };
 
-export const fieldInitialStates: Record<FieldType, Pick<Field, 'settings' | 'controls'>> = {
+export const initialFieldStates: InitialFieldStates = {
     [FieldType.TEXT]: {
         settings: {
             required: true,
@@ -51,10 +61,7 @@ export const fieldInitialStates: Record<FieldType, Pick<Field, 'settings' | 'con
     },
     [FieldType.RATING]: {
         settings: {
-            required: true,
-            analyseSentiment: true,
-            extractKeywords: true,
-            summarize: true
+            required: true
         },
         controls: {
             options: []
@@ -66,31 +73,59 @@ export function useFormFields(initialFields: Field[] = []) {
     const [fields, fieldsHandlers] = useListState<Field>(initialFields);
 
     const addField = () => {
-        const { settings, controls } = fieldInitialStates[FieldType.TEXT];
+        const { settings, controls } = initialFieldStates[FieldType.TEXT];
         fieldsHandlers.append({ id: uuid(), title: '', type: FieldType.TEXT, settings, controls });
+    };
+
+    const deleteField = (id: string) => {
+        fieldsHandlers.filter(f => f.id !== id);
     };
 
     const setField = (id: string, updatedField: Partial<Field>) => {
         fieldsHandlers.applyWhere(
             field => field.id === id,
             field => {
-                const typeChanged = updatedField.type && field.type !== updatedField.type;
-                return {
+                const typeChanged = updatedField.type && updatedField.type !== field.type;
+                const newField = {
                     ...field,
                     ...updatedField,
                     settings: typeChanged
-                        ? fieldInitialStates[updatedField.type!].settings
+                        ? initialFieldStates[updatedField.type!].settings
                         : (updatedField.settings ?? field.settings),
                     controls: typeChanged
-                        ? fieldInitialStates[updatedField.type!].controls
+                        ? initialFieldStates[updatedField.type!].controls
                         : (updatedField.controls ?? field.controls)
-                };
+                } as Field;
+
+                const initial = initialFieldStates[newField.type];
+
+                if (!keysEqual(initial.settings, newField.settings)) {
+                    console.warn(
+                        `Field settings mismatch for field "${newField.type}" (id: ${newField.id}).\n\n` +
+                            `- Received: ${printKeysOrType(newField.settings)}\n\n` +
+                            `- Expected: ${printKeysOrType(initial.settings)}\n\n` +
+                            'Field types are resolved at runtime — ' +
+                            'updating settings without validation may cause runtime errors.'
+                    );
+
+                    return field;
+                }
+
+                if (!keysEqual(initial.controls, newField.controls)) {
+                    console.warn(
+                        `Field controls mismatch for field "${newField.type}" (id: ${newField.id}).\n\n` +
+                            `- Received: ${printKeysOrType(newField.controls)}\n\n` +
+                            `- Expected: ${printKeysOrType(initial.controls)}\n\n` +
+                            'Field types are resolved at runtime — ' +
+                            'updating controls without validation may cause runtime errors.'
+                    );
+
+                    return field;
+                }
+
+                return newField;
             }
         );
-    };
-
-    const deleteField = (id: string) => {
-        fieldsHandlers.filter(f => f.id !== id);
     };
 
     return { fields, addField, setField, deleteField };
