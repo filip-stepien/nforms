@@ -12,20 +12,20 @@ type Props = {
     onOptionAdd: () => void;
     onOptionUpdate: (id: string, content: string) => void;
     onOptionDelete: (id: string) => void;
-    onOptionReorder: (from: number, to: number) => void;
+    onOptionReorder: (from: number, to?: number) => void;
 };
 
 export function OptionCreator(props: Props) {
     const { options, onOptionAdd, onOptionDelete, onOptionUpdate, onOptionReorder } = props;
 
-    const handleOptionDragEnd: OnDragEndResponder<string> = ({ destination, source }) => {
-        onOptionReorder(source.index, destination?.index ?? source.index);
-    };
-
     return (
         <div>
             <span className='text-xs mb-xs text-font-secondary'>Enter options</span>
-            <DragDropContext onDragEnd={handleOptionDragEnd}>
+            <DragDropContext
+                onDragEnd={({ destination, source }) =>
+                    onOptionReorder(source.index, destination?.index)
+                }
+            >
                 <Droppable droppableId='option-creator'>
                     {provided => (
                         <Flex

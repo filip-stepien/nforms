@@ -81,8 +81,8 @@ export function useFormFields(initialFields: Field[] = []) {
         fieldsHandlers.filter(f => f.id !== id);
     };
 
-    const reorderField = (from: number, to: number) => {
-        fieldsHandlers.reorder({ from, to });
+    const reorderField = (from: number, to?: number) => {
+        fieldsHandlers.reorder({ from, to: to ?? from });
     };
 
     const setField = (id: string, updatedField: Partial<Field>) => {

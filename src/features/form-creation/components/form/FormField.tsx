@@ -1,20 +1,19 @@
-import { Flex, TextInput, NativeSelect, Stack, Menu, Divider } from '@mantine/core';
-import { ChangeEventHandler, ReactNode } from 'react';
-import { IconAdjustments, IconArticle, IconTrash } from '@tabler/icons-react';
-import { IconButton } from '../ui/IconButton';
+import { Flex } from '@mantine/core';
+import { ReactNode } from 'react';
 import { TextFieldSettings } from '../field-settings/TextFieldSettings';
 import { BaseFieldSettings } from '../field-settings/BaseFieldSettings';
 import { OptionCreator } from '../field-controls/option-creator/OptionCreator';
 import { FieldType, SettingsMap, ControlsMap, TextSettings } from '../../hooks/useFormFields';
 import { getOptionCreatorProps } from '../../lib/field-controls';
-import { DragButton } from '../ui/DragButton';
 import { Draggable } from '@hello-pangea/dnd';
+import { FieldHeader } from './FieldHeader';
+import { FieldBody } from './FieldBody';
 
 type Props = {
     id: string;
     index: number;
     title: string;
-    fieldType: FieldType;
+    type: FieldType;
     settings: SettingsMap[FieldType];
     controls: ControlsMap[FieldType];
     onSettingsChange: (settings: SettingsMap[FieldType]) => void;
@@ -29,7 +28,7 @@ export function FormField(props: Props) {
         id,
         index,
         title,
-        fieldType,
+        type,
         settings,
         controls,
         onTitleChange,
@@ -58,14 +57,6 @@ export function FormField(props: Props) {
         )
     };
 
-    const handleInputTypeChange: ChangeEventHandler<HTMLSelectElement> = event => {
-        onFieldTypeChange(event.target.value as FieldType);
-    };
-
-    const handleTitleChange: ChangeEventHandler<HTMLInputElement> = event => {
-        onTitleChange(event.target.value);
-    };
-
     return (
         <Draggable draggableId={id} index={index}>
             {provided => (
@@ -76,49 +67,19 @@ export function FormField(props: Props) {
                     ref={provided.innerRef}
                     {...provided.draggableProps}
                 >
-                    <Flex align='end' gap='sm'>
-                        <DragButton
-                            dragHandleProps={provided.dragHandleProps}
-                            className='h-[36px]'
-                        />
-                        <TextInput
-                            variant='unstyled'
-                            placeholder='Question title...'
-                            className='flex-1 border-b-1 border-outline font-semibold'
-                            size='sm'
-                            value={title}
-                            onChange={handleTitleChange}
-                        />
-                        {fieldType && settingsComponent[fieldType] && (
-                            <Menu shadow='md' width={300} position='bottom-end'>
-                                <Menu.Target>
-                                    <IconButton variant='light' icon={IconAdjustments} />
-                                </Menu.Target>
-                                <Menu.Dropdown>
-                                    <Menu.Label>Field settings</Menu.Label>
-                                    <Stack className='p-sm'>{settingsComponent[fieldType]}</Stack>
-                                </Menu.Dropdown>
-                            </Menu>
-                        )}
-                        <IconButton
-                            icon={IconTrash}
-                            variant='light'
-                            color='red'
-                            onClick={onDelete}
-                        />
-                    </Flex>
-                    <Stack className='ml-[calc(32px+1rem)]'>
-                        <NativeSelect
-                            label='Input type'
-                            defaultValue={fieldType}
-                            data={Object.values(FieldType)}
-                            className='flex-1'
-                            onChange={handleInputTypeChange}
-                        />
-                        {fieldType && controlsComponent[fieldType] && (
-                            <Stack>{controlsComponent[fieldType]}</Stack>
-                        )}
-                    </Stack>
+                    <FieldHeader
+                        title={title}
+                        fieldType={type}
+                        settingsComponent={settingsComponent}
+                        dragHandleProps={provided.dragHandleProps}
+                        onTitleChange={onTitleChange}
+                        onDelete={onDelete}
+                    />
+                    <FieldBody
+                        fieldType={type}
+                        onFieldTypeChange={onFieldTypeChange}
+                        controlsComponent={controlsComponent}
+                    />
                 </Flex>
             )}
         </Draggable>

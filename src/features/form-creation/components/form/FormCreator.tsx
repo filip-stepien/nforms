@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, Flex, Stack, TextInput } from '@mantine/core';
+import { Button, Flex, TextInput } from '@mantine/core';
 import { FormField } from './FormField';
 import { FieldType, useFormFields } from '../../hooks/useFormFields';
 import { DragDropContext, Droppable, OnDragEndResponder } from '@hello-pangea/dnd';
@@ -20,12 +20,10 @@ export function FormCreator() {
         }
     ]);
 
-    const handleFieldDragEnd: OnDragEndResponder<string> = ({ destination, source }) => {
-        reorderField(source.index, destination?.index ?? source.index);
-    };
-
     return (
-        <DragDropContext onDragEnd={handleFieldDragEnd}>
+        <DragDropContext
+            onDragEnd={({ destination, source }) => reorderField(source.index, destination?.index)}
+        >
             <Droppable droppableId='form-creator'>
                 {provided => (
                     <Flex direction='column' ref={provided.innerRef} {...provided.droppableProps}>
@@ -34,31 +32,26 @@ export function FormCreator() {
                             description='Enter a title for your form. This will be visible to respondents.'
                             placeholder='e.g. Customer Satisfaction Survey'
                         />
-                        {fields.map(({ id, title, type, settings, controls }, index) => (
+                        {fields.map((field, index) => (
                             <FormField
-                                key={id}
-                                id={id}
+                                {...field}
+                                key={field.id}
                                 index={index}
-                                title={title}
-                                fieldType={type}
-                                settings={settings}
-                                controls={controls}
-                                onDelete={() => deleteField(id)}
-                                onTitleChange={title => setField(id, { title })}
-                                onFieldTypeChange={type => setField(id, { type })}
-                                onSettingsChange={settings => setField(id, { settings })}
-                                onControlsChange={controls => setField(id, { controls })}
+                                onDelete={() => deleteField(field.id)}
+                                onTitleChange={title => setField(field.id, { title })}
+                                onFieldTypeChange={type => setField(field.id, { type })}
+                                onSettingsChange={settings => setField(field.id, { settings })}
+                                onControlsChange={controls => setField(field.id, { controls })}
                             />
                         ))}
                         {provided.placeholder}
-                        <Button variant='transparent' onClick={addField}>
+                        <Button variant='transparent' className='mt-md' onClick={addField}>
                             + Add field
                         </Button>
                         <Button
                             variant='gradient'
-                            onClick={() => {
-                                console.log(fields);
-                            }}
+                            className='mt-md'
+                            onClick={() => console.log(fields)}
                         >
                             Finish
                         </Button>

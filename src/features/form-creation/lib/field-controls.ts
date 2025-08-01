@@ -16,7 +16,11 @@ export function getOptionCreatorProps(
                 options: options.map(opt => (opt.id === id ? { ...opt, content } : opt))
             });
         },
-        onOptionReorder: (from: number, to: number) => {
+        onOptionReorder: (from: number, to?: number) => {
+            if (!to) {
+                return;
+            }
+
             const updated = [...options];
             const [moved] = updated.splice(from, 1);
             updated.splice(to, 0, moved);
