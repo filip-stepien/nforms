@@ -9,16 +9,19 @@ import { DragButton } from '../../ui/DragButton';
 type Props = {
     option: FieldOption;
     index: number;
+    selected: boolean;
     onChange: (id: string, content: string) => void;
     onDelete: (id: string) => void;
 };
 
-export function OptionItem({ option, index, onChange, onDelete }: Props) {
+export function OptionItem({ option, index, selected, onChange, onDelete }: Props) {
     const inputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
-        inputRef.current?.select();
-    }, []);
+        if (selected) {
+            inputRef.current?.select();
+        }
+    }, [selected]);
 
     const handleOptionBlur: FocusEventHandler<HTMLInputElement> = event => {
         if (!event.target.value.trim()) {

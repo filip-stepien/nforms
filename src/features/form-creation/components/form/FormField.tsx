@@ -4,7 +4,7 @@ import { TextFieldSettings } from '../field-settings/TextFieldSettings';
 import { BaseFieldSettings } from '../field-settings/BaseFieldSettings';
 import { OptionCreator } from '../field-controls/option-creator/OptionCreator';
 import { FieldType, SettingsMap, ControlsMap, TextSettings } from '../../hooks/useFormFields';
-import { getOptionCreatorProps } from '../../lib/field-controls';
+import { useOptionCreator } from '../../hooks/useOptionCreator';
 import { Draggable } from '@hello-pangea/dnd';
 import { FieldHeader } from './FieldHeader';
 import { FieldBody } from './FieldBody';
@@ -38,6 +38,8 @@ export function FormField(props: Props) {
         onDelete
     } = props;
 
+    const optionCreatorProps = useOptionCreator(controls?.options, onControlsChange);
+
     const settingsComponent: Record<FieldType, ReactNode> = {
         [FieldType.TEXT]: (
             <TextFieldSettings
@@ -52,9 +54,7 @@ export function FormField(props: Props) {
 
     const controlsComponent: Record<FieldType, ReactNode> = {
         [FieldType.TEXT]: null,
-        [FieldType.RATING]: (
-            <OptionCreator {...getOptionCreatorProps(controls?.options, onControlsChange)} />
-        )
+        [FieldType.RATING]: <OptionCreator {...optionCreatorProps} />
     };
 
     return (

@@ -9,21 +9,23 @@ export type FieldOption = {
 
 type Props = {
     options: FieldOption[];
+    lastAddedId?: string;
     onOptionAdd: () => void;
     onOptionUpdate: (id: string, content: string) => void;
     onOptionDelete: (id: string) => void;
-    onOptionReorder: (from: number, to?: number) => void;
+    onOptionReorder: (from: number, to: number) => void;
 };
 
 export function OptionCreator(props: Props) {
-    const { options, onOptionAdd, onOptionDelete, onOptionUpdate, onOptionReorder } = props;
+    const { options, lastAddedId, onOptionAdd, onOptionDelete, onOptionUpdate, onOptionReorder } =
+        props;
 
     return (
         <div>
             <span className='text-xs mb-xs text-font-secondary'>Enter options</span>
             <DragDropContext
                 onDragEnd={({ destination, source }) =>
-                    onOptionReorder(source.index, destination?.index)
+                    onOptionReorder(source.index, destination?.index ?? source.index)
                 }
             >
                 <Droppable droppableId='option-creator'>
@@ -36,8 +38,9 @@ export function OptionCreator(props: Props) {
                             {options?.map((opt, i) => (
                                 <OptionItem
                                     key={opt.id}
-                                    option={opt}
                                     index={i}
+                                    option={opt}
+                                    selected={opt.id === lastAddedId}
                                     onChange={onOptionUpdate}
                                     onDelete={onOptionDelete}
                                 />
