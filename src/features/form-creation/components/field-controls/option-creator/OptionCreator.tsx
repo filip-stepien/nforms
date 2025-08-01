@@ -26,7 +26,7 @@ export function OptionCreator(props: Props) {
         <div>
             <span className='text-xs mb-xs text-font-secondary'>Enter options</span>
             <DragDropContext onDragEnd={handleOptionDragEnd}>
-                <Droppable droppableId='droppable'>
+                <Droppable droppableId='option-creator'>
                     {provided => (
                         <Flex
                             direction='column'

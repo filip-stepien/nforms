@@ -13,6 +13,8 @@
     --color-background: var(--background);
     --color-foreground: var(--foreground);
 
+    --shadow-card: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+
     --spacing-xs: calc(0.625rem * var(--mantine-scale));
     --spacing-sm: calc(0.75rem * var(--mantine-scale));
     --spacing-md: calc(1rem * var(--mantine-scale));

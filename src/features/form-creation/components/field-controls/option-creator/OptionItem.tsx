@@ -1,9 +1,10 @@
 import { Draggable } from '@hello-pangea/dnd';
-import { TextInput } from '@mantine/core';
+import { Flex, TextInput } from '@mantine/core';
 import { IconGripVertical, IconX } from '@tabler/icons-react';
 import { IconButton } from '../../ui/IconButton';
 import { FieldOption } from './OptionCreator';
 import { FocusEventHandler, useEffect, useRef } from 'react';
+import { DragButton } from '../../ui/DragButton';
 
 type Props = {
     option: FieldOption;
@@ -28,18 +29,13 @@ export function OptionItem({ option, index, onChange, onDelete }: Props) {
     return (
         <Draggable draggableId={option.id} index={index}>
             {provided => (
-                <div
+                <Flex
+                    gap='sm'
+                    className='py-2'
                     ref={provided.innerRef}
                     {...provided.draggableProps}
-                    className='flex items-center gap-sm py-2'
                 >
-                    <div {...provided.dragHandleProps} className='w-[36px] grid place-items-center'>
-                        <IconGripVertical
-                            className='text-icon cursor-grab'
-                            stroke={1.5}
-                            size={20}
-                        />
-                    </div>
+                    <DragButton dragHandleProps={provided.dragHandleProps} />
                     <TextInput
                         ref={inputRef}
                         value={option.content}
@@ -54,7 +50,7 @@ export function OptionItem({ option, index, onChange, onDelete }: Props) {
                         color='red'
                         onClick={() => onDelete(option.id)}
                     />
-                </div>
+                </Flex>
             )}
         </Draggable>
     );
