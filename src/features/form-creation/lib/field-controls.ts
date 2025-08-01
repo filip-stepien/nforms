@@ -9,7 +9,7 @@ export function getOptionCreatorProps(
     return {
         options,
         onOptionAdd: () => {
-            controlsChangeFn({ options: [...options, { id: uuid(), content: '' }] });
+            controlsChangeFn({ options: [...options, { id: uuid(), content: 'Option' }] });
         },
         onOptionUpdate: (id: string, content: string) => {
             controlsChangeFn({

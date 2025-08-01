@@ -3,6 +3,7 @@ import { TextInput } from '@mantine/core';
 import { IconGripVertical, IconX } from '@tabler/icons-react';
 import { IconButton } from '../../ui/IconButton';
 import { FieldOption } from './OptionCreator';
+import { FocusEventHandler, useEffect, useRef } from 'react';
 
 type Props = {
     option: FieldOption;
@@ -12,6 +13,18 @@ type Props = {
 };
 
 export function OptionItem({ option, index, onChange, onDelete }: Props) {
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        inputRef.current?.select();
+    }, []);
+
+    const handleOptionBlur: FocusEventHandler<HTMLInputElement> = event => {
+        if (!event.target.value.trim()) {
+            onChange(option.id, 'Option');
+        }
+    };
+
     return (
         <Draggable draggableId={option.id} index={index}>
             {provided => (
@@ -28,8 +41,10 @@ export function OptionItem({ option, index, onChange, onDelete }: Props) {
                         />
                     </div>
                     <TextInput
+                        ref={inputRef}
                         value={option.content}
                         onChange={e => onChange(option.id, e.target.value)}
+                        onBlur={handleOptionBlur}
                         placeholder='Option...'
                         className='flex-1'
                     />
