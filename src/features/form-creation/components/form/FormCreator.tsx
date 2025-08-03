@@ -1,10 +1,12 @@
 'use client';
 
-import { Button, Flex, TextInput } from '@mantine/core';
+import { Flex, Group, TextInput } from '@mantine/core';
 import { FormField } from './FormField';
 import { FieldType, useFormFields } from '../../hooks/useFormFields';
 import { DragDropContext, Droppable } from '@hello-pangea/dnd';
 import { useFormTitle } from '../../hooks/useFormTitle';
+import { IconDeviceFloppy, IconPlaylistAdd } from '@tabler/icons-react';
+import { ActionButton } from '../ui/ActionButton';
 
 export function FormCreator() {
     const { title, onTitleChange, onTitleBlur } = useFormTitle();
@@ -43,16 +45,19 @@ export function FormCreator() {
                             <FormField key={field.id} {...getFormFieldProps(field, index)} />
                         ))}
                         {provided.placeholder}
-                        <Button variant='transparent' className='mt-md' onClick={addField}>
-                            + Add field
-                        </Button>
-                        <Button
-                            variant='gradient'
-                            className='mt-md'
-                            onClick={() => console.log(fields)}
-                        >
-                            Finish
-                        </Button>
+                        <Group justify='end' className='mt-md'>
+                            <ActionButton
+                                label='Add question'
+                                variant='outline'
+                                icon={IconPlaylistAdd}
+                                onClick={addField}
+                            />
+                            <ActionButton
+                                label='Save'
+                                icon={IconDeviceFloppy}
+                                onClick={() => console.log(fields)}
+                            />
+                        </Group>
                     </Flex>
                 )}
             </Droppable>

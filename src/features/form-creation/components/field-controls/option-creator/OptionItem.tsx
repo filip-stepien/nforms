@@ -1,11 +1,10 @@
 import { Draggable } from '@hello-pangea/dnd';
 import { Flex, TextInput } from '@mantine/core';
-import { IconGripVertical, IconX } from '@tabler/icons-react';
+import { IconX } from '@tabler/icons-react';
 import { IconButton } from '../../ui/IconButton';
 import { FieldOption } from './OptionCreator';
 import { FocusEventHandler, useEffect, useRef } from 'react';
 import { DragButton } from '../../ui/DragButton';
-import { clearSelection } from '@/features/form-creation/lib/utils';
 
 type Props = {
     option: FieldOption;
