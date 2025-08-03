@@ -14,8 +14,10 @@ type Props = {
     index: number;
     title: string;
     type: FieldType;
+    selected?: boolean;
     settings: SettingsMap[FieldType];
     controls: ControlsMap[FieldType];
+    onSelect: () => void;
     onSettingsChange: (settings: SettingsMap[FieldType]) => void;
     onControlsChange: (controls: ControlsMap[FieldType]) => void;
     onTitleChange: (title: string) => void;
@@ -29,8 +31,10 @@ export function FormField(props: Props) {
         index,
         title,
         type,
+        selected,
         settings,
         controls,
+        onSelect,
         onTitleChange,
         onFieldTypeChange,
         onSettingsChange,
@@ -70,10 +74,12 @@ export function FormField(props: Props) {
                     <FieldHeader
                         title={title}
                         fieldType={type}
+                        selected={selected}
                         settingsComponent={settingsComponent}
                         dragHandleProps={provided.dragHandleProps}
                         onTitleChange={onTitleChange}
                         onDelete={onDelete}
+                        onSelect={onSelect}
                     />
                     <FieldBody
                         fieldType={type}

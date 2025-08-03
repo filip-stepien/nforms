@@ -3,13 +3,15 @@
 import { Button, Flex, TextInput } from '@mantine/core';
 import { FormField } from './FormField';
 import { FieldType, useFormFields } from '../../hooks/useFormFields';
-import { DragDropContext, Droppable, OnDragEndResponder } from '@hello-pangea/dnd';
+import { DragDropContext, Droppable } from '@hello-pangea/dnd';
+import { useFormTitle } from '../../hooks/useFormTitle';
 
 export function FormCreator() {
-    const { fields, addField, setField, deleteField, reorderField } = useFormFields([
+    const { title, onTitleChange, onTitleBlur } = useFormTitle();
+    const { fields, addField, reorderField, getFormFieldProps } = useFormFields([
         {
             id: 'xd',
-            title: '',
+            title: 'Question title',
             type: FieldType.RATING,
             settings: {
                 required: true
@@ -28,21 +30,17 @@ export function FormCreator() {
                 {provided => (
                     <Flex direction='column' ref={provided.innerRef} {...provided.droppableProps}>
                         <TextInput
+                            value={title}
+                            onChange={onTitleChange}
+                            onBlur={onTitleBlur}
                             label='Form title'
                             description='Enter a title for your form. This will be visible to respondents.'
-                            placeholder='e.g. Customer Satisfaction Survey'
+                            placeholder='Form title...'
+                            size='md'
+                            className='border-1 border-outline p-lg rounded-md bg-neutral-50'
                         />
                         {fields.map((field, index) => (
-                            <FormField
-                                {...field}
-                                key={field.id}
-                                index={index}
-                                onDelete={() => deleteField(field.id)}
-                                onTitleChange={title => setField(field.id, { title })}
-                                onFieldTypeChange={type => setField(field.id, { type })}
-                                onSettingsChange={settings => setField(field.id, { settings })}
-                                onControlsChange={controls => setField(field.id, { controls })}
-                            />
+                            <FormField key={field.id} {...getFormFieldProps(field, index)} />
                         ))}
                         {provided.placeholder}
                         <Button variant='transparent' className='mt-md' onClick={addField}>

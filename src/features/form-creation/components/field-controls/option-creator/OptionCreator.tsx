@@ -1,4 +1,4 @@
-import { DragDropContext, Droppable, OnDragEndResponder } from '@hello-pangea/dnd';
+import { DragDropContext, Droppable } from '@hello-pangea/dnd';
 import { Button, Flex } from '@mantine/core';
 import { OptionItem } from './OptionItem';
 
@@ -13,19 +13,27 @@ type Props = {
     onOptionAdd: () => void;
     onOptionUpdate: (id: string, content: string) => void;
     onOptionDelete: (id: string) => void;
-    onOptionReorder: (from: number, to: number) => void;
+    onOptionReorder: (from: number, to?: number) => void;
+    onOptionSelect: () => void;
 };
 
 export function OptionCreator(props: Props) {
-    const { options, lastAddedId, onOptionAdd, onOptionDelete, onOptionUpdate, onOptionReorder } =
-        props;
+    const {
+        options,
+        lastAddedId,
+        onOptionAdd,
+        onOptionDelete,
+        onOptionUpdate,
+        onOptionReorder,
+        onOptionSelect
+    } = props;
 
     return (
         <div>
             <span className='text-xs mb-xs text-font-secondary'>Enter options</span>
             <DragDropContext
                 onDragEnd={({ destination, source }) =>
-                    onOptionReorder(source.index, destination?.index ?? source.index)
+                    onOptionReorder(source.index, destination?.index)
                 }
             >
                 <Droppable droppableId='option-creator'>
@@ -43,6 +51,7 @@ export function OptionCreator(props: Props) {
                                     selected={opt.id === lastAddedId}
                                     onChange={onOptionUpdate}
                                     onDelete={onOptionDelete}
+                                    onSelect={onOptionSelect}
                                 />
                             ))}
                             {provided.placeholder}

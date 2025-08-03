@@ -5,21 +5,24 @@ import { IconButton } from '../../ui/IconButton';
 import { FieldOption } from './OptionCreator';
 import { FocusEventHandler, useEffect, useRef } from 'react';
 import { DragButton } from '../../ui/DragButton';
+import { clearSelection } from '@/features/form-creation/lib/utils';
 
 type Props = {
     option: FieldOption;
     index: number;
     selected: boolean;
+    onSelect: () => void;
     onChange: (id: string, content: string) => void;
     onDelete: (id: string) => void;
 };
 
-export function OptionItem({ option, index, selected, onChange, onDelete }: Props) {
+export function OptionItem({ option, index, selected, onChange, onDelete, onSelect }: Props) {
     const inputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         if (selected) {
             inputRef.current?.select();
+            onSelect();
         }
     }, [selected]);
 

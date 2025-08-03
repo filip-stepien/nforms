@@ -2,6 +2,7 @@ import { FieldOption } from '../components/field-controls/option-creator/OptionC
 import { useListState } from '@mantine/hooks';
 import { v4 as uuid } from 'uuid';
 import { keysEqual, printKeysOrType } from '../lib/utils';
+import { useState } from 'react';
 
 export enum FieldType {
     TEXT = 'Text',
@@ -70,11 +71,22 @@ export const initialFieldStates: InitialFieldStates = {
 };
 
 export function useFormFields(initialFields: Field[] = []) {
+    const [lastAddedId, setLastAddedId] = useState<string>();
     const [fields, fieldsHandlers] = useListState<Field>(initialFields);
 
     const addField = () => {
         const { settings, controls } = initialFieldStates[FieldType.TEXT];
-        fieldsHandlers.append({ id: uuid(), title: '', type: FieldType.TEXT, settings, controls });
+        const id = uuid();
+
+        fieldsHandlers.append({
+            id,
+            title: 'Untitled question',
+            type: FieldType.TEXT,
+            settings,
+            controls
+        });
+
+        setLastAddedId(id);
     };
 
     const deleteField = (id: string) => {
@@ -108,7 +120,7 @@ export function useFormFields(initialFields: Field[] = []) {
                         `Field settings mismatch for field "${newField.type}" (id: ${newField.id}).\n\n` +
                             `- Received: ${printKeysOrType(newField.settings)}\n\n` +
                             `- Expected: ${printKeysOrType(initial.settings)}\n\n` +
-                            'Field types are resolved at runtime — ' +
+                            'Field types are resolved at runtime - ' +
                             'updating settings without validation may cause runtime errors.'
                     );
 
@@ -120,7 +132,7 @@ export function useFormFields(initialFields: Field[] = []) {
                         `Field controls mismatch for field "${newField.type}" (id: ${newField.id}).\n\n` +
                             `- Received: ${printKeysOrType(newField.controls)}\n\n` +
                             `- Expected: ${printKeysOrType(initial.controls)}\n\n` +
-                            'Field types are resolved at runtime — ' +
+                            'Field types are resolved at runtime - ' +
                             'updating controls without validation may cause runtime errors.'
                     );
 
@@ -132,5 +144,26 @@ export function useFormFields(initialFields: Field[] = []) {
         );
     };
 
-    return { fields, addField, setField, deleteField, reorderField };
+    const getFormFieldProps = (field: Field, index: number) => {
+        const { id, title, type, settings, controls } = field;
+        const selected = lastAddedId === id;
+
+        return {
+            index,
+            id,
+            title,
+            type,
+            selected,
+            settings,
+            controls,
+            onSelect: () => setLastAddedId(undefined),
+            onTitleChange: (title: string) => setField(id, { title }),
+            onFieldTypeChange: (type: FieldType) => setField(id, { type }),
+            onDelete: () => deleteField(id),
+            onControlsChange: (controls: ControlsMap[FieldType]) => setField(id, { controls }),
+            onSettingsChange: (settings: SettingsMap[FieldType]) => setField(id, { settings })
+        };
+    };
+
+    return { fields, addField, deleteField, setField, reorderField, getFormFieldProps };
 }

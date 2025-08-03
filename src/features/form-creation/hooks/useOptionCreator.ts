@@ -7,7 +7,7 @@ export function useOptionCreator(
     options: FieldOption[] = [],
     controlsChangeFn: (controls: ControlsMap[FieldType]) => void
 ) {
-    const [lastAddedId, setLastAddedId] = useState<string>();
+    const [lastAddedId, setLastAddedId] = useState<string | undefined>();
 
     const onOptionAdd = () => {
         const id = uuid();
@@ -23,15 +23,27 @@ export function useOptionCreator(
         });
     };
 
-    const onOptionReorder = (from: number, to: number) => {
+    const onOptionReorder = (from: number, to?: number) => {
+        const dest = to ?? from;
+
+        if (from === dest) {
+            return;
+        }
+
         const updated = [...options];
         const [moved] = updated.splice(from, 1);
-        updated.splice(to, 0, moved);
+
+        updated.splice(dest, 0, moved);
+
         controlsChangeFn({ options: updated });
     };
 
     const onOptionDelete = (id: string) => {
         controlsChangeFn({ options: options.filter(opt => opt.id !== id) });
+    };
+
+    const onOptionSelect = () => {
+        setLastAddedId(undefined);
     };
 
     return {
@@ -40,6 +52,7 @@ export function useOptionCreator(
         onOptionAdd,
         onOptionUpdate,
         onOptionReorder,
-        onOptionDelete
+        onOptionDelete,
+        onOptionSelect
     };
 }
