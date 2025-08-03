@@ -7,12 +7,16 @@
         "build": "next build",
         "start": "next start",
         "lint": "next lint",
-        "pretty": "prettier --write ."
+        "pretty": "prettier --write .",
+        "prisma:generate": "prisma generate --schema src/db/prisma/schema.prisma",
+        "db:push": "prisma db push --schema src/db/prisma/schema.prisma",
+        "db:studio": "prisma studio --schema src/db/prisma/schema.prisma"
     },
     "dependencies": {
         "@hello-pangea/dnd": "^18.0.1",
         "@mantine/core": "^8.2.1",
         "@mantine/hooks": "^8.2.1",
+        "@prisma/client": "^6.13.0",
         "@tabler/icons-react": "^3.34.1",
         "deep-diff": "^1.0.2",
         "next": "15.4.3",
@@ -40,6 +44,7 @@
         "postcss-preset-mantine": "^1.18.0",
         "postcss-simple-vars": "^7.0.1",
         "prettier": "^3.6.2",
+        "prisma": "^6.13.0",
         "tailwind-merge": "^3.3.1",
         "tailwind-preset-mantine": "^2.1.0",
         "tailwindcss": "^4.1.11",
