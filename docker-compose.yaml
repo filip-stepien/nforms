@@ -28,7 +28,7 @@ services:
     depends_on:
       - keycloak-db
     volumes:
-      - ./keycloak/:/opt/keycloak/data/import
+      - ./docker/keycloak/:/opt/keycloak/data/import
     networks:
       - keycloak-network
 

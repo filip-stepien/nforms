@@ -8,9 +8,10 @@
         "start": "next start",
         "lint": "next lint",
         "pretty": "prettier --write .",
-        "prisma:generate": "prisma generate --schema src/db/prisma/schema.prisma",
-        "db:push": "prisma db push --schema src/db/prisma/schema.prisma",
-        "db:studio": "prisma studio --schema src/db/prisma/schema.prisma"
+        "prisma:push": "prisma db push",
+        "prisma:studio": "prisma studio",
+        "prisma:generate": "prisma generate",
+        "primsa:format": "prisma format"
     },
     "dependencies": {
         "@hello-pangea/dnd": "^18.0.1",
