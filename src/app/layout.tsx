@@ -5,6 +5,7 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { Layout } from '@/components/Layout';
 import Providers from '@/components/Providers';
+import authOptions from '@/auth/config';
 
 type Props = {
     children: ReactNode;
@@ -15,7 +16,7 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: Props) {
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
 
     return (
         <html lang='en' {...mantineHtmlProps}>

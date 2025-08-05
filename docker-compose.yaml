@@ -50,6 +50,23 @@ services:
       MONGO_KEYFILE_CONTENT: changeme
     volumes:
       - mongodb-data:/data/db
+    networks:
+      - mongodb-network
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
+    environment:
+      ME_CONFIG_BASICAUTH_ENABLED: true
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin
+      ME_CONFIG_MONGODB_URL: mongodb://admin:admin@mongodb-rs0:27017/forms?replicaSet=rs0&authSource=admin
+    depends_on:
+      - mongodb-rs0
+    ports:
+      - 8081:8081
+    networks:
+      - mongodb-network
 
 volumes:
   postgres-data:
@@ -57,3 +74,4 @@ volumes:
 
 networks:
   keycloak-network:
+  mongodb-network:
