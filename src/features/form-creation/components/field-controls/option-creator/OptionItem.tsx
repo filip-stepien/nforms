@@ -23,7 +23,7 @@ export function OptionItem({ option, index, selected, onChange, onDelete, onSele
             inputRef.current?.select();
             onSelect();
         }
-    }, [selected]);
+    }, [selected, onSelect]);
 
     const handleOptionBlur: FocusEventHandler<HTMLInputElement> = event => {
         if (!event.target.value.trim()) {

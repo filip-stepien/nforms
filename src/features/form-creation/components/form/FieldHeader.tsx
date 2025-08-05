@@ -36,7 +36,7 @@ export function FieldHeader(props: Props) {
             titleRef.current?.select();
             onSelect();
         }
-    }, [selected]);
+    }, [selected, onSelect]);
 
     const handleTitleChange: ChangeEventHandler<HTMLInputElement> = event => {
         onTitleChange(event.target.value);

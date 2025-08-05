@@ -1,11 +1,11 @@
-import '@/globals.css';
+import '@/styles/globals.css';
 import { ColorSchemeScript, mantineHtmlProps } from '@mantine/core';
-import { getServerSession } from 'next-auth';
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { Layout } from '@/components/Layout';
 import Providers from '@/components/Providers';
 import authOptions from '@/auth/config';
+import { getServerSession } from 'next-auth';
 
 type Props = {
     children: ReactNode;

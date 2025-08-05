@@ -11,10 +11,26 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
+    {
+        ignores: ['src/db/prisma/generated/**']
+    },
     ...compat.extends('next/core-web-vitals', 'next/typescript'),
-    ...{
+    {
+        plugins: {
+            'unused-imports': unusedImports
+        },
         rules: {
-            'eslintreact/jsx-key': 'off'
+            '@typescript-eslint/no-unused-vars': 'off',
+            'unused-imports/no-unused-imports': 'warn',
+            'unused-imports/no-unused-vars': [
+                'warn',
+                {
+                    vars: 'all',
+                    varsIgnorePattern: '^_',
+                    args: 'after-used',
+                    argsIgnorePattern: '^_'
+                }
+            ]
         }
     }
 ];

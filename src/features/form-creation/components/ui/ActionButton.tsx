@@ -1,5 +1,5 @@
 import { PolymorphicComponentProps, Button, Group, ButtonProps } from '@mantine/core';
-import { Icon, ReactNode } from '@tabler/icons-react';
+import { Icon } from '@tabler/icons-react';
 
 type Props = {
     icon?: Icon;
