@@ -6,6 +6,7 @@ import { Layout } from '@/components/Layout';
 import Providers from '@/components/Providers';
 import authOptions from '@/auth/config';
 import { getServerSession } from 'next-auth';
+import { Toaster } from 'react-hot-toast';
 
 type Props = {
     children: ReactNode;
@@ -24,6 +25,7 @@ export default async function RootLayout({ children }: Props) {
                 <ColorSchemeScript />
             </head>
             <body>
+                <Toaster />
                 <Providers session={session}>
                     <Layout>{children}</Layout>
                 </Providers>

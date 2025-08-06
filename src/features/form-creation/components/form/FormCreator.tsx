@@ -8,11 +8,14 @@ import { useFormTitle } from '../../hooks/useFormTitle';
 import { IconDeviceFloppy, IconPlaylistAdd } from '@tabler/icons-react';
 import { ActionButton } from '../ui/ActionButton';
 import { useFormCreateAction } from '../../hooks/useFormCreateAction';
+import { useFormStatusEffect } from '../../hooks/useFormStatusEffect';
 
 export function FormCreator() {
     const { title, onTitleChange, onTitleBlur } = useFormTitle();
     const { fields, addField, reorderField, getFormFieldProps } = useFormFields([]);
-    const { action, isLoading } = useFormCreateAction(title, fields);
+    const { status, action, isLoading } = useFormCreateAction(title, fields);
+
+    useFormStatusEffect(status);
 
     return (
         <form action={action}>

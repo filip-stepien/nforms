@@ -1,13 +1,13 @@
 import { ActionIcon, Divider, Flex, Group, Tooltip } from '@mantine/core';
 import { UserButton } from './UserButton';
-import Link from 'next/link';
 import { Icon, IconClipboardData, IconDashboard, IconPlus } from '@tabler/icons-react';
+import Link from 'next/link';
 
 const MENU_ITEMS: MenuItemProps[] = [
     {
         icon: IconDashboard,
         title: 'Dashboard',
-        href: ''
+        href: '/'
     },
     {
         icon: IconClipboardData,
@@ -67,9 +67,11 @@ export function Menu({ menuFormItems = [] }: MenuProps) {
                 <Flex justify='space-between' className='pb-1'>
                     <span className='text-xs text-font-secondary pl-1'>Last forms</span>
                     <Tooltip label='Create new form' withArrow position='right'>
-                        <ActionIcon variant='default' size={18}>
-                            <IconPlus size={12} stroke={1.5} />
-                        </ActionIcon>
+                        <Link href='create-form'>
+                            <ActionIcon variant='default' size={18}>
+                                <IconPlus size={12} stroke={1.5} />
+                            </ActionIcon>
+                        </Link>
                     </Tooltip>
                 </Flex>
                 {menuFormItems.length === 0 ? (
