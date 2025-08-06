@@ -1,7 +1,6 @@
-import { useSession } from 'next-auth/react';
+import { saveFormAction } from '../lib/actions';
 import { Field } from './useFormFields';
 import { useActionState } from 'react';
-import { saveFormAction } from '../actions/saveFormAction';
 
 export type FormCreateActionStatus = {
     success: boolean;
@@ -9,11 +8,9 @@ export type FormCreateActionStatus = {
 };
 
 export function useFormCreateAction(title: string, fields: Field[]) {
-    const { data: session } = useSession();
-
     const formCreateAction = async (): Promise<FormCreateActionStatus> => {
         try {
-            await saveFormAction(title, fields, session?.user.id);
+            await saveFormAction(title, fields);
             return { success: true, message: 'Form has been saved successfully.' };
         } catch {
             return { success: false, message: 'Something went wrong.\nPlease try again.' };
