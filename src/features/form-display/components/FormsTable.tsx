@@ -1,7 +1,9 @@
 'use client';
 
+import { Badge, Button, Flex, Group, Pagination, Table } from '@mantine/core';
 import { FormTableData } from '../lib/data';
-import { Badge, Button, Flex, Group, Table } from '@mantine/core';
+import { PaginationMeta } from '../lib/pagination';
+import { usePaginationParamSetter } from '../hooks/usePaginationParamSetter';
 import {
     IconCalendarPlus,
     IconCode,
@@ -14,9 +16,12 @@ import {
 
 type Props = {
     data: FormTableData[];
+    pagination: PaginationMeta;
 };
 
-export function FormsTable({ data = [] }: Props) {
+export function FormsTable({ data, pagination }: Props) {
+    const { setPage } = usePaginationParamSetter();
+
     const rows = data.map(form => (
         <Table.Tr key={form.id}>
             <Table.Td>
@@ -54,43 +59,54 @@ export function FormsTable({ data = [] }: Props) {
         </Table.Tr>
     ));
 
+    const handlePageChange = (page: number) => {
+        setPage(page);
+    };
+
     return (
-        <Table verticalSpacing='sm'>
-            <Table.Thead>
-                <Table.Tr>
-                    <Table.Th>
-                        <Flex gap={6} align='center'>
-                            <IconLabel size={16} className='text-icon' />
-                            <span>Title</span>
-                        </Flex>
-                    </Table.Th>
-                    <Table.Th>
-                        <Flex gap={6} align='center'>
-                            <IconCalendarPlus size={16} className='text-icon' />
-                            <span>Created&nbsp;on</span>
-                        </Flex>
-                    </Table.Th>
-                    <Table.Th>
-                        <Flex gap={6} align='center'>
-                            <IconUsers size={16} className='text-icon' />
-                            <span>Responses</span>
-                        </Flex>
-                    </Table.Th>
-                    <Table.Th>
-                        <Flex gap={6} align='center'>
-                            <IconProgress size={16} className='text-icon' />
-                            <span>Status</span>
-                        </Flex>
-                    </Table.Th>
-                    <Table.Th>
-                        <Flex gap={6} align='center'>
-                            <IconSettings size={16} className='text-icon' />
-                            <span>Actions</span>
-                        </Flex>
-                    </Table.Th>
-                </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>{rows}</Table.Tbody>
-        </Table>
+        <Flex direction='column'>
+            <Table verticalSpacing='sm'>
+                <Table.Thead>
+                    <Table.Tr>
+                        <Table.Th>
+                            <Flex gap={6} align='center'>
+                                <IconLabel size={16} className='text-icon' />
+                                <span>Title</span>
+                            </Flex>
+                        </Table.Th>
+                        <Table.Th>
+                            <Flex gap={6} align='center'>
+                                <IconCalendarPlus size={16} className='text-icon' />
+                                <span>Created&nbsp;on</span>
+                            </Flex>
+                        </Table.Th>
+                        <Table.Th>
+                            <Flex gap={6} align='center'>
+                                <IconUsers size={16} className='text-icon' />
+                                <span>Responses</span>
+                            </Flex>
+                        </Table.Th>
+                        <Table.Th>
+                            <Flex gap={6} align='center'>
+                                <IconProgress size={16} className='text-icon' />
+                                <span>Status</span>
+                            </Flex>
+                        </Table.Th>
+                        <Table.Th>
+                            <Flex gap={6} align='center'>
+                                <IconSettings size={16} className='text-icon' />
+                                <span>Actions</span>
+                            </Flex>
+                        </Table.Th>
+                    </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>{rows}</Table.Tbody>
+            </Table>
+            <Pagination
+                total={pagination.totalPages}
+                value={pagination.currentPage}
+                onChange={handlePageChange}
+            />
+        </Flex>
     );
 }

@@ -3,6 +3,12 @@ import 'server-only';
 import { verifyUser } from '@/auth';
 import { prisma } from '@/db/prisma';
 import dayjs from 'dayjs';
+import {
+    getPaginationMeta,
+    getPaginationQueryParams,
+    PaginationMeta,
+    PaginationParams
+} from './pagination';
 
 export type FormTableData = {
     id: string;
@@ -16,49 +22,23 @@ export type FormTableData = {
     };
 };
 
-const DEBUG_FORMS: FormTableData[] = [
-    {
-        id: '1',
-        title: 'Debug form #1',
-        responses: 123,
-        createdOn: dayjs().format('DD.MM.YYYY'),
-        status: 'active',
-        actions: {
-            editHref: '/',
-            embedding: 'embedding'
-        }
-    },
-    {
-        id: '2',
-        title: 'Debug form #2',
-        responses: 123,
-        createdOn: dayjs().format('DD.MM.YYYY'),
-        status: 'inactive',
-        actions: {
-            editHref: '/',
-            embedding: 'embedding'
-        }
-    },
-    {
-        id: '3',
-        title: 'Debug form #3',
-        responses: 123,
-        createdOn: dayjs().format('DD.MM.YYYY'),
-        status: 'inactive',
-        actions: {
-            editHref: '/',
-            embedding: 'embedding'
-        }
-    }
-];
+export type PaginatedFormsTableData = {
+    data: FormTableData[];
+    pagination: PaginationMeta;
+};
 
-export async function getFormsTableData(): Promise<FormTableData[]> {
+export async function getFormsTableData(
+    pagination: PaginationParams
+): Promise<PaginatedFormsTableData> {
     const user = await verifyUser();
-    const forms = await prisma.form.findMany({ where: { userId: user.id } });
+    const totalCount = await prisma.form.count();
+    const forms = await prisma.form.findMany({
+        where: { userId: user.id },
+        ...getPaginationQueryParams(pagination)
+    });
 
-    return [
-        ...DEBUG_FORMS,
-        ...forms.map(form => ({
+    return {
+        data: forms.map(form => ({
             id: form.id,
             title: form.title,
 
@@ -70,6 +50,7 @@ export async function getFormsTableData(): Promise<FormTableData[]> {
                 editHref: '/',
                 embedding: 'embedding'
             }
-        }))
-    ];
+        })),
+        pagination: getPaginationMeta({ ...pagination, totalCount })
+    };
 }
