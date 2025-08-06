@@ -1,7 +1,7 @@
 'use client';
 
+import { FormTableData } from '../lib/data';
 import { Badge, Button, Flex, Group, Table } from '@mantine/core';
-import dayjs from 'dayjs';
 import {
     IconCalendarPlus,
     IconCode,
@@ -12,47 +12,27 @@ import {
     IconUsers
 } from '@tabler/icons-react';
 
-const elements = [
-    {
-        id: '1',
-        title: 'Untitled form',
-        createdTimestamp: dayjs().unix(),
-        status: 'Active',
-        responsesCount: '54'
-    },
-    {
-        id: '2',
-        title: 'Untitled form',
-        createdTimestamp: dayjs().unix(),
-        status: 'Active',
-        responsesCount: '54'
-    },
-    {
-        id: '3',
-        title: 'Untitled form',
-        createdTimestamp: dayjs().unix(),
-        status: 'Active',
-        responsesCount: '54'
-    }
-];
+type Props = {
+    data: FormTableData[];
+};
 
-export function FormsTable() {
-    const rows = elements.map(e => (
-        <Table.Tr key={e.id}>
+export function FormsTable({ data = [] }: Props) {
+    const rows = data.map(form => (
+        <Table.Tr key={form.id}>
             <Table.Td>
-                <span className=''>{e.title}</span>
+                <span className=''>{form.title}</span>
             </Table.Td>
             <Table.Td>
-                <span className=''>{dayjs(e.createdTimestamp).format('DD.MM.YYYY')}</span>
+                <span className=''>{form.createdOn}</span>
             </Table.Td>
             <Table.Td>
                 <Badge className='' color='blue' variant='light'>
-                    {e.responsesCount}
+                    {form.responses}
                 </Badge>
             </Table.Td>
             <Table.Td>
                 <Badge color='green' variant='dot'>
-                    {e.status}
+                    {form.status}
                 </Badge>
             </Table.Td>
             <Table.Td>

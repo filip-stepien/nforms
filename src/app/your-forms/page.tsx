@@ -1,15 +1,18 @@
 import { FormsTable } from '@/features/form-display/components/FormsTable';
+import { getFormsTableData } from '@/features/form-display/lib/data';
 import { Flex, Stack } from '@mantine/core';
 import { IconLayout } from '@tabler/icons-react';
 
-export default function YourFormsPage() {
+export default async function YourFormsPage() {
+    const formsTableData = await getFormsTableData();
+
     return (
         <Stack>
             <Flex align='center' gap='xs'>
                 <IconLayout stroke={1.5} size={30} className='text-icon' />
                 <h1 className='text-3xl font-medium text-font-secondary'>Your forms</h1>
             </Flex>
-            <FormsTable />
+            <FormsTable data={formsTableData} />
         </Stack>
     );
 }
