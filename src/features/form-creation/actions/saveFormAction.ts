@@ -3,7 +3,7 @@
 import { prisma } from '@/db/prisma';
 import { Field } from '../hooks/useFormFields';
 
-export async function saveForm(title: string, fields: Field[], userId?: string) {
+export async function saveFormAction(title: string, fields: Field[], userId?: string) {
     if (!userId) {
         console.error('Error saving form: invalid user ID.');
         return;
