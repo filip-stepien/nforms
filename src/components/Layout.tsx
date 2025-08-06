@@ -20,7 +20,7 @@ export function Layout({ children }: Props) {
                 breakpoint: 'sm',
                 collapsed: { mobile: !opened }
             }}
-            className='p-md'
+            classNames={{ main: 'm-lg' }}
         >
             <AppShell.Header className='flex items-center'>
                 <Burger opened={opened} onClick={toggle} hiddenFrom='sm' className='pl-md' />
