@@ -4,9 +4,9 @@ import { Badge, Button, Flex, Group, Pagination, Table } from '@mantine/core';
 import { FormTableData } from '../lib/data';
 import { PaginationMeta } from '../lib/pagination';
 import { usePaginationParamSetter } from '../hooks/usePaginationParamSetter';
+import { FormEmbedAction } from './FormEmbedAction';
 import {
     IconCalendarPlus,
-    IconCode,
     IconEdit,
     IconLabel,
     IconProgress,
@@ -42,12 +42,7 @@ export function FormsTable({ data, pagination }: Props) {
             </Table.Td>
             <Table.Td>
                 <Group>
-                    <Button size='compact-sm' className='px-sm text-xs' variant='subtle'>
-                        <Flex align='center' gap={6}>
-                            <IconCode size={18} />
-                            <span>Embed</span>
-                        </Flex>
-                    </Button>
+                    <FormEmbedAction embedding={form.actions.embedding} />
                     <Button size='compact-sm' className='px-sm text-xs' variant='subtle'>
                         <Flex align='center' gap={6}>
                             <IconEdit size={18} />
