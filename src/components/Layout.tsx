@@ -20,9 +20,12 @@ export function Layout({ children }: Props) {
                 breakpoint: 'sm',
                 collapsed: { mobile: !opened }
             }}
-            classNames={{ main: 'm-lg' }}
+            classNames={{
+                main: 'mx-lg pt-[calc(60px+var(--spacing-lg))]',
+                header: 'flex items-center'
+            }}
         >
-            <AppShell.Header className='flex items-center'>
+            <AppShell.Header>
                 <Burger opened={opened} onClick={toggle} hiddenFrom='sm' className='pl-md' />
             </AppShell.Header>
             <AppShell.Navbar>

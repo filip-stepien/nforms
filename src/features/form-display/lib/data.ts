@@ -9,6 +9,7 @@ import {
     PaginationMeta,
     PaginationParams
 } from './pagination';
+import { debug_wait } from '@/lib/debug';
 
 export type FormTableData = {
     id: string;
@@ -36,6 +37,8 @@ export async function getFormsTableData(
         where: { userId: user.id },
         ...getPaginationQueryParams(pagination)
     });
+
+    await debug_wait();
 
     return {
         data: forms.map(form => ({
