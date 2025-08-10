@@ -8,6 +8,8 @@
         "start": "next start",
         "lint": "next lint",
         "pretty": "prettier --write .",
+        "widget:dev": "webpack build -c widget/webpack.config.js --watch",
+        "widget:build": "webpack build -c widget/webpack.config.js",
         "prisma:push": "prisma db push",
         "prisma:studio": "prisma studio",
         "prisma:generate": "prisma generate",
@@ -21,6 +23,7 @@
         "@tabler/icons-react": "^3.34.1",
         "dayjs": "^1.11.13",
         "deep-diff": "^1.0.2",
+        "lit": "^3.3.1",
         "next": "15.4.3",
         "next-auth": "^4.24.11",
         "prop-types": "^15.8.1",
@@ -33,6 +36,11 @@
         "zod": "^4.0.10"
     },
     "devDependencies": {
+        "@babel/cli": "^7.28.0",
+        "@babel/core": "^7.28.0",
+        "@babel/plugin-proposal-decorators": "^7.28.0",
+        "@babel/preset-env": "^7.28.0",
+        "@babel/preset-typescript": "^7.27.1",
         "@eslint/eslintrc": "^3",
         "@mantine/form": "^8.2.1",
         "@tailwindcss/postcss": "^4.1.11",
@@ -41,6 +49,7 @@
         "@types/react": "^19",
         "@types/react-dom": "^19",
         "@types/uuid": "^10.0.0",
+        "babel-loader": "^10.0.0",
         "clsx": "^2.1.1",
         "eslint": "^9",
         "eslint-config-next": "15.4.3",
@@ -53,6 +62,9 @@
         "tailwind-merge": "^3.3.1",
         "tailwind-preset-mantine": "^2.1.0",
         "tailwindcss": "^4.1.11",
-        "typescript": "^5"
+        "ts-loader": "^9.5.2",
+        "typescript": "^5",
+        "webpack": "^5.101.0",
+        "webpack-cli": "^6.0.1"
     }
 }
