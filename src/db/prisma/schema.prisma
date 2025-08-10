@@ -21,17 +21,32 @@ model User {
 
 model Form {
     id                  String              @id @default(auto()) @map("_id") @db.ObjectId
+    active              Boolean             @default(true)
+    createdAt           DateTime            @default(now())
     title               String
+    fields              FormField[]
+
     userId              String              @db.ObjectId
     user                User                @relation(fields: [userId], references: [id])
-    fields              FormField[]
 }
 
 model FormField {
     id                  String              @id @default(auto()) @map("_id") @db.ObjectId
-    formId              String              @db.ObjectId
-    form                Form                @relation(fields: [formId], references: [id])
     type                String
     settings            Json
     controls            Json
+
+    formId              String              @db.ObjectId
+    form                Form                @relation(fields: [formId], references: [id])
+
+    responses           FieldResponse[]
+}
+
+model FieldResponse {
+    id                  String              @id @default(auto()) @map("_id") @db.ObjectId
+    response            Json
+    createdAt           DateTime            @default(now())
+
+    formFieldId         String              @db.ObjectId
+    formField           FormField           @relation(fields: [formFieldId], references: [id])
 }
