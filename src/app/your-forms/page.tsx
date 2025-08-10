@@ -1,5 +1,5 @@
 import { Loading } from '@/components/Loading';
-import { FormsTable } from '@/features/form-display/components/FormsTable';
+import { FormsTable } from '@/features/form-display/components/table/FormsTable';
 import { getFormsTableData } from '@/features/form-display/lib/data';
 import { getPaginationSearchParams } from '@/features/form-display/lib/pagination';
 import { Flex, Stack } from '@mantine/core';
