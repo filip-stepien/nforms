@@ -2,9 +2,9 @@ import '@/styles/globals.css';
 import { ColorSchemeScript, mantineHtmlProps } from '@mantine/core';
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
+import { Toaster } from 'react-hot-toast';
 import { Layout } from '@/components/Layout';
 import Providers from '@/components/Providers';
-import { Toaster } from 'react-hot-toast';
 import { getAuthSession } from '@/auth';
 
 type Props = {

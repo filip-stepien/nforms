@@ -22,7 +22,10 @@ const config = {
                 exclude: /node_modules/,
                 use: [
                     {
-                        loader: 'babel-loader'
+                        loader: 'babel-loader',
+                        options: {
+                            configFile: path.resolve(__dirname, '.babelrc.json')
+                        }
                     },
                     {
                         loader: 'ts-loader',
