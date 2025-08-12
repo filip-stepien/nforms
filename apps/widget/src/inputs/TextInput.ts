@@ -18,9 +18,7 @@ export class TextInput extends LitElement {
     @property()
     public placeholder: string = '';
 
-    @property({
-        type: Boolean
-    })
+    @property({ type: Boolean })
     public error: boolean = false;
 
     private changeValue(event: Event) {

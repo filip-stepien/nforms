@@ -1,0 +1,100 @@
+import { html, LitElement, ReactiveController } from 'lit';
+import { InputStructure, FormFetch } from './FormFetch';
+import { FormState } from './FormState';
+
+export class FormController implements ReactiveController {
+    private _host: LitElement;
+    private _fetch: FormFetch = new FormFetch();
+    private _state: FormState = new FormState();
+
+    constructor(host: LitElement) {
+        (this._host = host).addController(this);
+    }
+
+    private handleFormSubmit = () => {
+        const inputValid = (input: InputStructure) => {
+            const state = this._state.getById(input.id);
+            const required = input.attributes.required;
+
+            if (state && required && !state.value.trim()) {
+                this._state.setErrorById(input.id, true);
+                return false;
+            }
+
+            return true;
+        };
+
+        const formValid = this._fetch.inputs.every(inputValid);
+
+        if (formValid) {
+            // do submit stuff
+            console.log(this._state.get());
+        }
+
+        this._host.requestUpdate();
+    };
+
+    private handleValueChange(id: string, event: CustomEvent<string>) {
+        this._state.setValueById(id, event.detail);
+        this._state.set(this._state.get().map(state => ({ ...state, error: false })));
+        this._host.requestUpdate();
+    }
+
+    private renderInput({ id, inputType, attributes }: InputStructure) {
+        const state = this._state.getById(id);
+
+        if (!state) {
+            console.error(
+                `Input state not found (input id: "${id}"). Is update requested before state is set?`
+            );
+            return;
+        }
+
+        switch (inputType) {
+            case 'text':
+                return html`
+                    <text-input
+                        id=${id}
+                        value=${state.value}
+                        ?error=${state.error}
+                        placeholder=${attributes.placeholder}
+                        @value-changed=${(e: CustomEvent<string>) => this.handleValueChange(id, e)}
+                    ></text-inpuit>
+                `;
+            default:
+                console.warn(`Unknown input type "${inputType}". Check input render method.`);
+        }
+    }
+
+    public async hostConnected() {
+        await this._fetch.fetchInputs();
+
+        this._state.set(
+            this._fetch.inputs.map(input => ({ id: input.id, value: '', error: false }))
+        );
+
+        this._host.addEventListener('form-submitted', this.handleFormSubmit);
+
+        this._host.requestUpdate();
+    }
+
+    public hostDisconnected() {
+        this._host.removeEventListener('form-submitted', this.handleFormSubmit);
+    }
+
+    public get inputElements() {
+        return this._fetch.inputs.map(input => this.renderInput(input));
+    }
+
+    public get loading() {
+        return this._fetch.loading;
+    }
+
+    public get error() {
+        return this._fetch.error;
+    }
+
+    public get debug_stateElement() {
+        return JSON.stringify(this._state.get(), null, 2);
+    }
+}
