@@ -28,6 +28,11 @@ export const inputsStructureSchema = z.array(
 
 export type InputStructure = z.infer<typeof inputsStructureSchema>[number];
 
+export type InputResponse = {
+    id: string;
+    value: string | string[];
+};
+
 async function debug_fetch(): Promise<InputStructure[]> {
     await new Promise(resolve => setTimeout(resolve, 1000));
     return [
@@ -68,9 +73,12 @@ export class FormFetch {
     private _inputs: InputStructure[] = [];
     private _loading = false;
     private _error = false;
+    private _onChange: () => unknown = () => {};
 
     public async fetchInputs() {
         this._loading = true;
+        this._error = false;
+        this._onChange();
 
         try {
             const raw = await debug_fetch();
@@ -85,7 +93,33 @@ export class FormFetch {
             this._error = true;
         } finally {
             this._loading = false;
+            this._onChange();
         }
+    }
+
+    public async uploadResponses(responses: InputResponse[]) {
+        this._loading = true;
+        this._error = false;
+        this._onChange();
+
+        try {
+            // submit stuff...
+            await debug_fetch();
+            console.log(responses);
+        } catch (error) {
+            if (error) {
+                console.error('An error occurred while uploading form responses:', error);
+            }
+
+            this._error = true;
+        } finally {
+            this._loading = false;
+            this._onChange();
+        }
+    }
+
+    public set onChange(callback: () => void) {
+        this._onChange = callback;
     }
 
     public get loading() {

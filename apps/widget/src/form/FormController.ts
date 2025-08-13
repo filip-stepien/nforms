@@ -9,9 +9,18 @@ export class FormController implements ReactiveController {
 
     constructor(host: LitElement) {
         (this._host = host).addController(this);
+
+        // sync asynchronously fetched fields with state
+        this._fetch.onChange = () => {
+            this._state.set(
+                this._fetch.inputs.map(input => ({ id: input.id, value: null, error: false }))
+            );
+
+            this._host.requestUpdate();
+        };
     }
 
-    private handleFormSubmit = () => {
+    private handleFormSubmit = async () => {
         const inputValid = (input: InputStructure) => {
             const state = this._state.getById(input.id);
             const required = input.required;
@@ -24,19 +33,29 @@ export class FormController implements ReactiveController {
             return true;
         };
 
-        const formValid = this._fetch.inputs.every(inputValid);
+        // map first to set error on every invalid field
+        const validationResult = this._fetch.inputs.map(inputValid);
+        const formValid = validationResult.every(Boolean);
 
         if (formValid) {
-            // do submit stuff
-            console.log(this._state.get());
-        }
+            const responses = this._state.get().map(state => ({
+                id: state.id,
+                value: state.value as NonNullable<typeof state.value>
+            }));
 
-        this._host.requestUpdate();
+            await this._fetch.uploadResponses(responses);
+        } else {
+            // update to show error
+            this._host.requestUpdate();
+        }
     };
 
     private handleValueChange(id: string, event: CustomEvent<string> | CustomEvent<string[]>) {
         this._state.setValueById(id, event.detail);
+
+        // reset errors
         this._state.set(this._state.get().map(state => ({ ...state, error: false })));
+
         this._host.requestUpdate();
     }
 
@@ -89,15 +108,8 @@ export class FormController implements ReactiveController {
     }
 
     public async hostConnected() {
-        await this._fetch.fetchInputs();
-
-        this._state.set(
-            this._fetch.inputs.map(input => ({ id: input.id, value: null, error: false }))
-        );
-
         this._host.addEventListener('form-submitted', this.handleFormSubmit);
-
-        this._host.requestUpdate();
+        await this._fetch.fetchInputs();
     }
 
     public hostDisconnected() {
