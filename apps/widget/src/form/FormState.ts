@@ -1,6 +1,6 @@
 export type InputState = {
     id: string;
-    value: string;
+    value: string | null;
     error: boolean;
 };
 

@@ -1,12 +1,20 @@
 import z from 'zod';
 import { textInputAttributesSchema } from '../inputs/TextInput';
+import { radioInputAttributesSchema } from '../inputs/RadioInput';
 
 export const inputsStructureSchema = z.array(
     z.discriminatedUnion('inputType', [
         z.object({
             id: z.string().nonempty(),
             inputType: z.literal('text'),
+            required: z.boolean().optional(),
             attributes: textInputAttributesSchema
+        }),
+        z.object({
+            id: z.string().nonempty(),
+            inputType: z.literal('radio'),
+            required: z.boolean().optional(),
+            attributes: radioInputAttributesSchema
         })
     ])
 );
@@ -19,12 +27,20 @@ async function debug_fetch(): Promise<InputStructure[]> {
         {
             id: '1',
             inputType: 'text',
-            attributes: { required: true, placeholder: 'placeholder' }
+            required: true,
+            attributes: { placeholder: 'placeholder' }
         },
         {
             id: '2',
-            inputType: 'text',
-            attributes: {}
+            inputType: 'radio',
+            required: true,
+            attributes: {
+                values: [
+                    { key: '1', label: 'First' },
+                    { key: '2', label: 'Second' },
+                    { key: '3', label: 'Third' }
+                ]
+            }
         }
     ];
 }

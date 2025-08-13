@@ -4,6 +4,7 @@ import { FormController } from './form/FormController';
 
 import './inputs/SubmitInput';
 import './inputs/TextInput';
+import './inputs/RadioInput';
 
 @customElement('n-form')
 export class FormWidget extends LitElement {

@@ -3,8 +3,7 @@ import { customElement, property } from 'lit/decorators.js';
 import z from 'zod';
 
 export const textInputAttributesSchema = z.object({
-    placeholder: z.string().optional(),
-    required: z.boolean().optional()
+    placeholder: z.string().optional()
 });
 
 @customElement('text-input')
@@ -13,7 +12,7 @@ export class TextInput extends LitElement {
     public id!: string;
 
     @property()
-    public value: string = '';
+    public value: string | null = null;
 
     @property()
     public placeholder: string = '';
@@ -27,7 +26,7 @@ export class TextInput extends LitElement {
 
         this.dispatchEvent(
             new CustomEvent('value-changed', {
-                detail: this.value
+                detail: this.value || null
             })
         );
     }

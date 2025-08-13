@@ -14,9 +14,9 @@ export class FormController implements ReactiveController {
     private handleFormSubmit = () => {
         const inputValid = (input: InputStructure) => {
             const state = this._state.getById(input.id);
-            const required = input.attributes.required;
+            const required = input.required;
 
-            if (state && required && !state.value.trim()) {
+            if (state && required && !state.value?.trim()) {
                 this._state.setErrorById(input.id, true);
                 return false;
             }
@@ -40,7 +40,8 @@ export class FormController implements ReactiveController {
         this._host.requestUpdate();
     }
 
-    private renderInput({ id, inputType, attributes }: InputStructure) {
+    private renderInput(structure: InputStructure) {
+        const { id, inputType } = structure;
         const state = this._state.getById(id);
 
         if (!state) {
@@ -57,12 +58,22 @@ export class FormController implements ReactiveController {
                         id=${id}
                         value=${state.value}
                         ?error=${state.error}
-                        placeholder=${attributes.placeholder}
+                        placeholder=${structure.attributes.placeholder}
                         @value-changed=${(e: CustomEvent<string>) => this.handleValueChange(id, e)}
                     ></text-inpuit>
                 `;
+            case 'radio':
+                return html`
+                    <radio-input
+                        id=${id}
+                        .values=${structure.attributes.values}
+                        .selectedKey=${state.value}
+                        ?error=${state.error}
+                        @value-changed=${(e: CustomEvent<string>) => this.handleValueChange(id, e)}
+                    ></radio-input>
+                `;
             default:
-                console.warn(`Unknown input type "${inputType}". Check input render method.`);
+                console.error(`Unknown input type "${inputType}". Check input render method.`);
         }
     }
 
@@ -70,7 +81,7 @@ export class FormController implements ReactiveController {
         await this._fetch.fetchInputs();
 
         this._state.set(
-            this._fetch.inputs.map(input => ({ id: input.id, value: '', error: false }))
+            this._fetch.inputs.map(input => ({ id: input.id, value: null, error: false }))
         );
 
         this._host.addEventListener('form-submitted', this.handleFormSubmit);
