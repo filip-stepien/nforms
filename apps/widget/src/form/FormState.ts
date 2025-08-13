@@ -1,13 +1,13 @@
 export type InputState = {
     id: string;
-    value: string | null;
+    value: string | string[] | null;
     error: boolean;
 };
 
 export class FormState {
     private _state: InputState[] = [];
 
-    public setValueById(inputId: string, newValue: string) {
+    public setValueById(inputId: string, newValue: string | string[]) {
         this._state = this._state.map(input =>
             input.id === inputId ? { id: inputId, value: newValue, error: input.error } : input
         );

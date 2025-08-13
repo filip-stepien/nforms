@@ -1,6 +1,7 @@
 import z from 'zod';
 import { textInputAttributesSchema } from '../inputs/TextInput';
 import { radioInputAttributesSchema } from '../inputs/RadioInput';
+import { checkboxInputAttributesSchema } from '../inputs/CheckboxInput';
 
 export const inputsStructureSchema = z.array(
     z.discriminatedUnion('inputType', [
@@ -15,6 +16,12 @@ export const inputsStructureSchema = z.array(
             inputType: z.literal('radio'),
             required: z.boolean().optional(),
             attributes: radioInputAttributesSchema
+        }),
+        z.object({
+            id: z.string().nonempty(),
+            inputType: z.literal('checkbox'),
+            required: z.boolean().optional(),
+            attributes: checkboxInputAttributesSchema
         })
     ])
 );
@@ -33,6 +40,18 @@ async function debug_fetch(): Promise<InputStructure[]> {
         {
             id: '2',
             inputType: 'radio',
+            required: true,
+            attributes: {
+                values: [
+                    { key: '1', label: 'First' },
+                    { key: '2', label: 'Second' },
+                    { key: '3', label: 'Third' }
+                ]
+            }
+        },
+        {
+            id: '3',
+            inputType: 'checkbox',
             required: true,
             attributes: {
                 values: [

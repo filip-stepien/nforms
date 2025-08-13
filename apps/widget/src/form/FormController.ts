@@ -16,7 +16,7 @@ export class FormController implements ReactiveController {
             const state = this._state.getById(input.id);
             const required = input.required;
 
-            if (state && required && !state.value?.trim()) {
+            if (state && required && !state.value) {
                 this._state.setErrorById(input.id, true);
                 return false;
             }
@@ -34,7 +34,7 @@ export class FormController implements ReactiveController {
         this._host.requestUpdate();
     };
 
-    private handleValueChange(id: string, event: CustomEvent<string>) {
+    private handleValueChange(id: string, event: CustomEvent<string> | CustomEvent<string[]>) {
         this._state.setValueById(id, event.detail);
         this._state.set(this._state.get().map(state => ({ ...state, error: false })));
         this._host.requestUpdate();
@@ -71,6 +71,17 @@ export class FormController implements ReactiveController {
                         ?error=${state.error}
                         @value-changed=${(e: CustomEvent<string>) => this.handleValueChange(id, e)}
                     ></radio-input>
+                `;
+            case 'checkbox':
+                return html`
+                    <checkbox-input
+                        id=${id}
+                        .values=${structure.attributes.values}
+                        .selectedKeys=${state.value}
+                        ?error=${state.error}
+                        @value-changed=${(e: CustomEvent<string[]>) =>
+                            this.handleValueChange(id, e)}
+                    ></checkbox-input>
                 `;
             default:
                 console.error(`Unknown input type "${inputType}". Check input render method.`);

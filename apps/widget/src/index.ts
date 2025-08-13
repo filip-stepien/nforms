@@ -2,9 +2,10 @@ import { LitElement, html } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { FormController } from './form/FormController';
 
-import './inputs/SubmitInput';
 import './inputs/TextInput';
 import './inputs/RadioInput';
+import './inputs/CheckboxInput';
+import './inputs/SubmitInput';
 
 @customElement('n-form')
 export class FormWidget extends LitElement {
