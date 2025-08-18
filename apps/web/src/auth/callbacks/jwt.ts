@@ -22,9 +22,9 @@ async function addUserIdPayload(token: JWT, account: Account | null) {
         }
     } catch (err) {
         console.error('Error fetching user while adding user ID to JWT payload.', err);
-    } finally {
-        return token;
     }
+
+    return token;
 }
 
 export const jwt: CallbacksOptions['jwt'] = async ({ token, account }) => {

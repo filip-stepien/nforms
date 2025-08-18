@@ -1,4 +1,5 @@
 import IORedis from 'ioredis';
+import { env } from '../env';
 
 const globalForRedis = globalThis as unknown as {
     redis: IORedis | undefined;
@@ -7,8 +8,8 @@ const globalForRedis = globalThis as unknown as {
 export const connection =
     globalForRedis.redis ??
     new IORedis({
-        host: 'localhost',
-        port: 6379,
+        host: env.REDIS_HOST,
+        port: env.REDIS_PORT,
         maxRetriesPerRequest: null
     });
 
