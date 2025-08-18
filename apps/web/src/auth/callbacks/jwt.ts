@@ -1,4 +1,4 @@
-import { prisma } from '@/db/prisma';
+import { prisma } from '@packages/prisma';
 import { Account, CallbacksOptions } from 'next-auth';
 import { JWT } from 'next-auth/jwt';
 

@@ -7,17 +7,12 @@
         "build": "next build",
         "start": "next start",
         "lint": "next lint",
-        "pretty": "prettier --write .",
-        "prisma:push": "prisma db push",
-        "prisma:studio": "prisma studio",
-        "prisma:generate": "prisma generate",
-        "primsa:format": "prisma format"
+        "pretty": "prettier --write ."
     },
     "dependencies": {
         "@hello-pangea/dnd": "^18.0.1",
         "@mantine/core": "^8.2.1",
         "@mantine/hooks": "^8.2.1",
-        "@prisma/client": "^6.13.0",
         "@tabler/icons-react": "^3.34.1",
         "dayjs": "^1.11.13",
         "deep-diff": "^1.0.2",

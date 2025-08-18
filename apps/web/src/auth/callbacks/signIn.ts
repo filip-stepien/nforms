@@ -1,4 +1,4 @@
-import { prisma } from '@/db/prisma';
+import { prisma } from '@packages/prisma';
 import { CallbacksOptions } from 'next-auth';
 import { z } from 'zod';
 
