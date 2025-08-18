@@ -13,7 +13,9 @@
         "primsa:format": "prisma format"
     },
     "dependencies": {
-        "@prisma/client": "^6.14.0"
+        "@prisma/client": "^6.14.0",
+        "bullmq": "^5.58.0",
+        "ioredis": "^5.7.0"
     },
     "devDependencies": {
         "@eslint/js": "^9.33.0",
