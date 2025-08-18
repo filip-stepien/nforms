@@ -1,12 +1,10 @@
-import pluginJs from '@eslint/js';
-import tseslint from 'typescript-eslint';
+import baseConfig from '../../eslint.config.mjs';
 
 const eslintConfig = [
+    ...baseConfig,
     {
         ignores: ['dist']
-    },
-    pluginJs.configs.recommended,
-    ...tseslint.configs.strict
+    }
 ];
 
 export default eslintConfig;
