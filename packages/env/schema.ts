@@ -1,6 +1,8 @@
 import z from 'zod';
 
 const envSchema = z.object({
+    NODE_ENV: z.literal(['production', 'development']).default('development'),
+
     DATABASE_URL: z.string().min(1),
 
     SIGN_IN_URL: z.string().min(1),

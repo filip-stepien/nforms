@@ -13,6 +13,6 @@ export const connection =
         maxRetriesPerRequest: null
     });
 
-if (process.env.NODE_ENV !== 'production') {
+if (env.NODE_ENV !== 'production') {
     globalForRedis.redis = connection;
 }
