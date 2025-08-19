@@ -5,6 +5,7 @@
         "apps/*"
     ],
     "scripts": {
+        "nlp:start": "npm start --workspace=@nforms/nlp",
         "nlp:dev": "npm run dev --workspace=@nforms/nlp",
         "web:dev": "npm run dev --workspace=@nforms/web",
         "widget:dev": "npm run dev --workspace=@nforms/widget",
