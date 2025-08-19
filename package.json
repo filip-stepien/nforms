@@ -5,6 +5,7 @@
         "apps/*"
     ],
     "scripts": {
+        "nlp:dev": "npm run dev --workspace=@nforms/nlp",
         "web:dev": "npm run dev --workspace=@nforms/web",
         "widget:dev": "npm run dev --workspace=@nforms/widget",
         "prisma:push": "prisma db push",
@@ -13,6 +14,7 @@
         "primsa:format": "prisma format"
     },
     "dependencies": {
+        "@huggingface/transformers": "^3.7.2",
         "@prisma/client": "^6.14.0",
         "bullmq": "^5.58.0",
         "dotenv": "^17.2.1",

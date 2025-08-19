@@ -10,10 +10,12 @@ export type QueueJobResult = {
     result: string;
 };
 
+export type WorkerHandler = Processor<QueueJobData, QueueJobData, string>;
+
 export async function createJob(name: string, data: QueueJobData) {
     await queue.add(name, data);
 }
 
-export async function createWorker(handler?: Processor<QueueJobData, QueueJobData, string>) {
+export function createWorker(handler?: WorkerHandler) {
     return new Worker<QueueJobData, QueueJobData>(queueName, handler, { connection });
 }
