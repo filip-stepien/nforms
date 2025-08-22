@@ -2,7 +2,7 @@ import 'server-only';
 
 import { Field } from '../hooks/useFormFields';
 import { verifyUser } from '@/auth';
-import { prisma } from '@packages/prisma';
+import { prisma } from '@packages/db';
 
 export async function saveForm(title: string, fields: Field[]) {
     const user = await verifyUser();

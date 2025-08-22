@@ -8,7 +8,7 @@ import {
     PaginationParams
 } from './pagination';
 import { verifyUser } from '@/auth';
-import { prisma } from '@packages/prisma';
+import { prisma } from '@packages/db';
 import { debug_wait } from '@/lib/debug';
 
 export type FormTableData = {
