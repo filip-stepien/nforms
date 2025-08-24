@@ -1,4 +1,7 @@
-import { pipeline, AutoTokenizer, AutoModelForSequenceClassification } from '@xenova/transformers';
+import { getEmotionLabels } from 'pipelines/emotions';
+import { rank } from 'pipelines/rank';
+import { getSentimentLabels } from 'pipelines/sentiment';
+import { getSummary } from 'pipelines/summary';
 // import { createWorker, WorkerHandler } from '@packages/queue';
 
 // const workerHandler: WorkerHandler = async () => {
@@ -17,31 +20,6 @@ import { pipeline, AutoTokenizer, AutoModelForSequenceClassification } from '@xe
 // worker.on('ready', () => console.log('Worker ready!'));
 
 async function main() {
-    const model_id = 'jinaai/jina-reranker-v1-tiny-en';
-    const model = await AutoModelForSequenceClassification.from_pretrained(model_id, {
-        quantized: false
-    });
-    const tokenizer = await AutoTokenizer.from_pretrained(model_id);
-
-    async function rank(query, documents, { top_k = undefined, return_documents = false } = {}) {
-        const inputs = tokenizer(new Array(documents.length).fill(query), {
-            text_pair: documents,
-            padding: true,
-            truncation: true
-        });
-        const { logits } = await model(inputs);
-        return logits
-            .sigmoid()
-            .tolist()
-            .map(([score], i) => ({
-                corpus_id: i,
-                score,
-                ...(return_documents ? { text: documents[i] } : {})
-            }))
-            .sort((a, b) => b.score - a.score)
-            .slice(0, top_k);
-    }
-
     const text =
         'The product met my expectations – it is well made, ' +
         'easy to use, and nicely packaged. ' +
@@ -58,31 +36,12 @@ async function main() {
         'The review emphasizes intuitive handling, good packaging, and overall happiness with the purchase.'
     ];
 
-    const getSentimentLabels = await pipeline(
-        'sentiment-analysis',
-        'Xenova/distilbert-base-uncased-finetuned-sst-2-english'
-    );
-
-    const getEmotionLabels = await pipeline(
-        'text-classification',
-        'TrumpMcDonaldz/bert-43-multilabel-emotion-detection-ONNX'
-    );
-
-    const getSummary = await pipeline('summarization', 'Xenova/distilbart-cnn-6-6');
-
-    const summary = await getSummary(text, {
-        min_new_tokens: 10,
-        max_new_tokens: 20
-    });
+    const summary = await getSummary(text);
 
     console.log(await getSentimentLabels(text));
     console.log(await getEmotionLabels(text));
     console.log(summary);
-    console.log(
-        await rank((summary.at(0) as { summary_text: string }).summary_text, summaries, {
-            return_documents: true
-        })
-    );
+    console.log(await rank(summary, summaries));
 }
 
 main();
