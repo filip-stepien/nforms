@@ -16,7 +16,7 @@ model User {
     providerUserId      String
     Form                Form[]
 
-  @@unique([providerName, providerUserId])
+    @@unique([providerName, providerUserId])
 }
 
 model Form {

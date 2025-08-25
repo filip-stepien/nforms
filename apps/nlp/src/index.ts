@@ -1,16 +1,8 @@
 import { createWorker, WorkerHandler } from '@packages/queue';
-import { saveFieldResponseProcessing, saveFieldResponseSummary } from './lib/data';
-import { getEmotions } from './pipelines/emotions';
-import { getSentiment } from './pipelines/sentiment';
+import { saveFieldResponseProcessing } from './lib/data';
 
-const workerHandler: WorkerHandler = async job => {
-    const { formId, fieldResponseId, text } = job.data;
-    await saveFieldResponseProcessing({
-        emotions: await getEmotions(text),
-        sentiment: await getSentiment(text),
-        summaryId: (await saveFieldResponseSummary(formId, fieldResponseId)).id,
-        fieldResponseId
-    });
+const workerHandler: WorkerHandler = async ({ data }) => {
+    await saveFieldResponseProcessing(data);
 };
 
 const worker = createWorker(workerHandler);

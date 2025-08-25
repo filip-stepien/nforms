@@ -5,7 +5,6 @@ import { connection } from './connection';
 export type QueueJobData = {
     formId: string;
     fieldResponseId: string;
-    text: string;
 };
 
 export type WorkerHandler = Processor<QueueJobData, void, string>;
