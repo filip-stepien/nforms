@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 try {
     const status = rs.status();
     if (!status.ok && status.codeName !== 'NotYetInitialized') {

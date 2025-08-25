@@ -18,7 +18,9 @@ const envSchema = z.object({
     REDIS_PORT: z
         .string()
         .transform(val => parseInt(val))
-        .refine(val => Number.isInteger(val), { message: 'REDIS_PORT must be a number.' })
+        .refine(val => Number.isInteger(val), { message: 'REDIS_PORT must be a number.' }),
+
+    OLLAMA_MODEL: z.string().min(1)
 });
 
 export default envSchema;

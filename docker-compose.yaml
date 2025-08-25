@@ -77,10 +77,19 @@ services:
       - redis-data:/data
     command: ["redis-server", "--appendonly", "yes"]
 
+  ollama:
+    build: ./docker/ollama
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+
 volumes:
   postgres-data:
   mongodb-data:
   redis-data:
+  ollama-data:
 
 networks:
   keycloak-network:
