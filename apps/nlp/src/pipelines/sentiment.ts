@@ -2,7 +2,7 @@ import { pipeline } from '@xenova/transformers';
 
 export type Sentiment = 'positive' | 'negative';
 
-export async function getSentimentLabels(text: string, topK = 2) {
+async function getSentimentLabels(text: string, topK = 2) {
     const pipe = await pipeline(
         'sentiment-analysis',
         'Xenova/distilbert-base-uncased-finetuned-sst-2-english'
@@ -17,4 +17,9 @@ export async function getSentimentLabels(text: string, topK = 2) {
         label: sent.label.toLowerCase() as Sentiment,
         score: sent.score
     }));
+}
+
+export async function getSentiment(text: string) {
+    const [first, second] = await getSentimentLabels(text, 2);
+    return first.score > second.score ? first.label : second.label;
 }

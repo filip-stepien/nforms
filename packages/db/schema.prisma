@@ -42,10 +42,31 @@ model FormField {
     responses           FieldResponse[]
 }
 
+model LanguageProcessing {
+    id                  String              @id @default(auto()) @map("_id") @db.ObjectId
+    sentiment           String
+    emotions            String[]
+
+    summaryId           String              @db.ObjectId
+    summary             ResponseSummary     @relation(fields: [summaryId], references: [id])
+
+    fieldResponseId     String              @db.ObjectId @unique
+    fieldResponse       FieldResponse       @relation(fields: [fieldResponseId], references: [id])
+}
+
+model ResponseSummary {
+    id                  String              @id @default(auto()) @map("_id") @db.ObjectId
+    summary             String
+
+    languageProcessings LanguageProcessing[]
+}
+
 model FieldResponse {
     id                  String              @id @default(auto()) @map("_id") @db.ObjectId
     response            Json
     createdAt           DateTime            @default(now())
+
+    langProcessing      LanguageProcessing?
 
     formFieldId         String              @db.ObjectId
     formField           FormField           @relation(fields: [formFieldId], references: [id])

@@ -45,7 +45,7 @@ export type Emotion =
     | 'creativity'
     | 'boredom';
 
-export async function getEmotionLabels(text: string, topK = 3) {
+async function getEmotionLabels(text: string, topK = 100) {
     const pipe = await pipeline(
         'text-classification',
         'TrumpMcDonaldz/bert-43-multilabel-emotion-detection-ONNX'
@@ -53,4 +53,10 @@ export async function getEmotionLabels(text: string, topK = 3) {
 
     const labels = await pipe(text, { topk: topK });
     return labels as { label: Emotion; score: number }[];
+}
+
+export async function getEmotions(text: string) {
+    const labels = await getEmotionLabels(text);
+    const confidenceThreshold = 0.8;
+    return labels.filter(({ score }) => score > confidenceThreshold).map(({ label }) => label);
 }

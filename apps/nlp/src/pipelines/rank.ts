@@ -28,7 +28,15 @@ async function getTokenizer() {
     return tokenizer;
 }
 
-export async function rank(query: string, documents: string[], topK = 3) {
+export async function rank({
+    query,
+    documents,
+    topK = 1
+}: {
+    query: string;
+    documents: string[];
+    topK: number;
+}) {
     const model = await getModel();
     const tokenizer = await getTokenizer();
 
@@ -43,7 +51,7 @@ export async function rank(query: string, documents: string[], topK = 3) {
     return logits
         .sigmoid()
         .tolist()
-        .map(([score], i) => ({ index: i, score }))
+        .map(([score], i) => ({ index: i, score, document: documents[i] }))
         .sort((a, b) => b.score - a.score)
         .slice(0, topK) as { index: number; score: number }[];
 }
