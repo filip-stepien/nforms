@@ -3,9 +3,11 @@ import { InputStructure, FormFetch } from './FormFetch';
 import { FormState } from './FormState';
 
 export class FormController implements ReactiveController {
-    private _host: LitElement;
-    private _fetch: FormFetch = new FormFetch();
-    private _state: FormState = new FormState();
+    private readonly _host: LitElement;
+    private readonly _fetch: FormFetch = new FormFetch();
+    private readonly _state: FormState = new FormState();
+    private _formId: string | null = null;
+    private _error = false;
 
     constructor(host: LitElement) {
         (this._host = host).addController(this);
@@ -37,17 +39,23 @@ export class FormController implements ReactiveController {
         const validationResult = this._fetch.inputs.map(inputValid);
         const formValid = validationResult.every(Boolean);
 
-        if (formValid) {
-            const responses = this._state.get().map(state => ({
-                id: state.id,
-                value: state.value as NonNullable<typeof state.value>
-            }));
-
-            await this._fetch.uploadResponses(responses);
-        } else {
-            // update to show error
-            this._host.requestUpdate();
+        if (this._formId === null) {
+            this._error = true;
+            this._host.requestUpdate(); // update to show invalid id error
+            return;
         }
+
+        if (!formValid) {
+            this._host.requestUpdate(); // update to show invalid input indicators
+            return;
+        }
+
+        const responses = this._state.get().map(({ id, value }) => ({
+            id,
+            value: value as NonNullable<typeof value>
+        }));
+
+        await this._fetch.uploadResponses(this._formId, responses);
     };
 
     private handleValueChange(id: string, event: CustomEvent<string> | CustomEvent<string[]>) {
@@ -108,12 +116,18 @@ export class FormController implements ReactiveController {
     }
 
     public async hostConnected() {
-        this._host.addEventListener('form-submitted', this.handleFormSubmit);
-        await this._fetch.fetchInputs();
-    }
+        const id = this._host.getAttribute('id');
 
-    public hostDisconnected() {
-        this._host.removeEventListener('form-submitted', this.handleFormSubmit);
+        if (id) {
+            this._formId = id;
+            this._host.addEventListener('form-submitted', this.handleFormSubmit);
+            await this._fetch.fetchInputs(id);
+        } else {
+            this._error = true;
+            console.error(
+                'Form has no valid ID. Make sure you have added `id` attribute to the form tag.'
+            );
+        }
     }
 
     public get inputElements() {
@@ -125,7 +139,7 @@ export class FormController implements ReactiveController {
     }
 
     public get error() {
-        return this._fetch.error;
+        return this._error || this._fetch.error;
     }
 
     public get debug_stateElement() {

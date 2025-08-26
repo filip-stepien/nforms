@@ -8,6 +8,7 @@
         "nlp:start": "npm start --workspace=@nforms/nlp",
         "nlp:dev": "npm run dev --workspace=@nforms/nlp",
         "web:dev": "npm run dev --workspace=@nforms/web",
+        "widget:build": "npm run build --workspace=@nforms/widget",
         "widget:dev": "npm run dev --workspace=@nforms/widget",
         "prisma:push": "prisma db push",
         "prisma:studio": "prisma studio",

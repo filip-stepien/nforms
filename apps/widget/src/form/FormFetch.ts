@@ -33,7 +33,8 @@ export type InputResponse = {
     value: string | string[];
 };
 
-async function debug_fetch(): Promise<InputStructure[]> {
+async function debug_fetch(formId: string): Promise<InputStructure[]> {
+    console.log(`Fetching form with ID: ${formId}...`);
     await new Promise(resolve => setTimeout(resolve, 1000));
     return [
         {
@@ -75,13 +76,13 @@ export class FormFetch {
     private _error = false;
     private _onChange: () => unknown = () => {};
 
-    public async fetchInputs() {
+    public async fetchInputs(formId: string) {
         this._loading = true;
         this._error = false;
         this._onChange();
 
         try {
-            const raw = await debug_fetch();
+            const raw = await debug_fetch(formId);
             this._inputs = inputsStructureSchema.parse(raw);
         } catch (error) {
             if (error instanceof z.ZodError) {
@@ -97,14 +98,14 @@ export class FormFetch {
         }
     }
 
-    public async uploadResponses(responses: InputResponse[]) {
+    public async uploadResponses(formId: string, responses: InputResponse[]) {
         this._loading = true;
         this._error = false;
         this._onChange();
 
         try {
             // submit stuff...
-            await debug_fetch();
+            await debug_fetch(formId);
             console.log(responses);
         } catch (error) {
             if (error) {
