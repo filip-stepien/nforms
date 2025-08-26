@@ -1,13 +1,19 @@
 import { Flex } from '@mantine/core';
 import { ReactNode } from 'react';
 import { TextFieldSettings } from '../field-settings/TextFieldSettings';
-import { BaseFieldSettings } from '../field-settings/BaseFieldSettings';
 import { OptionCreator } from '../field-controls/option-creator/OptionCreator';
-import { FieldType, SettingsMap, ControlsMap, TextSettings } from '../../hooks/useFormFields';
+import {
+    FieldType,
+    SettingsMap,
+    ControlsMap,
+    TextSettings,
+    SelectionSettings
+} from '../../hooks/useFormFields';
 import { useOptionCreator } from '../../hooks/useOptionCreator';
 import { Draggable } from '@hello-pangea/dnd';
 import { FieldHeader } from './FieldHeader';
 import { FieldBody } from './FieldBody';
+import { SelectionFieldSettings } from '../field-settings/SelectionFieldSettings';
 
 type Props = {
     id: string;
@@ -51,14 +57,17 @@ export function FormField(props: Props) {
                 onSettingsChange={onSettingsChange}
             />
         ),
-        [FieldType.RATING]: (
-            <BaseFieldSettings settings={settings} onSettingsChange={onSettingsChange} />
+        [FieldType.SELECTION]: (
+            <SelectionFieldSettings
+                settings={settings as SelectionSettings}
+                onSettingsChange={onSettingsChange}
+            />
         )
     };
 
     const controlsComponent: Record<FieldType, ReactNode> = {
         [FieldType.TEXT]: null,
-        [FieldType.RATING]: <OptionCreator {...optionCreatorProps} />
+        [FieldType.SELECTION]: <OptionCreator {...optionCreatorProps} />
     };
 
     return (

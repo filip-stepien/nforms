@@ -6,17 +6,17 @@ import { useState } from 'react';
 
 export enum FieldType {
     TEXT = 'Text',
-    RATING = 'Rating'
+    SELECTION = 'Selection'
 }
 
 export type SettingsMap = {
     [FieldType.TEXT]: TextSettings;
-    [FieldType.RATING]: BaseSettings;
+    [FieldType.SELECTION]: SelectionSettings;
 };
 
 export type ControlsMap = {
     [FieldType.TEXT]: null;
-    [FieldType.RATING]: OptionsControl;
+    [FieldType.SELECTION]: OptionsControl;
 };
 
 export type BaseSettings = {
@@ -27,6 +27,10 @@ export type TextSettings = BaseSettings & {
     analyseSentiment: boolean;
     extractKeywords: boolean;
     summarize: true;
+};
+
+export type SelectionSettings = BaseSettings & {
+    singleSelection: boolean;
 };
 
 export type OptionsControl = {
@@ -60,9 +64,10 @@ export const initialFieldStates: InitialFieldStates = {
         },
         controls: null
     },
-    [FieldType.RATING]: {
+    [FieldType.SELECTION]: {
         settings: {
-            required: true
+            required: true,
+            singleSelection: false
         },
         controls: {
             options: []
@@ -101,15 +106,16 @@ export function useFormFields(initialFields: Field[] = []) {
         fieldsHandlers.applyWhere(
             field => field.id === id,
             field => {
-                const typeChanged = updatedField.type && updatedField.type !== field.type;
+                const updatedFieldType = updatedField.type;
+                const typeChanged = updatedFieldType && updatedFieldType !== field.type;
                 const newField = {
                     ...field,
                     ...updatedField,
                     settings: typeChanged
-                        ? initialFieldStates[updatedField.type!].settings
+                        ? initialFieldStates[updatedFieldType].settings
                         : (updatedField.settings ?? field.settings),
                     controls: typeChanged
-                        ? initialFieldStates[updatedField.type!].controls
+                        ? initialFieldStates[updatedFieldType].controls
                         : (updatedField.controls ?? field.controls)
                 } as Field;
 
@@ -160,8 +166,10 @@ export function useFormFields(initialFields: Field[] = []) {
             onTitleChange: (title: string) => setField(id, { title }),
             onFieldTypeChange: (type: FieldType) => setField(id, { type }),
             onDelete: () => deleteField(id),
-            onControlsChange: (controls: ControlsMap[FieldType]) => setField(id, { controls }),
-            onSettingsChange: (settings: SettingsMap[FieldType]) => setField(id, { settings })
+            onControlsChange: (controls: ControlsMap[FieldType]) =>
+                setField(id, { controls } as Partial<Field>),
+            onSettingsChange: (settings: SettingsMap[FieldType]) =>
+                setField(id, { settings } as Partial<Field>)
         };
     };
 
