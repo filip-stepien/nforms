@@ -7,19 +7,19 @@ export const inputsStructureSchema = z.array(
     z.discriminatedUnion('inputType', [
         z.object({
             id: z.string().nonempty(),
-            inputType: z.literal('text'),
+            type: z.literal('text'),
             required: z.boolean().optional(),
             attributes: textInputAttributesSchema
         }),
         z.object({
             id: z.string().nonempty(),
-            inputType: z.literal('radio'),
+            type: z.literal('radio'),
             required: z.boolean().optional(),
             attributes: radioInputAttributesSchema
         }),
         z.object({
             id: z.string().nonempty(),
-            inputType: z.literal('checkbox'),
+            type: z.literal('checkbox'),
             required: z.boolean().optional(),
             attributes: checkboxInputAttributesSchema
         })
@@ -39,13 +39,13 @@ async function debug_fetch(formId: string): Promise<InputStructure[]> {
     return [
         {
             id: '1',
-            inputType: 'text',
+            type: 'text',
             required: true,
             attributes: { placeholder: 'placeholder' }
         },
         {
             id: '2',
-            inputType: 'radio',
+            type: 'radio',
             required: true,
             attributes: {
                 values: [
@@ -57,7 +57,7 @@ async function debug_fetch(formId: string): Promise<InputStructure[]> {
         },
         {
             id: '3',
-            inputType: 'checkbox',
+            type: 'checkbox',
             required: true,
             attributes: {
                 values: [

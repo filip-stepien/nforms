@@ -1,13 +1,15 @@
 import { prisma } from '@packages/db';
 import { fieldExistsByFormId, fieldExistsById, formExistById, saveFieldResponse } from './data';
-import { parseRequestBody } from './request';
+import { parseFormSubmitBody } from './request';
 import { ApiError } from '../errors/ApiError';
 import { StatusCodes } from 'http-status-codes';
+import { mapSelectionFieldToWidgetField } from '../mappers/fields/selection';
+import { mapTextFieldToWidgetField } from '../mappers/fields/text';
 
 export async function submitFormResponses({
     formId,
     fieldResponses
-}: ReturnType<typeof parseRequestBody>) {
+}: ReturnType<typeof parseFormSubmitBody>) {
     const formExists = await formExistById({ formId });
 
     if (!formExists) {
@@ -54,5 +56,30 @@ export async function submitFormResponses({
         await Promise.all(
             fieldResponses.map(response => saveFieldResponse({ ...response, transaction }))
         );
+    });
+}
+
+export async function getFormStructure({ formId }: { formId: string }) {
+    const form = await prisma.form.findUnique({ where: { id: formId }, include: { fields: true } });
+
+    if (!form) {
+        throw new ApiError(
+            'Form with provided ID does not exist.',
+            { formId },
+            StatusCodes.NOT_FOUND
+        );
+    }
+
+    return form.fields.map(field => {
+        switch (field.type) {
+            case 'Text':
+                return mapTextFieldToWidgetField(field);
+            case 'Selection':
+                return mapSelectionFieldToWidgetField(field);
+            default:
+                throw new Error(
+                    `Unexpected field type "${field.type}" while trying to map to widget field.`
+                );
+        }
     });
 }

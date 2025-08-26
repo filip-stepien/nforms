@@ -14,15 +14,19 @@ function formatErrorResponse(message: string, statusCode: number, details?: unkn
 
 export function getErrorResponse(error: unknown) {
     if (error instanceof ZodError) {
-        return formatErrorResponse('Invalid request body.', StatusCodes.BAD_REQUEST, error.issues);
+        return formatErrorResponse(
+            'Invalid request structure.',
+            StatusCodes.BAD_REQUEST,
+            error.issues
+        );
     } else if (error instanceof ApiError) {
         const { message, status, details } = error;
         return formatErrorResponse(message, status, details);
-    } else {
+    } else if (error instanceof Error) {
         return formatErrorResponse(
             'An unknown error occurred.',
             StatusCodes.INTERNAL_SERVER_ERROR,
-            env.NODE_ENV ? error : undefined
+            env.NODE_ENV === 'development' ? { message: error.message } : undefined
         );
     }
 }

@@ -4,7 +4,7 @@ const idSchema = z
     .string()
     .refine(val => /^[0-9a-fA-F]{24}$/.test(val), { message: 'Invalid ID format.' });
 
-const requestBodySchema = z.object({
+const formSubmitBodySchema = z.object({
     formId: idSchema,
     fieldResponses: z.array(
         z.object({
@@ -14,6 +14,11 @@ const requestBodySchema = z.object({
     )
 });
 
-export function parseRequestBody(body: unknown) {
-    return requestBodySchema.parse(body);
+export function parseFormSubmitBody(body: unknown) {
+    return formSubmitBodySchema.parse(body);
+}
+
+export async function parseFormGetParams(params: Promise<{ id: string }>) {
+    const id = (await params).id;
+    return idSchema.parse(id);
 }
