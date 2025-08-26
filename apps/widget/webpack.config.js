@@ -1,5 +1,7 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
+import webpack from 'webpack';
+import { env } from '../../packages/env/index.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -37,7 +39,13 @@ const config = {
             }
         ]
     },
-    devtool: 'source-map'
+    devtool: 'source-map',
+    plugins: [
+        new webpack.DefinePlugin({
+            WIDGET_FORM_STRUCTURE_BASE_URL: JSON.stringify(env.WIDGET_FORM_STRUCTURE_BASE_URL),
+            WIDGET_FORM_SUBMIT_URL: JSON.stringify(env.WIDGET_FORM_SUBMIT_URL)
+        })
+    ]
 };
 
 export default config;

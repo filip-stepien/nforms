@@ -4,8 +4,19 @@ import { NextResponse } from 'next/server';
 import { StatusCodes } from 'http-status-codes';
 import { env } from '@packages/env';
 
-export function getResponse(status: number, body?: unknown) {
-    return NextResponse.json({ ok: true, statusCode: status, data: body }, { status });
+export function getResponse(status: number, body?: unknown, headers?: HeadersInit) {
+    return NextResponse.json(
+        { ok: true, statusCode: status, data: body },
+        {
+            status,
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type',
+                ...headers
+            }
+        }
+    );
 }
 
 function formatErrorResponse(message: string, statusCode: number, details?: unknown) {

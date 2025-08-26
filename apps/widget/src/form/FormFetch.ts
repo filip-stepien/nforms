@@ -3,8 +3,8 @@ import { textInputAttributesSchema } from '../inputs/TextInput';
 import { radioInputAttributesSchema } from '../inputs/RadioInput';
 import { checkboxInputAttributesSchema } from '../inputs/CheckboxInput';
 
-export const inputsStructureSchema = z.array(
-    z.discriminatedUnion('inputType', [
+const fieldsStructureSchema = z.array(
+    z.discriminatedUnion('type', [
         z.object({
             id: z.string().nonempty(),
             type: z.literal('text'),
@@ -26,52 +26,20 @@ export const inputsStructureSchema = z.array(
     ])
 );
 
-export type InputStructure = z.infer<typeof inputsStructureSchema>[number];
+type FieldResponsesBody = {
+    formId: string;
+    fieldResponses: { fieldId: string; response: string | string[] }[];
+};
 
-export type InputResponse = {
+export type FieldStructure = z.infer<typeof fieldsStructureSchema>[number];
+
+export type FieldResponse = {
     id: string;
     value: string | string[];
 };
 
-async function debug_fetch(formId: string): Promise<InputStructure[]> {
-    console.log(`Fetching form with ID: ${formId}...`);
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    return [
-        {
-            id: '1',
-            type: 'text',
-            required: true,
-            attributes: { placeholder: 'placeholder' }
-        },
-        {
-            id: '2',
-            type: 'radio',
-            required: true,
-            attributes: {
-                values: [
-                    { key: '1', label: 'First' },
-                    { key: '2', label: 'Second' },
-                    { key: '3', label: 'Third' }
-                ]
-            }
-        },
-        {
-            id: '3',
-            type: 'checkbox',
-            required: true,
-            attributes: {
-                values: [
-                    { key: '1', label: 'First' },
-                    { key: '2', label: 'Second' },
-                    { key: '3', label: 'Third' }
-                ]
-            }
-        }
-    ];
-}
-
 export class FormFetch {
-    private _inputs: InputStructure[] = [];
+    private _inputs: FieldStructure[] = [];
     private _loading = false;
     private _error = false;
     private _onChange: () => unknown = () => {};
@@ -82,8 +50,10 @@ export class FormFetch {
         this._onChange();
 
         try {
-            const raw = await debug_fetch(formId);
-            this._inputs = inputsStructureSchema.parse(raw);
+            const url = WIDGET_FORM_STRUCTURE_BASE_URL + formId;
+            const raw = await fetch(url);
+            const body = await raw.json();
+            this._inputs = fieldsStructureSchema.parse(body?.data);
         } catch (error) {
             if (error instanceof z.ZodError) {
                 console.error('Fetched inputs have incorrect shape. Issues:', error.issues);
@@ -98,21 +68,35 @@ export class FormFetch {
         }
     }
 
-    public async uploadResponses(formId: string, responses: InputResponse[]) {
+    public async uploadResponses(formId: string, responses: FieldResponse[]) {
         this._loading = true;
         this._error = false;
         this._onChange();
 
         try {
-            // submit stuff...
-            await debug_fetch(formId);
-            console.log(responses);
-        } catch (error) {
-            if (error) {
-                console.error('An error occurred while uploading form responses:', error);
-            }
+            const body: FieldResponsesBody = {
+                formId,
+                fieldResponses: responses.map(({ id, value }) => ({ fieldId: id, response: value }))
+            };
 
+            const response = await fetch(WIDGET_FORM_SUBMIT_URL, {
+                headers: { 'Content-Type': 'application/json' },
+                method: 'POST',
+                body: JSON.stringify(body)
+            });
+
+            if (response.ok) {
+                console.log('Form submitted:', body);
+            } else {
+                this._error = true;
+                console.error(
+                    'An error occurred while uploading form responses:',
+                    await response.json()
+                );
+            }
+        } catch (error) {
             this._error = true;
+            console.error('An error occurred while uploading form responses:', error);
         } finally {
             this._loading = false;
             this._onChange();

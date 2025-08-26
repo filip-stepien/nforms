@@ -13,3 +13,8 @@ export async function POST(req: NextRequest) {
         return getErrorResponse(error);
     }
 }
+
+// accept preflight
+export async function OPTIONS() {
+    return getResponse(StatusCodes.OK);
+}

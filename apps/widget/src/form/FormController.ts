@@ -1,5 +1,5 @@
 import { html, LitElement, ReactiveController } from 'lit';
-import { InputStructure, FormFetch } from './FormFetch';
+import { FieldStructure, FormFetch } from './FormFetch';
 import { FormState } from './FormState';
 
 export class FormController implements ReactiveController {
@@ -23,7 +23,7 @@ export class FormController implements ReactiveController {
     }
 
     private handleFormSubmit = async () => {
-        const inputValid = (input: InputStructure) => {
+        const inputValid = (input: FieldStructure) => {
             const state = this._state.getById(input.id);
             const required = input.required;
 
@@ -67,8 +67,8 @@ export class FormController implements ReactiveController {
         this._host.requestUpdate();
     }
 
-    private renderInput(structure: InputStructure) {
-        const { id, inputType } = structure;
+    private renderInput(structure: FieldStructure) {
+        const { id, type } = structure;
         const state = this._state.getById(id);
 
         if (!state) {
@@ -78,7 +78,7 @@ export class FormController implements ReactiveController {
             return;
         }
 
-        switch (inputType) {
+        switch (type) {
             case 'text':
                 return html`
                     <text-input
@@ -111,7 +111,7 @@ export class FormController implements ReactiveController {
                     ></checkbox-input>
                 `;
             default:
-                console.error(`Unknown input type "${inputType}". Check input render method.`);
+                console.error(`Unknown input type "${type}". Check input render method.`);
         }
     }
 

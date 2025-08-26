@@ -20,7 +20,13 @@ const envSchema = z.object({
         .transform(val => parseInt(val))
         .refine(val => Number.isInteger(val), { message: 'REDIS_PORT must be a number.' }),
 
-    OLLAMA_MODEL: z.string().min(1)
+    OLLAMA_MODEL: z.string().min(1),
+
+    WIDGET_FORM_SUBMIT_URL: z.string().min(1),
+    WIDGET_FORM_STRUCTURE_BASE_URL: z
+        .string()
+        .min(1)
+        .transform(url => (url.endsWith('/') ? url : url + '/'))
 });
 
 export default envSchema;
