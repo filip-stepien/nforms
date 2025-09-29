@@ -14,6 +14,7 @@ import { Draggable } from '@hello-pangea/dnd';
 import { FieldHeader } from './FieldHeader';
 import { FieldBody } from './FieldBody';
 import { SelectionFieldSettings } from '../field-settings/SelectionFieldSettings';
+import { ConsistencyRulesCreator } from '../field-controls/ConsistencyRulesCreator';
 
 type Props = {
     id: string;
@@ -66,7 +67,7 @@ export function FormField(props: Props) {
     };
 
     const controlsComponent: Record<FieldType, ReactNode> = {
-        [FieldType.TEXT]: null,
+        [FieldType.TEXT]: <ConsistencyRulesCreator />,
         [FieldType.SELECTION]: <OptionCreator {...optionCreatorProps} />
     };
 

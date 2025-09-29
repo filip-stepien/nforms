@@ -13,6 +13,7 @@
         "@hello-pangea/dnd": "^18.0.1",
         "@mantine/core": "^8.2.1",
         "@mantine/hooks": "^8.2.1",
+        "@react-querybuilder/mantine": "^8.9.2",
         "@tabler/icons-react": "^3.34.1",
         "dayjs": "^1.11.13",
         "deep-diff": "^1.0.2",
@@ -24,6 +25,7 @@
         "react-avatar": "^5.0.4",
         "react-dom": "19.1.0",
         "react-hot-toast": "^2.5.2",
+        "react-querybuilder": "^8.9.2",
         "server-only": "^0.0.1",
         "uuid": "^9.0.1"
     },
