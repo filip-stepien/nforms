@@ -1,5 +1,5 @@
 import { Flex } from '@mantine/core';
-import { ReactNode } from 'react';
+import { memo, ReactNode, RefObject, useCallback } from 'react';
 import { TextFieldSettings } from '../field-settings/TextFieldSettings';
 import { OptionCreator } from '../field-controls/option-creator/OptionCreator';
 import {
@@ -7,7 +7,8 @@ import {
     SettingsMap,
     ControlsMap,
     TextSettings,
-    SelectionSettings
+    SelectionSettings,
+    Field
 } from '../../hooks/useFormFields';
 import { useOptionCreator } from '../../hooks/useOptionCreator';
 import { Draggable } from '@hello-pangea/dnd';
@@ -17,51 +18,59 @@ import { SelectionFieldSettings } from '../field-settings/SelectionFieldSettings
 import { ConsistencyRulesCreator } from '../field-controls/ConsistencyRulesCreator';
 
 type Props = {
-    id: string;
     index: number;
-    title: string;
-    type: FieldType;
-    selected?: boolean;
-    settings: SettingsMap[FieldType];
-    controls: ControlsMap[FieldType];
-    onSelect: () => void;
-    onSettingsChange: (settings: SettingsMap[FieldType]) => void;
-    onControlsChange: (controls: ControlsMap[FieldType]) => void;
-    onTitleChange: (title: string) => void;
-    onFieldTypeChange: (fieldType: FieldType) => void;
-    onDelete: () => void;
+    field: Field;
+    lastAddedFieldIdRef: RefObject<string | null>;
+    setField: (id: string, updatedField: Partial<Field>) => void;
+    deleteField: (id: string) => void;
 };
 
-export function FormField(props: Props) {
-    const {
-        id,
-        index,
-        title,
-        type,
-        selected,
-        settings,
-        controls,
-        onSelect,
-        onTitleChange,
-        onFieldTypeChange,
-        onSettingsChange,
-        onControlsChange,
-        onDelete
-    } = props;
+export const FormField = memo(function FormField(props: Props) {
+    const { index, field, lastAddedFieldIdRef, setField, deleteField } = props;
 
-    const optionCreatorProps = useOptionCreator(controls?.options, onControlsChange);
+    const handleSelect = useCallback(() => {
+        if (lastAddedFieldIdRef) {
+            lastAddedFieldIdRef.current = null;
+        }
+    }, [lastAddedFieldIdRef]);
+
+    const handleTitleChange = useCallback(
+        (title: string) => setField(field.id, { title }),
+        [field.id, setField]
+    );
+
+    const handleTypeChange = useCallback(
+        (type: FieldType) => setField(field.id, { type }),
+        [field.id, setField]
+    );
+
+    const handleDelete = useCallback(() => deleteField(field.id), [field.id, deleteField]);
+
+    const handleControlsChange = useCallback(
+        (controls: ControlsMap[FieldType]) => setField(field.id, { controls } as Partial<Field>),
+        [field.id, setField]
+    );
+
+    const handleSettingsChange = useCallback(
+        (settings: SettingsMap[FieldType]) => setField(field.id, { settings } as Partial<Field>),
+        [field.id, setField]
+    );
+
+    const optionCreatorProps = useOptionCreator(field.controls?.options, handleControlsChange);
+
+    console.count('rerender');
 
     const settingsComponent: Record<FieldType, ReactNode> = {
         [FieldType.TEXT]: (
             <TextFieldSettings
-                settings={settings as TextSettings}
-                onSettingsChange={onSettingsChange}
+                settings={field.settings as TextSettings}
+                onSettingsChange={handleSettingsChange}
             />
         ),
         [FieldType.SELECTION]: (
             <SelectionFieldSettings
-                settings={settings as SelectionSettings}
-                onSettingsChange={onSettingsChange}
+                settings={field.settings as SelectionSettings}
+                onSettingsChange={handleSettingsChange}
             />
         )
     };
@@ -72,7 +81,7 @@ export function FormField(props: Props) {
     };
 
     return (
-        <Draggable draggableId={id} index={index}>
+        <Draggable draggableId={field.id} index={index}>
             {provided => (
                 <Flex
                     direction='column'
@@ -82,22 +91,22 @@ export function FormField(props: Props) {
                     {...provided.draggableProps}
                 >
                     <FieldHeader
-                        title={title}
-                        fieldType={type}
-                        selected={selected}
+                        title={field.title}
+                        fieldType={field.type}
+                        selected={lastAddedFieldIdRef?.current === field.id}
                         settingsComponent={settingsComponent}
                         dragHandleProps={provided.dragHandleProps}
-                        onTitleChange={onTitleChange}
-                        onDelete={onDelete}
-                        onSelect={onSelect}
+                        onTitleChange={handleTitleChange}
+                        onDelete={handleDelete}
+                        onSelect={handleSelect}
                     />
                     <FieldBody
-                        fieldType={type}
-                        onFieldTypeChange={onFieldTypeChange}
+                        fieldType={field.type}
+                        onFieldTypeChange={handleTypeChange}
                         controlsComponent={controlsComponent}
                     />
                 </Flex>
             )}
         </Draggable>
     );
-}
+});

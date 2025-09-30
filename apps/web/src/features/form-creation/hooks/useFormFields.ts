@@ -1,8 +1,7 @@
 import { FieldOption } from '../components/field-controls/option-creator/OptionCreator';
-import { useListState } from '@mantine/hooks';
 import { v4 as uuid } from 'uuid';
 import { keysEqual, printKeysOrType } from '../lib/utils';
-import { useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 export enum FieldType {
     TEXT = 'Text',
@@ -76,38 +75,48 @@ export const initialFieldStates: InitialFieldStates = {
 };
 
 export function useFormFields(initialFields: Field[] = []) {
-    const [lastAddedId, setLastAddedId] = useState<string>();
-    const [fields, fieldsHandlers] = useListState<Field>(initialFields);
+    const lastAddedIdRef = useRef<string>(null);
+    const [fields, setFields] = useState<Field[]>(initialFields);
 
-    const addField = () => {
+    const addField = useCallback(() => {
         const { settings, controls } = initialFieldStates[FieldType.TEXT];
         const id = uuid();
 
-        fieldsHandlers.append({
-            id,
-            title: 'Untitled question',
-            type: FieldType.TEXT,
-            settings,
-            controls
+        setFields(prev => [
+            ...prev,
+            {
+                id,
+                title: 'Untitled question',
+                type: FieldType.TEXT,
+                settings,
+                controls
+            }
+        ]);
+
+        lastAddedIdRef.current = id;
+    }, []);
+
+    const deleteField = useCallback((id: string) => {
+        setFields(prev => prev.filter(f => f.id !== id));
+    }, []);
+
+    const reorderField = useCallback((from: number, to?: number) => {
+        setFields(prev => {
+            const copy = [...prev];
+            const [moved] = copy.splice(from, 1);
+            copy.splice(to ?? from, 0, moved);
+            return copy;
         });
+    }, []);
 
-        setLastAddedId(id);
-    };
+    const setField = useCallback((id: string, updatedField: Partial<Field>) => {
+        setFields(prev =>
+            prev.map(field => {
+                if (field.id !== id) return field;
 
-    const deleteField = (id: string) => {
-        fieldsHandlers.filter(f => f.id !== id);
-    };
-
-    const reorderField = (from: number, to?: number) => {
-        fieldsHandlers.reorder({ from, to: to ?? from });
-    };
-
-    const setField = (id: string, updatedField: Partial<Field>) => {
-        fieldsHandlers.applyWhere(
-            field => field.id === id,
-            field => {
                 const updatedFieldType = updatedField.type;
                 const typeChanged = updatedFieldType && updatedFieldType !== field.type;
+
                 const newField = {
                     ...field,
                     ...updatedField,
@@ -129,7 +138,6 @@ export function useFormFields(initialFields: Field[] = []) {
                             'Field types are resolved at runtime - ' +
                             'updating settings without validation may cause runtime errors.'
                     );
-
                     return field;
                 }
 
@@ -141,37 +149,20 @@ export function useFormFields(initialFields: Field[] = []) {
                             'Field types are resolved at runtime - ' +
                             'updating controls without validation may cause runtime errors.'
                     );
-
                     return field;
                 }
 
                 return newField;
-            }
+            })
         );
+    }, []);
+
+    return {
+        fields,
+        lastAddedIdRef,
+        addField,
+        deleteField,
+        setField,
+        reorderField
     };
-
-    const getFormFieldProps = (field: Field, index: number) => {
-        const { id, title, type, settings, controls } = field;
-        const selected = lastAddedId === id;
-
-        return {
-            index,
-            id,
-            title,
-            type,
-            selected,
-            settings,
-            controls,
-            onSelect: () => setLastAddedId(undefined),
-            onTitleChange: (title: string) => setField(id, { title }),
-            onFieldTypeChange: (type: FieldType) => setField(id, { type }),
-            onDelete: () => deleteField(id),
-            onControlsChange: (controls: ControlsMap[FieldType]) =>
-                setField(id, { controls } as Partial<Field>),
-            onSettingsChange: (settings: SettingsMap[FieldType]) =>
-                setField(id, { settings } as Partial<Field>)
-        };
-    };
-
-    return { fields, addField, deleteField, setField, reorderField, getFormFieldProps };
 }

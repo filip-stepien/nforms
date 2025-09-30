@@ -12,9 +12,11 @@ import { useFormStatusEffect } from '../../hooks/useFormStatusEffect';
 
 export function FormCreator() {
     const { title, onTitleChange, onTitleBlur } = useFormTitle();
-    const { fields, addField, reorderField, getFormFieldProps } = useFormFields([]);
-    const { status, action, isLoading } = useFormCreateAction(title, fields);
+    const { fields, addField, reorderField, setField, deleteField, lastAddedIdRef } = useFormFields(
+        []
+    );
 
+    const { status, action, isLoading } = useFormCreateAction(title, fields);
     useFormStatusEffect(status);
 
     return (
@@ -42,7 +44,14 @@ export function FormCreator() {
                                 className='border-1 border-outline p-lg rounded-md bg-neutral-50'
                             />
                             {fields.map((field, index) => (
-                                <FormField key={field.id} {...getFormFieldProps(field, index)} />
+                                <FormField
+                                    key={field.id}
+                                    index={index}
+                                    field={field}
+                                    setField={setField}
+                                    deleteField={deleteField}
+                                    lastAddedFieldIdRef={lastAddedIdRef}
+                                />
                             ))}
                             {provided.placeholder}
                             <Group justify='end' className='mt-md'>
