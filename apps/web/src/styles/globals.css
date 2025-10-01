@@ -13,9 +13,8 @@
     --color-border: rgb(206, 212, 218);
     --color-background: var(--background);
     --color-foreground: var(--foreground);
-    --color-danger-background: rgba(250, 82, 82, 0.1);
     --color-danger: rgb(250, 82, 82);
-    --color-primary-background: rgba(34, 139, 230, 0.1);
+    --color-neutral-background: rgba(20, 20, 20, 0.05);
 
     --shadow-card: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 
