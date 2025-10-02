@@ -32,7 +32,8 @@ const eslintConfig = [
                     args: 'after-used',
                     argsIgnorePattern: '^_'
                 }
-            ]
+            ],
+            '@next/next/no-sync-scripts': 'off'
         }
     }
 ];

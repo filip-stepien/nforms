@@ -1,11 +1,11 @@
 import { RuleGroupRow } from './RuleGroupRow';
 import { RulesAccordion } from './RulesAccordion';
-import { RulesControl } from '@/features/form-creation/hooks/useFormFields';
+import { Field, RulesControl } from '@/features/form-creation/hooks/useFormFields';
 
 export type Rule = {
     id: string;
     type: 'rule';
-    question?: string;
+    questionId?: string;
     condition?: string;
     operator?: string;
     value?: string;
@@ -23,12 +23,13 @@ export type RuleGroup = {
 export const ruleCombinators = ['AND', 'OR'] as const;
 
 type Props = {
+    field: Field;
+    fields: Field[];
     rules: RuleGroup;
     onRulesChange: (controls: RulesControl) => void;
-    questions: string[];
 };
 
-export function RulesCreator({ rules, onRulesChange, questions }: Props) {
+export function RulesCreator({ field, fields, rules, onRulesChange }: Props) {
     const handleRuleChange = (rules: RuleGroup) => {
         onRulesChange({ rules });
     };
@@ -44,7 +45,8 @@ export function RulesCreator({ rules, onRulesChange, questions }: Props) {
                     group={rules}
                     onRuleChange={handleRuleChange}
                     combinators={[...ruleCombinators]}
-                    questions={questions}
+                    fields={fields}
+                    field={field}
                     conditions={['sentiment', 'emotion']}
                     operators={['is', 'equals']}
                     values={['1', '2']}

@@ -22,6 +22,7 @@ export default async function RootLayout({ children }: Props) {
         <html lang='en' {...mantineHtmlProps}>
             <head>
                 <ColorSchemeScript />
+                {/* <script crossOrigin='anonymous' src='//unpkg.com/react-scan/dist/auto.global.js' /> */}
             </head>
             <body>
                 <Toaster />

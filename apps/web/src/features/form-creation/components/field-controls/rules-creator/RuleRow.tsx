@@ -2,12 +2,13 @@ import { Group, Input, Select } from '@mantine/core';
 import { IconX } from '@tabler/icons-react';
 import { IconButton } from '../../ui/IconButton';
 import { Rule, RuleGroup } from './RulesCreator';
+import { Field } from '@/features/form-creation/hooks/useFormFields';
 
 type Props = {
     rule: Rule;
     rootGroup: RuleGroup;
     onRuleChange: (root: RuleGroup) => void;
-    questions: string[];
+    fields: Field[];
     conditions: string[];
     operators: string[];
     values?: string[];
@@ -40,8 +41,8 @@ function deleteRule(root: RuleGroup, ruleId: string): RuleGroup {
 }
 
 export function RuleRow(props: Props) {
-    const { rule, rootGroup, onRuleChange, questions, conditions, operators, values } = props;
-    const { id, question, operator, condition, value } = rule;
+    const { rule, rootGroup, onRuleChange, fields, conditions, operators, values } = props;
+    const { id, questionId, operator, condition, value } = rule;
 
     const handleRuleChange = (value: string | null, property: keyof Rule) => {
         onRuleChange(updateRule(rootGroup, id, rule => ({ ...rule, [property]: value })));
@@ -51,13 +52,17 @@ export function RuleRow(props: Props) {
         onRuleChange(deleteRule(rootGroup, id));
     };
 
+    const handleQuestionChange = (value: string | null) => {
+        const questionId = fields.find(field => field.title === value)?.id as string;
+        handleRuleChange(questionId, 'questionId');
+    };
+
     return (
-        <Group className='children:flex-1'>
+        <Group>
             <Select
-                data={questions}
-                value={question}
-                defaultValue={questions.at(0)}
-                onChange={value => handleRuleChange(value, 'question')}
+                data={fields.map(field => field.title)}
+                value={fields.find(field => field.id === questionId)?.title}
+                onChange={handleQuestionChange}
             />
             <Select
                 data={conditions}

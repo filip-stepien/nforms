@@ -73,7 +73,8 @@ export const FormField = memo(function FormField(props: Props) {
             case FieldType.TEXT:
                 return (
                     <RulesCreator
-                        questions={fields.map(f => f.id)}
+                        field={field}
+                        fields={fields}
                         rules={field.controls.rules}
                         onRulesChange={handleControlsChange}
                     />
@@ -89,6 +90,7 @@ export const FormField = memo(function FormField(props: Props) {
     };
 
     console.count('rerender');
+    console.log(JSON.stringify(fields, null, 2));
 
     return (
         <Draggable draggableId={field.id} index={index}>

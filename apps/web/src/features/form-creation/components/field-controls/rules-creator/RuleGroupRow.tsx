@@ -6,6 +6,7 @@ import { IconCategoryPlus, IconPlus, IconX } from '@tabler/icons-react';
 import { IconButton } from '../../ui/IconButton';
 import { cn } from '@/lib/utils';
 import { RuleGroup, RuleCombinator } from './RulesCreator';
+import { Field } from '@/features/form-creation/hooks/useFormFields';
 
 type Props = {
     hasBackgroundColor: boolean;
@@ -14,7 +15,8 @@ type Props = {
     rootGroup: RuleGroup;
     onRuleChange: (root: RuleGroup) => void;
     combinators: RuleCombinator[];
-    questions: string[];
+    fields: Field[];
+    field: Field;
     conditions: string[];
     operators: string[];
     values?: string[];
@@ -52,7 +54,8 @@ export function RuleGroupRow(props: Props) {
         rootGroup,
         onRuleChange,
         combinators,
-        questions,
+        fields,
+        field,
         conditions,
         operators,
         values
@@ -68,7 +71,7 @@ export function RuleGroupRow(props: Props) {
                     {
                         id: uuid(),
                         type: 'rule' as const,
-                        question: questions.at(0),
+                        questionId: field.id,
                         condition: conditions.at(0),
                         operator: operators.at(0),
                         value: values ? values.at(0) : ''
@@ -145,7 +148,7 @@ export function RuleGroupRow(props: Props) {
                         onRuleChange={onRuleChange}
                         conditions={conditions}
                         operators={operators}
-                        questions={questions}
+                        fields={fields}
                         values={values}
                     />
                 ) : (
@@ -159,7 +162,8 @@ export function RuleGroupRow(props: Props) {
                         combinators={combinators}
                         conditions={conditions}
                         operators={operators}
-                        questions={questions}
+                        fields={fields}
+                        field={field}
                         values={values}
                     />
                 )

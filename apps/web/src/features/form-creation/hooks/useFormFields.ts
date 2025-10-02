@@ -98,7 +98,7 @@ export function useFormFields(initialFields: Field[] = []) {
             ...prev,
             {
                 id,
-                title: 'Untitled question',
+                title: 'Untitled question ' + prev.length,
                 type: FieldType.TEXT,
                 settings,
                 controls
