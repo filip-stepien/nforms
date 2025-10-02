@@ -1,16 +1,8 @@
 import { Flex } from '@mantine/core';
-import { memo, ReactNode, RefObject, useCallback } from 'react';
+import { memo, RefObject, useCallback } from 'react';
 import { TextFieldSettings } from '../field-settings/TextFieldSettings';
 import { OptionCreator } from '../field-controls/option-creator/OptionCreator';
-import {
-    FieldType,
-    SettingsMap,
-    ControlsMap,
-    TextSettings,
-    SelectionSettings,
-    Field
-} from '../../hooks/useFormFields';
-import { useOptionCreator } from '../../hooks/useOptionCreator';
+import { FieldType, SettingsMap, ControlsMap, Field } from '../../hooks/useFormFields';
 import { Draggable } from '@hello-pangea/dnd';
 import { FieldHeader } from './FieldHeader';
 import { FieldBody } from './FieldBody';
@@ -20,13 +12,14 @@ import { RulesCreator } from '../field-controls/rules-creator/RulesCreator';
 type Props = {
     index: number;
     field: Field;
+    fields: Field[];
     lastAddedFieldIdRef: RefObject<string | null>;
     setField: (id: string, updatedField: Partial<Field>) => void;
     deleteField: (id: string) => void;
 };
 
 export const FormField = memo(function FormField(props: Props) {
-    const { index, field, lastAddedFieldIdRef, setField, deleteField } = props;
+    const { index, field, fields, lastAddedFieldIdRef, setField, deleteField } = props;
 
     const handleSelect = useCallback(() => {
         if (lastAddedFieldIdRef) {
@@ -56,29 +49,46 @@ export const FormField = memo(function FormField(props: Props) {
         [field.id, setField]
     );
 
-    const optionCreatorProps = useOptionCreator(field.controls?.options, handleControlsChange);
+    const getSettingsComponent = () => {
+        switch (field.type) {
+            case FieldType.TEXT:
+                return (
+                    <TextFieldSettings
+                        settings={field.settings}
+                        onSettingsChange={handleSettingsChange}
+                    />
+                );
+            case FieldType.SELECTION:
+                return (
+                    <SelectionFieldSettings
+                        settings={field.settings}
+                        onSettingsChange={handleSettingsChange}
+                    />
+                );
+        }
+    };
+
+    const getControlsComponent = () => {
+        switch (field.type) {
+            case FieldType.TEXT:
+                return (
+                    <RulesCreator
+                        questions={fields.map(f => f.id)}
+                        rules={field.controls.rules}
+                        onRulesChange={handleControlsChange}
+                    />
+                );
+            case FieldType.SELECTION:
+                return (
+                    <OptionCreator
+                        options={field.controls.options}
+                        onOptionsChange={handleControlsChange}
+                    />
+                );
+        }
+    };
 
     console.count('rerender');
-
-    const settingsComponent: Record<FieldType, ReactNode> = {
-        [FieldType.TEXT]: (
-            <TextFieldSettings
-                settings={field.settings as TextSettings}
-                onSettingsChange={handleSettingsChange}
-            />
-        ),
-        [FieldType.SELECTION]: (
-            <SelectionFieldSettings
-                settings={field.settings as SelectionSettings}
-                onSettingsChange={handleSettingsChange}
-            />
-        )
-    };
-
-    const controlsComponent: Record<FieldType, ReactNode> = {
-        [FieldType.TEXT]: <RulesCreator />,
-        [FieldType.SELECTION]: <OptionCreator {...optionCreatorProps} />
-    };
 
     return (
         <Draggable draggableId={field.id} index={index}>
@@ -92,9 +102,8 @@ export const FormField = memo(function FormField(props: Props) {
                 >
                     <FieldHeader
                         title={field.title}
-                        fieldType={field.type}
                         selected={lastAddedFieldIdRef?.current === field.id}
-                        settingsComponent={settingsComponent}
+                        settingsComponent={getSettingsComponent()}
                         dragHandleProps={provided.dragHandleProps}
                         onTitleChange={handleTitleChange}
                         onDelete={handleDelete}
@@ -103,7 +112,7 @@ export const FormField = memo(function FormField(props: Props) {
                     <FieldBody
                         fieldType={field.type}
                         onFieldTypeChange={handleTypeChange}
-                        controlsComponent={controlsComponent}
+                        controlsComponent={getControlsComponent()}
                     />
                 </Flex>
             )}

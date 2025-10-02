@@ -1,7 +1,6 @@
-import { useState } from 'react';
-import { v4 as uuid } from 'uuid';
 import { RuleGroupRow } from './RuleGroupRow';
 import { RulesAccordion } from './RulesAccordion';
+import { RulesControl } from '@/features/form-creation/hooks/useFormFields';
 
 export type Rule = {
     id: string;
@@ -21,31 +20,31 @@ export type RuleGroup = {
     rules: (Rule | RuleGroup)[];
 };
 
-const ruleCombinators = ['AND', 'OR'] as const;
+export const ruleCombinators = ['AND', 'OR'] as const;
 
-const initialRulesState: RuleGroup = {
-    id: uuid(),
-    type: 'group',
-    combinator: 'AND',
-    rules: []
+type Props = {
+    rules: RuleGroup;
+    onRulesChange: (controls: RulesControl) => void;
+    questions: string[];
 };
 
-export function RulesCreator() {
-    const [rootRuleGroup, setRootRuleGroup] = useState<RuleGroup>(initialRulesState);
-
-    console.log(JSON.stringify(rootRuleGroup, null, 2));
+export function RulesCreator({ rules, onRulesChange, questions }: Props) {
+    const handleRuleChange = (rules: RuleGroup) => {
+        onRulesChange({ rules });
+    };
 
     return (
         <RulesAccordion>
             <div className='flex flex-col'>
                 <RuleGroupRow
-                    key={rootRuleGroup.id}
+                    key={rules.id}
                     hasBackgroundColor={false}
                     isFirstGroup={true}
-                    group={rootRuleGroup}
-                    setRules={setRootRuleGroup}
+                    rootGroup={rules}
+                    group={rules}
+                    onRuleChange={handleRuleChange}
                     combinators={[...ruleCombinators]}
-                    questions={['q1', 'q2']}
+                    questions={questions}
                     conditions={['sentiment', 'emotion']}
                     operators={['is', 'equals']}
                     values={['1', '2']}

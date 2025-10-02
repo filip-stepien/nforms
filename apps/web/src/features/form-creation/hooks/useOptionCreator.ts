@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { FieldOption } from '../components/field-controls/option-creator/OptionCreator';
-import { ControlsMap, FieldType } from './useFormFields';
+import { OptionsControl } from './useFormFields';
 import { v4 as uuid } from 'uuid';
 
 export function useOptionCreator(
     options: FieldOption[] = [],
-    controlsChangeFn: (controls: ControlsMap[FieldType]) => void
+    controlsChangeFn: (controls: OptionsControl) => void
 ) {
     const [lastAddedId, setLastAddedId] = useState<string | undefined>();
 

@@ -2,15 +2,13 @@ import { Flex, TextInput, Menu, Stack } from '@mantine/core';
 import { IconAdjustments, IconTrash } from '@tabler/icons-react';
 import { DragButton } from '../ui/DragButton';
 import { IconButton } from '../ui/IconButton';
-import { FieldType } from '../../hooks/useFormFields';
-import { ReactNode, ChangeEventHandler, FocusEventHandler, useEffect, useRef } from 'react';
+import { JSX, ChangeEventHandler, FocusEventHandler, useEffect, useRef } from 'react';
 import { DraggableProvidedDragHandleProps } from '@hello-pangea/dnd';
 
 type Props = {
     title: string;
-    fieldType: FieldType;
     selected?: boolean;
-    settingsComponent: Record<FieldType, ReactNode>;
+    settingsComponent?: JSX.Element;
     dragHandleProps: DraggableProvidedDragHandleProps | null;
     onTitleChange: (title: string) => void;
     onDelete: () => void;
@@ -24,7 +22,6 @@ export function FieldHeader(props: Props) {
         dragHandleProps,
         title,
         selected,
-        fieldType,
         settingsComponent,
         onDelete,
         onSelect,
@@ -61,14 +58,14 @@ export function FieldHeader(props: Props) {
                 onChange={handleTitleChange}
                 onBlur={handleTitleBlur}
             />
-            {fieldType && settingsComponent[fieldType] && (
+            {settingsComponent && (
                 <Menu shadow='md' width={300} position='bottom-end'>
                     <Menu.Target>
                         <IconButton variant='light' icon={IconAdjustments} />
                     </Menu.Target>
                     <Menu.Dropdown>
                         <Menu.Label>Field settings</Menu.Label>
-                        <Stack className='p-sm'>{settingsComponent[fieldType]}</Stack>
+                        <Stack className='p-sm'>{settingsComponent}</Stack>
                     </Menu.Dropdown>
                 </Menu>
             )}

@@ -1,12 +1,12 @@
 import { Group, Input, Select } from '@mantine/core';
-import { Dispatch, SetStateAction } from 'react';
-import { Rule, RuleGroup } from './RulesCreator';
 import { IconX } from '@tabler/icons-react';
 import { IconButton } from '../../ui/IconButton';
+import { Rule, RuleGroup } from './RulesCreator';
 
 type Props = {
     rule: Rule;
-    setRules: Dispatch<SetStateAction<RuleGroup>>;
+    rootGroup: RuleGroup;
+    onRuleChange: (root: RuleGroup) => void;
     questions: string[];
     conditions: string[];
     operators: string[];
@@ -40,15 +40,15 @@ function deleteRule(root: RuleGroup, ruleId: string): RuleGroup {
 }
 
 export function RuleRow(props: Props) {
-    const { rule, setRules, questions, conditions, operators, values } = props;
+    const { rule, rootGroup, onRuleChange, questions, conditions, operators, values } = props;
     const { id, question, operator, condition, value } = rule;
 
     const handleRuleChange = (value: string | null, property: keyof Rule) => {
-        setRules(prev => updateRule(prev, id, rule => ({ ...rule, [property]: value })));
+        onRuleChange(updateRule(rootGroup, id, rule => ({ ...rule, [property]: value })));
     };
 
     const handleRuleDelete = () => {
-        setRules(prev => deleteRule(prev, id));
+        onRuleChange(deleteRule(rootGroup, id));
     };
 
     return (

@@ -1,11 +1,11 @@
-import { ChangeEventHandler, ReactNode } from 'react';
+import { ChangeEventHandler, ReactNode, JSX } from 'react';
 import { FieldType } from '../../hooks/useFormFields';
 import { Stack, NativeSelect } from '@mantine/core';
 
 type Props = {
     fieldType: FieldType;
     onFieldTypeChange: (fieldType: FieldType) => void;
-    controlsComponent: Record<FieldType, ReactNode>;
+    controlsComponent: JSX.Element;
 };
 
 export function FieldBody({ fieldType, onFieldTypeChange, controlsComponent }: Props) {
@@ -22,9 +22,7 @@ export function FieldBody({ fieldType, onFieldTypeChange, controlsComponent }: P
                 className='flex-1'
                 onChange={handleInputTypeChange}
             />
-            {fieldType && controlsComponent[fieldType] && (
-                <Stack>{controlsComponent[fieldType]}</Stack>
-            )}
+            {controlsComponent && <Stack>{controlsComponent}</Stack>}
         </Stack>
     );
 }

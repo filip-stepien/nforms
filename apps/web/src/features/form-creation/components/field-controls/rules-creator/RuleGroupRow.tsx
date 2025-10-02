@@ -1,18 +1,18 @@
 import { Group, Select, Stack } from '@mantine/core';
-import { RuleCombinator, RuleGroup } from './RulesCreator';
 import { ActionButton } from '../../ui/ActionButton';
 import { RuleRow } from './RuleRow';
-import { Dispatch, SetStateAction } from 'react';
 import { v4 as uuid } from 'uuid';
 import { IconCategoryPlus, IconPlus, IconX } from '@tabler/icons-react';
 import { IconButton } from '../../ui/IconButton';
 import { cn } from '@/lib/utils';
+import { RuleGroup, RuleCombinator } from './RulesCreator';
 
 type Props = {
     hasBackgroundColor: boolean;
     isFirstGroup: boolean;
     group: RuleGroup;
-    setRules: Dispatch<SetStateAction<RuleGroup>>;
+    rootGroup: RuleGroup;
+    onRuleChange: (root: RuleGroup) => void;
     combinators: RuleCombinator[];
     questions: string[];
     conditions: string[];
@@ -49,7 +49,8 @@ export function RuleGroupRow(props: Props) {
         hasBackgroundColor,
         isFirstGroup,
         group,
-        setRules,
+        rootGroup,
+        onRuleChange,
         combinators,
         questions,
         conditions,
@@ -60,8 +61,8 @@ export function RuleGroupRow(props: Props) {
     const { id, combinator, rules } = group;
 
     const handleAddRule = () => {
-        setRules(prev =>
-            updateGroup(prev, id, group => ({
+        onRuleChange(
+            updateGroup(rootGroup, id, group => ({
                 ...group,
                 rules: [
                     {
@@ -79,8 +80,8 @@ export function RuleGroupRow(props: Props) {
     };
 
     const handleAddGroup = () => {
-        setRules(prev =>
-            updateGroup(prev, id, group => ({
+        onRuleChange(
+            updateGroup(rootGroup, id, group => ({
                 ...group,
                 rules: [
                     ...group.rules,
@@ -96,12 +97,12 @@ export function RuleGroupRow(props: Props) {
     };
 
     const handleGroupDelete = () => {
-        setRules(prev => deleteGroup(prev, id));
+        onRuleChange(deleteGroup(rootGroup, id));
     };
 
     const handleCombinatorChange = (value: string | null) => {
-        setRules(prev =>
-            updateGroup(prev, id, group => ({ ...group, combinator: value as RuleCombinator }))
+        onRuleChange(
+            updateGroup(rootGroup, id, group => ({ ...group, combinator: value as RuleCombinator }))
         );
     };
 
@@ -140,7 +141,8 @@ export function RuleGroupRow(props: Props) {
                     <RuleRow
                         key={ruleOrGroup.id}
                         rule={ruleOrGroup}
-                        setRules={setRules}
+                        rootGroup={rootGroup}
+                        onRuleChange={onRuleChange}
                         conditions={conditions}
                         operators={operators}
                         questions={questions}
@@ -152,7 +154,8 @@ export function RuleGroupRow(props: Props) {
                         hasBackgroundColor={!hasBackgroundColor}
                         isFirstGroup={false}
                         group={ruleOrGroup}
-                        setRules={setRules}
+                        rootGroup={rootGroup}
+                        onRuleChange={onRuleChange}
                         combinators={combinators}
                         conditions={conditions}
                         operators={operators}

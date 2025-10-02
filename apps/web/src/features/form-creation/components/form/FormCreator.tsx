@@ -48,6 +48,7 @@ export function FormCreator() {
                                     key={field.id}
                                     index={index}
                                     field={field}
+                                    fields={fields}
                                     setField={setField}
                                     deleteField={deleteField}
                                     lastAddedFieldIdRef={lastAddedIdRef}

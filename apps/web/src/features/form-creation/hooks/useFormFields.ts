@@ -2,6 +2,7 @@ import { FieldOption } from '../components/field-controls/option-creator/OptionC
 import { v4 as uuid } from 'uuid';
 import { keysEqual, printKeysOrType } from '../lib/utils';
 import { useCallback, useRef, useState } from 'react';
+import { RuleGroup } from '../components/field-controls/rules-creator/RulesCreator';
 
 export enum FieldType {
     TEXT = 'Text',
@@ -14,7 +15,7 @@ export type SettingsMap = {
 };
 
 export type ControlsMap = {
-    [FieldType.TEXT]: null;
+    [FieldType.TEXT]: RulesControl;
     [FieldType.SELECTION]: OptionsControl;
 };
 
@@ -34,6 +35,10 @@ export type SelectionSettings = BaseSettings & {
 
 export type OptionsControl = {
     options: FieldOption[];
+};
+
+export type RulesControl = {
+    rules: RuleGroup;
 };
 
 export type Field = {
@@ -61,7 +66,14 @@ export const initialFieldStates: InitialFieldStates = {
             extractKeywords: true,
             summarize: true
         },
-        controls: null
+        controls: {
+            rules: {
+                id: uuid(),
+                combinator: 'AND',
+                type: 'group',
+                rules: []
+            }
+        }
     },
     [FieldType.SELECTION]: {
         settings: {
