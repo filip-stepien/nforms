@@ -15,7 +15,6 @@ type Props = {
     rootGroup: RuleGroup;
     onRuleChange: (root: RuleGroup) => void;
     combinators: RuleCombinator[];
-    fields: Field[];
     field: Field;
     conditions: string[];
     operators: string[];
@@ -54,7 +53,6 @@ export function RuleGroupRow(props: Props) {
         rootGroup,
         onRuleChange,
         combinators,
-        fields,
         field,
         conditions,
         operators,
@@ -144,11 +142,11 @@ export function RuleGroupRow(props: Props) {
                     <RuleRow
                         key={ruleOrGroup.id}
                         rule={ruleOrGroup}
+                        field={field}
                         rootGroup={rootGroup}
                         onRuleChange={onRuleChange}
                         conditions={conditions}
                         operators={operators}
-                        fields={fields}
                         values={values}
                     />
                 ) : (
@@ -162,7 +160,6 @@ export function RuleGroupRow(props: Props) {
                         combinators={combinators}
                         conditions={conditions}
                         operators={operators}
-                        fields={fields}
                         field={field}
                         values={values}
                     />

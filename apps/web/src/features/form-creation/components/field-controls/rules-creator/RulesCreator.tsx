@@ -24,12 +24,11 @@ export const ruleCombinators = ['AND', 'OR'] as const;
 
 type Props = {
     field: Field;
-    fields: Field[];
     rules: RuleGroup;
     onRulesChange: (controls: RulesControl) => void;
 };
 
-export function RulesCreator({ field, fields, rules, onRulesChange }: Props) {
+export function RulesCreator({ field, rules, onRulesChange }: Props) {
     const handleRuleChange = (rules: RuleGroup) => {
         onRulesChange({ rules });
     };
@@ -45,7 +44,6 @@ export function RulesCreator({ field, fields, rules, onRulesChange }: Props) {
                     group={rules}
                     onRuleChange={handleRuleChange}
                     combinators={[...ruleCombinators]}
-                    fields={fields}
                     field={field}
                     conditions={['sentiment', 'emotion']}
                     operators={['is', 'equals']}

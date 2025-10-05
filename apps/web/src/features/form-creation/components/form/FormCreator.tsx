@@ -9,12 +9,11 @@ import { IconDeviceFloppy, IconPlaylistAdd } from '@tabler/icons-react';
 import { ActionButton } from '../ui/ActionButton';
 import { useFormCreateAction } from '../../hooks/useFormCreateAction';
 import { useFormStatusEffect } from '../../hooks/useFormStatusEffect';
+import { useFormFieldsStore } from '../../state/fieldsStore';
 
 export function FormCreator() {
     const { title, onTitleChange, onTitleBlur } = useFormTitle();
-    const { fields, addField, reorderField, setField, deleteField, lastAddedIdRef } = useFormFields(
-        []
-    );
+    const { fields, reorderField, addField } = useFormFieldsStore();
 
     const { status, action, isLoading } = useFormCreateAction(title, fields);
     useFormStatusEffect(status);
@@ -44,15 +43,7 @@ export function FormCreator() {
                                 className='border-1 border-outline p-lg rounded-md bg-neutral-50'
                             />
                             {fields.map((field, index) => (
-                                <FormField
-                                    key={field.id}
-                                    index={index}
-                                    field={field}
-                                    fields={fields}
-                                    setField={setField}
-                                    deleteField={deleteField}
-                                    lastAddedFieldIdRef={lastAddedIdRef}
-                                />
+                                <FormField key={field.id} index={index} field={field} />
                             ))}
                             {provided.placeholder}
                             <Group justify='end' className='mt-md'>

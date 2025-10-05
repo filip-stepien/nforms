@@ -8,24 +8,29 @@ import { FieldHeader } from './FieldHeader';
 import { FieldBody } from './FieldBody';
 import { SelectionFieldSettings } from '../field-settings/SelectionFieldSettings';
 import { RulesCreator } from '../field-controls/rules-creator/RulesCreator';
+import { useFormFieldsStore } from '../../state/fieldsStore';
+import { useShallow } from 'zustand/shallow';
 
 type Props = {
     index: number;
     field: Field;
-    fields: Field[];
-    lastAddedFieldIdRef: RefObject<string | null>;
-    setField: (id: string, updatedField: Partial<Field>) => void;
-    deleteField: (id: string) => void;
 };
 
 export const FormField = memo(function FormField(props: Props) {
-    const { index, field, fields, lastAddedFieldIdRef, setField, deleteField } = props;
+    const { index, field } = props;
 
-    const handleSelect = useCallback(() => {
-        if (lastAddedFieldIdRef) {
-            lastAddedFieldIdRef.current = null;
-        }
-    }, [lastAddedFieldIdRef]);
+    const { setField, deleteField } = useFormFieldsStore(
+        useShallow(({ setField, deleteField }) => ({
+            setField,
+            deleteField
+        }))
+    );
+
+    // const handleSelect = useCallback(() => {
+    //     if (lastAddedFieldIdRef) {
+    //         lastAddedFieldIdRef.current = null;
+    //     }
+    // }, [lastAddedFieldIdRef]);
 
     const handleTitleChange = useCallback(
         (title: string) => setField(field.id, { title }),
@@ -74,7 +79,6 @@ export const FormField = memo(function FormField(props: Props) {
                 return (
                     <RulesCreator
                         field={field}
-                        fields={fields}
                         rules={field.controls.rules}
                         onRulesChange={handleControlsChange}
                     />
@@ -90,7 +94,6 @@ export const FormField = memo(function FormField(props: Props) {
     };
 
     console.count('rerender');
-    console.log(JSON.stringify(fields, null, 2));
 
     return (
         <Draggable draggableId={field.id} index={index}>
@@ -104,12 +107,14 @@ export const FormField = memo(function FormField(props: Props) {
                 >
                     <FieldHeader
                         title={field.title}
-                        selected={lastAddedFieldIdRef?.current === field.id}
+                        //selected={lastAddedFieldIdRef?.current === field.id}
+                        selected={false}
                         settingsComponent={getSettingsComponent()}
                         dragHandleProps={provided.dragHandleProps}
                         onTitleChange={handleTitleChange}
                         onDelete={handleDelete}
-                        onSelect={handleSelect}
+                        onSelect={() => {}}
+                        //onSelect={handleSelect}
                     />
                     <FieldBody
                         fieldType={field.type}
