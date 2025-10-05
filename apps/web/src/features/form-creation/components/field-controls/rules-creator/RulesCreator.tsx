@@ -1,11 +1,12 @@
+import { memo } from 'react';
 import { RuleGroupRow } from './RuleGroupRow';
 import { RulesAccordion } from './RulesAccordion';
-import { Field, RulesControl } from '@/features/form-creation/hooks/useFormFields';
+import { RulesControl } from '@/features/form-creation/hooks/useFormFields';
 
 export type Rule = {
     id: string;
     type: 'rule';
-    questionId?: string;
+    fieldId?: string;
     condition?: string;
     operator?: string;
     value?: string;
@@ -23,12 +24,12 @@ export type RuleGroup = {
 export const ruleCombinators = ['AND', 'OR'] as const;
 
 type Props = {
-    field: Field;
+    fieldId: string;
     rules: RuleGroup;
     onRulesChange: (controls: RulesControl) => void;
 };
 
-export function RulesCreator({ field, rules, onRulesChange }: Props) {
+export const RulesCreator = memo(function RulesCreator({ fieldId, rules, onRulesChange }: Props) {
     const handleRuleChange = (rules: RuleGroup) => {
         onRulesChange({ rules });
     };
@@ -44,7 +45,7 @@ export function RulesCreator({ field, rules, onRulesChange }: Props) {
                     group={rules}
                     onRuleChange={handleRuleChange}
                     combinators={[...ruleCombinators]}
-                    field={field}
+                    fieldId={fieldId}
                     conditions={['sentiment', 'emotion']}
                     operators={['is', 'equals']}
                     values={['1', '2']}
@@ -52,4 +53,4 @@ export function RulesCreator({ field, rules, onRulesChange }: Props) {
             </div>
         </RulesAccordion>
     );
-}
+});

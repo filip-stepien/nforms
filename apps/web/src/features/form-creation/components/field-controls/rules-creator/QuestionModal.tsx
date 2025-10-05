@@ -1,13 +1,11 @@
 import { useFormFieldsStore } from '@/features/form-creation/state/fieldsStore';
 import { Modal } from '@mantine/core';
-import { useShallow } from 'zustand/shallow';
 import { RuleGroup, Rule } from './RulesCreator';
 
 type Props = {
-    fieldId: string;
-    ruleId: string;
     onClose: () => void;
     opened: boolean;
+    rule: Rule;
     rootGroup: RuleGroup;
     onRuleChange: (root: RuleGroup) => void;
 };
@@ -29,18 +27,18 @@ function updateRule(root: RuleGroup, ruleId: string, updater: (r: Rule) => Rule)
     };
 }
 
-export function QuestionModal({ onClose, ruleId, opened, onRuleChange, rootGroup }: Props) {
+export function QuestionModal({ onClose, opened, rule, onRuleChange, rootGroup }: Props) {
     const fields = useFormFieldsStore(state => state.fields);
 
-    const handleClick = (selectedId: string) => {
-        onRuleChange(updateRule(rootGroup, ruleId, rule => ({ ...rule, questionId: selectedId })));
+    const handleClick = (fieldId: string) => {
+        onRuleChange(updateRule(rootGroup, rule.id, rule => ({ ...rule, fieldId })));
     };
 
     return (
         <Modal opened={opened} onClose={onClose} title='Authentication'>
             {fields.map(f => (
                 <p key={f.id} onClick={() => handleClick(f.id)}>
-                    {f.id}
+                    {f.title}
                 </p>
             ))}
         </Modal>

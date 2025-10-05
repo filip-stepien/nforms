@@ -6,7 +6,6 @@ import { IconCategoryPlus, IconPlus, IconX } from '@tabler/icons-react';
 import { IconButton } from '../../ui/IconButton';
 import { cn } from '@/lib/utils';
 import { RuleGroup, RuleCombinator } from './RulesCreator';
-import { Field } from '@/features/form-creation/hooks/useFormFields';
 
 type Props = {
     hasBackgroundColor: boolean;
@@ -15,7 +14,7 @@ type Props = {
     rootGroup: RuleGroup;
     onRuleChange: (root: RuleGroup) => void;
     combinators: RuleCombinator[];
-    field: Field;
+    fieldId: string;
     conditions: string[];
     operators: string[];
     values?: string[];
@@ -53,7 +52,7 @@ export function RuleGroupRow(props: Props) {
         rootGroup,
         onRuleChange,
         combinators,
-        field,
+        fieldId,
         conditions,
         operators,
         values
@@ -69,7 +68,7 @@ export function RuleGroupRow(props: Props) {
                     {
                         id: uuid(),
                         type: 'rule' as const,
-                        questionId: field.id,
+                        fieldId,
                         condition: conditions.at(0),
                         operator: operators.at(0),
                         value: values ? values.at(0) : ''
@@ -142,7 +141,6 @@ export function RuleGroupRow(props: Props) {
                     <RuleRow
                         key={ruleOrGroup.id}
                         rule={ruleOrGroup}
-                        field={field}
                         rootGroup={rootGroup}
                         onRuleChange={onRuleChange}
                         conditions={conditions}
@@ -160,7 +158,7 @@ export function RuleGroupRow(props: Props) {
                         combinators={combinators}
                         conditions={conditions}
                         operators={operators}
-                        field={field}
+                        fieldId={fieldId}
                         values={values}
                     />
                 )

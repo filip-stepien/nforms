@@ -1,5 +1,5 @@
 import { Flex } from '@mantine/core';
-import { memo, RefObject, useCallback } from 'react';
+import { memo, useCallback } from 'react';
 import { TextFieldSettings } from '../field-settings/TextFieldSettings';
 import { OptionCreator } from '../field-controls/option-creator/OptionCreator';
 import { FieldType, SettingsMap, ControlsMap, Field } from '../../hooks/useFormFields';
@@ -78,7 +78,7 @@ export const FormField = memo(function FormField(props: Props) {
             case FieldType.TEXT:
                 return (
                     <RulesCreator
-                        field={field}
+                        fieldId={field.id}
                         rules={field.controls.rules}
                         onRulesChange={handleControlsChange}
                     />

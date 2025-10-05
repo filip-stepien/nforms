@@ -3,7 +3,6 @@ import { IconX } from '@tabler/icons-react';
 import { IconButton } from '../../ui/IconButton';
 import { Rule, RuleGroup } from './RulesCreator';
 import { QuestionButton } from './QuestionButton';
-import { Field } from '@/features/form-creation/state/fieldsStore';
 
 type Props = {
     rule: Rule;
@@ -11,7 +10,6 @@ type Props = {
     onRuleChange: (root: RuleGroup) => void;
     conditions: string[];
     operators: string[];
-    field: Field;
     values?: string[];
 };
 
@@ -42,7 +40,7 @@ function deleteRule(root: RuleGroup, ruleId: string): RuleGroup {
 }
 
 export function RuleRow(props: Props) {
-    const { rule, rootGroup, onRuleChange, conditions, operators, values, field } = props;
+    const { rule, rootGroup, onRuleChange, conditions, operators, values } = props;
     const { id, operator, condition, value } = rule;
 
     const handleRuleChange = (value: string | null, property: keyof Rule) => {
@@ -60,12 +58,7 @@ export function RuleRow(props: Props) {
                 value={fields.find(field => field.id === questionId)?.title}
                 onChange={handleQuestionChange}
             /> */}
-            <QuestionButton
-                rule={rule}
-                rootGroup={rootGroup}
-                onRuleChange={onRuleChange}
-                fieldId={field.id}
-            />
+            <QuestionButton rule={rule} rootGroup={rootGroup} onRuleChange={onRuleChange} />
             <Select
                 data={conditions}
                 value={condition}
