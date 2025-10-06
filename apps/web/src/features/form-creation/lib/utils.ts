@@ -1,5 +1,10 @@
 import diff from 'deep-diff';
 
+export function truncateText(text: string, maxLength: number) {
+    const ellipsis = '...';
+    return text.length > maxLength ? text.slice(0, maxLength - ellipsis.length) + ellipsis : text;
+}
+
 export function keysEqual(expected: unknown, actual: unknown) {
     const differences = diff(expected, actual);
 

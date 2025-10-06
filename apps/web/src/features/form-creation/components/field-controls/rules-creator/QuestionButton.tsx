@@ -1,8 +1,10 @@
-import { Button } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { QuestionModal } from './QuestionModal';
 import { useFormFieldsStore } from '@/features/form-creation/hooks/useFormFieldsStore';
 import { Rule, RuleGroup } from '@/features/form-creation/lib/types';
+import { truncateText } from '@/features/form-creation/lib/utils';
+import { ActionButton } from '../../ui/ActionButton';
+import { IconLink } from '@tabler/icons-react';
 
 type Props = {
     rule: Rule;
@@ -13,6 +15,7 @@ type Props = {
 export function QuestionButton({ rule, rootGroup, onRuleChange }: Props) {
     const fields = useFormFieldsStore(state => state.fields);
     const [opened, { open, close }] = useDisclosure(false);
+    const buttonLabel = fields.find(f => f.id === rule.fieldId)?.title as string;
 
     return (
         <>
@@ -23,7 +26,13 @@ export function QuestionButton({ rule, rootGroup, onRuleChange }: Props) {
                 rootGroup={rootGroup}
                 onRuleChange={onRuleChange}
             />
-            <Button onClick={open}>{fields.find(f => f.id === rule.fieldId)?.title}</Button>
+            <ActionButton
+                label={truncateText(buttonLabel, 30)}
+                className='pl-md border-border'
+                icon={IconLink}
+                variant='white'
+                onClick={open}
+            />
         </>
     );
 }
