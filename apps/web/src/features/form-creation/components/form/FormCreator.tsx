@@ -1,18 +1,26 @@
 'use client';
 
-import { Flex, Group, TextInput } from '@mantine/core';
+import { Flex } from '@mantine/core';
 import { FormField } from './FormField';
 import { DragDropContext, Droppable } from '@hello-pangea/dnd';
 import { useFormTitle } from '../../hooks/useFormTitle';
-import { IconDeviceFloppy, IconPlaylistAdd } from '@tabler/icons-react';
-import { ActionButton } from '../ui/ActionButton';
 import { useFormCreateAction } from '../../hooks/useFormCreateAction';
 import { useFormStatusEffect } from '../../hooks/useFormStatusEffect';
 import { useFormFieldsStore } from '../../hooks/useFormFieldsStore';
+import { FormTitle } from './FormTitle';
+import { FormControls } from './FormControls';
+import { useShallow } from 'zustand/shallow';
 
 export function FormCreator() {
     const { title, onTitleChange, onTitleBlur } = useFormTitle();
-    const { fields, reorderField, addField } = useFormFieldsStore();
+    const { fields, reorderField, addField } = useFormFieldsStore(
+        useShallow(state => ({
+            fields: state.fields,
+            reorderField: state.reorderField,
+            addField: state.addField
+        }))
+    );
+
     const { status, action, isLoading } = useFormCreateAction(title, fields);
 
     useFormStatusEffect(status);
@@ -31,34 +39,16 @@ export function FormCreator() {
                             ref={provided.innerRef}
                             {...provided.droppableProps}
                         >
-                            <TextInput
-                                value={title}
+                            <FormTitle
+                                title={title}
                                 onChange={onTitleChange}
                                 onBlur={onTitleBlur}
-                                label='Form title'
-                                description='Enter a title for your form. This will be visible to respondents.'
-                                placeholder='Form title...'
-                                size='md'
-                                className='border-1 border-outline p-lg rounded-md bg-neutral-50'
                             />
                             {fields.map((field, index) => (
                                 <FormField key={field.id} index={index} field={field} />
                             ))}
                             {provided.placeholder}
-                            <Group justify='end' className='mt-md'>
-                                <ActionButton
-                                    label='Add question'
-                                    variant='outline'
-                                    icon={IconPlaylistAdd}
-                                    onClick={addField}
-                                />
-                                <ActionButton
-                                    label='Save'
-                                    type='submit'
-                                    icon={IconDeviceFloppy}
-                                    loading={isLoading}
-                                />
-                            </Group>
+                            <FormControls addField={addField} isLoading={isLoading} />
                         </Flex>
                     )}
                 </Droppable>

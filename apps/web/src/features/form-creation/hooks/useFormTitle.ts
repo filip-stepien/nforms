@@ -1,4 +1,4 @@
-import { ChangeEventHandler, FocusEventHandler, useState } from 'react';
+import { ChangeEventHandler, FocusEventHandler, useCallback, useState } from 'react';
 
 export function useFormTitle(initialTitle?: string) {
     const defaultTitle = 'Untitled form';
@@ -14,5 +14,9 @@ export function useFormTitle(initialTitle?: string) {
         }
     };
 
-    return { title, onTitleChange, onTitleBlur };
+    return {
+        title,
+        onTitleChange: useCallback(onTitleChange, []),
+        onTitleBlur: useCallback(onTitleBlur, [])
+    };
 }

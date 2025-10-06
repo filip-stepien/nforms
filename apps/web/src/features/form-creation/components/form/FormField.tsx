@@ -18,19 +18,20 @@ type Props = {
 
 export const FormField = memo(function FormField(props: Props) {
     const { index, field } = props;
-
-    const { setField, deleteField } = useFormFieldsStore(
-        useShallow(({ setField, deleteField }) => ({
-            setField,
-            deleteField
+    const { setField, deleteField, getLastAddedId, setLastAddedId } = useFormFieldsStore(
+        useShallow(state => ({
+            setField: state.setField,
+            deleteField: state.deleteField,
+            getLastAddedId: state.getLastAddedId,
+            setLastAddedId: state.setLastAddedId
         }))
     );
 
-    // const handleSelect = useCallback(() => {
-    //     if (lastAddedFieldIdRef) {
-    //         lastAddedFieldIdRef.current = null;
-    //     }
-    // }, [lastAddedFieldIdRef]);
+    const handleSelect = useCallback(() => {
+        if (getLastAddedId() !== null) {
+            setLastAddedId(null);
+        }
+    }, [getLastAddedId, setLastAddedId]);
 
     const handleTitleChange = useCallback(
         (title: string) => setField(field.id, { title }),
@@ -107,14 +108,12 @@ export const FormField = memo(function FormField(props: Props) {
                 >
                     <FieldHeader
                         title={field.title}
-                        //selected={lastAddedFieldIdRef?.current === field.id}
-                        selected={false}
+                        selected={getLastAddedId() === field.id}
                         settingsComponent={getSettingsComponent()}
                         dragHandleProps={provided.dragHandleProps}
                         onTitleChange={handleTitleChange}
                         onDelete={handleDelete}
-                        onSelect={() => {}}
-                        //onSelect={handleSelect}
+                        onSelect={handleSelect}
                     />
                     <FieldBody
                         fieldType={field.type}

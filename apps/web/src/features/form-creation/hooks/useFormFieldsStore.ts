@@ -33,17 +33,24 @@ const initialFieldStates: InitialFieldStates = {
 
 export type FormFieldsState = {
     fields: Field[];
-    lastAddedId: string | null;
     addField: () => void;
     deleteField: (id: string) => void;
     reorderField: (from: number, to?: number) => void;
     setField: (id: string, updatedField: Partial<Field>) => void;
-    reset: () => void;
+    setLastAddedId: (id: string | null) => void;
+    getLastAddedId: () => string | null;
 };
+
+let lastAddedId: string | null = null;
 
 export const useFormFieldsStore = create<FormFieldsState>(set => ({
     fields: [],
-    lastAddedId: null,
+
+    setLastAddedId: (id: string | null) => {
+        lastAddedId = id;
+    },
+
+    getLastAddedId: () => lastAddedId,
 
     addField: () => {
         const { settings, controls } = initialFieldStates[FieldType.TEXT];
@@ -59,9 +66,10 @@ export const useFormFieldsStore = create<FormFieldsState>(set => ({
                     settings,
                     controls
                 }
-            ],
-            lastAddedId: id
+            ]
         }));
+
+        lastAddedId = id;
     },
 
     deleteField: id => {
@@ -121,7 +129,5 @@ export const useFormFieldsStore = create<FormFieldsState>(set => ({
                 return newField;
             })
         }));
-    },
-
-    reset: () => set({ fields: [], lastAddedId: null })
+    }
 }));
