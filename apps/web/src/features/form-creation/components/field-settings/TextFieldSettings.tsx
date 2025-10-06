@@ -1,7 +1,7 @@
 import { Stack, Checkbox, Divider } from '@mantine/core';
 import { ChangeEvent } from 'react';
 import { BaseFieldSettings } from './BaseFieldSettings';
-import { TextSettings, BaseSettings } from '../../hooks/useFormFields';
+import { TextSettings, BaseSettings } from '../../lib/types';
 
 type Props = {
     settings: TextSettings;

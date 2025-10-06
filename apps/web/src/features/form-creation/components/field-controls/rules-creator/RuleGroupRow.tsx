@@ -5,7 +5,8 @@ import { v4 as uuid } from 'uuid';
 import { IconCategoryPlus, IconPlus, IconX } from '@tabler/icons-react';
 import { IconButton } from '../../ui/IconButton';
 import { cn } from '@/lib/utils';
-import { RuleGroup, RuleCombinator } from './RulesCreator';
+import { RuleGroup, RuleCombinator } from '@/features/form-creation/lib/types';
+import { updateGroup, deleteGroup } from '@/features/form-creation/lib/rules';
 
 type Props = {
     hasBackgroundColor: boolean;
@@ -19,30 +20,6 @@ type Props = {
     operators: string[];
     values?: string[];
 };
-
-function updateGroup(
-    root: RuleGroup,
-    groupId: string,
-    updater: (g: RuleGroup) => RuleGroup
-): RuleGroup {
-    if (root.id === groupId) {
-        return updater(root);
-    }
-
-    return {
-        ...root,
-        rules: root.rules.map(r => (r.type === 'group' ? updateGroup(r, groupId, updater) : r))
-    };
-}
-
-function deleteGroup(root: RuleGroup, groupId: string): RuleGroup {
-    return {
-        ...root,
-        rules: root.rules
-            .filter(r => !(r.type === 'group' && r.id === groupId))
-            .map(r => (r.type === 'group' ? deleteGroup(r, groupId) : r))
-    };
-}
 
 export function RuleGroupRow(props: Props) {
     const {

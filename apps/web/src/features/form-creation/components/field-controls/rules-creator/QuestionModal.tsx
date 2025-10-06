@@ -1,6 +1,7 @@
-import { useFormFieldsStore } from '@/features/form-creation/state/fieldsStore';
+import { useFormFieldsStore } from '@/features/form-creation/hooks/useFormFieldsStore';
+import { updateRule } from '@/features/form-creation/lib/rules';
+import { Rule, RuleGroup } from '@/features/form-creation/lib/types';
 import { Modal } from '@mantine/core';
-import { RuleGroup, Rule } from './RulesCreator';
 
 type Props = {
     onClose: () => void;
@@ -9,23 +10,6 @@ type Props = {
     rootGroup: RuleGroup;
     onRuleChange: (root: RuleGroup) => void;
 };
-
-function updateRule(root: RuleGroup, ruleId: string, updater: (r: Rule) => Rule): RuleGroup {
-    return {
-        ...root,
-        rules: root.rules.map(r => {
-            if (r.type === 'rule' && r.id === ruleId) {
-                return updater(r);
-            }
-
-            if (r.type === 'group') {
-                return updateRule(r, ruleId, updater);
-            }
-
-            return r;
-        })
-    };
-}
 
 export function QuestionModal({ onClose, opened, rule, onRuleChange, rootGroup }: Props) {
     const fields = useFormFieldsStore(state => state.fields);

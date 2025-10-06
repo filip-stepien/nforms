@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { FieldOption } from '../components/field-controls/option-creator/OptionCreator';
-import { OptionsControl } from './useFormFields';
 import { v4 as uuid } from 'uuid';
+import { OptionsControl } from '../lib/types';
 
 export function useOptionCreator(
     options: FieldOption[] = [],

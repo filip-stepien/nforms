@@ -1,8 +1,9 @@
 import { Group, Input, Select } from '@mantine/core';
 import { IconX } from '@tabler/icons-react';
 import { IconButton } from '../../ui/IconButton';
-import { Rule, RuleGroup } from './RulesCreator';
 import { QuestionButton } from './QuestionButton';
+import { Rule, RuleGroup } from '@/features/form-creation/lib/types';
+import { updateRule, deleteRule } from '@/features/form-creation/lib/rules';
 
 type Props = {
     rule: Rule;
@@ -12,32 +13,6 @@ type Props = {
     operators: string[];
     values?: string[];
 };
-
-function updateRule(root: RuleGroup, ruleId: string, updater: (r: Rule) => Rule): RuleGroup {
-    return {
-        ...root,
-        rules: root.rules.map(r => {
-            if (r.type === 'rule' && r.id === ruleId) {
-                return updater(r);
-            }
-
-            if (r.type === 'group') {
-                return updateRule(r, ruleId, updater);
-            }
-
-            return r;
-        })
-    };
-}
-
-function deleteRule(root: RuleGroup, ruleId: string): RuleGroup {
-    return {
-        ...root,
-        rules: root.rules
-            .filter(r => !(r.type === 'rule' && r.id === ruleId))
-            .map(r => (r.type === 'group' ? deleteRule(r, ruleId) : r))
-    };
-}
 
 export function RuleRow(props: Props) {
     const { rule, rootGroup, onRuleChange, conditions, operators, values } = props;
@@ -53,11 +28,6 @@ export function RuleRow(props: Props) {
 
     return (
         <Group>
-            {/* <Select
-                data={fields.map(field => field.title)}
-                value={fields.find(field => field.id === questionId)?.title}
-                onChange={handleQuestionChange}
-            /> */}
             <QuestionButton rule={rule} rootGroup={rootGroup} onRuleChange={onRuleChange} />
             <Select
                 data={conditions}

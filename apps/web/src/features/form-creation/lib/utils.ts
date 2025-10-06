@@ -25,7 +25,7 @@ export function printKeysOrType(value: unknown): string {
     }
 
     if (typeof value === 'object') {
-        return `{ ${Object.keys(value!).sort().join(', ')} }`;
+        return `{ ${Object.keys(value).sort().join(', ')} }`;
     }
 
     return typeof value;

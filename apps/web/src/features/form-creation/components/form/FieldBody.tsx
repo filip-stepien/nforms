@@ -1,6 +1,6 @@
-import { ChangeEventHandler, ReactNode, JSX } from 'react';
-import { FieldType } from '../../hooks/useFormFields';
+import { ChangeEventHandler, JSX } from 'react';
 import { Stack, NativeSelect } from '@mantine/core';
+import { FieldType } from '../../lib/types';
 
 type Props = {
     fieldType: FieldType;

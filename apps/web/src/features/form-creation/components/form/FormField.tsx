@@ -2,14 +2,14 @@ import { Flex } from '@mantine/core';
 import { memo, useCallback } from 'react';
 import { TextFieldSettings } from '../field-settings/TextFieldSettings';
 import { OptionCreator } from '../field-controls/option-creator/OptionCreator';
-import { FieldType, SettingsMap, ControlsMap, Field } from '../../hooks/useFormFields';
 import { Draggable } from '@hello-pangea/dnd';
 import { FieldHeader } from './FieldHeader';
 import { FieldBody } from './FieldBody';
 import { SelectionFieldSettings } from '../field-settings/SelectionFieldSettings';
 import { RulesCreator } from '../field-controls/rules-creator/RulesCreator';
-import { useFormFieldsStore } from '../../state/fieldsStore';
+import { useFormFieldsStore } from '../../hooks/useFormFieldsStore';
 import { useShallow } from 'zustand/shallow';
+import { Field, FieldType, ControlsMap, SettingsMap } from '../../lib/types';
 
 type Props = {
     index: number;

@@ -1,6 +1,6 @@
 import { Switch } from '@mantine/core';
 import { ChangeEventHandler } from 'react';
-import { BaseSettings } from '../../hooks/useFormFields';
+import { BaseSettings } from '../../lib/types';
 
 export type Props = {
     settings: BaseSettings;

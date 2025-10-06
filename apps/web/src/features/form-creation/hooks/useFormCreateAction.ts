@@ -1,6 +1,6 @@
 import { saveFormAction } from '../lib/actions';
-import { Field } from './useFormFields';
 import { useActionState } from 'react';
+import { Field } from '../lib/types';
 
 export type FormCreateActionStatus = {
     success: boolean;

@@ -1,8 +1,8 @@
 import { DragDropContext, Droppable } from '@hello-pangea/dnd';
 import { Button, Flex } from '@mantine/core';
 import { OptionItem } from './OptionItem';
-import { OptionsControl } from '@/features/form-creation/hooks/useFormFields';
 import { useOptionCreator } from '@/features/form-creation/hooks/useOptionCreator';
+import { OptionsControl } from '@/features/form-creation/lib/types';
 
 export type FieldOption = {
     id: string;

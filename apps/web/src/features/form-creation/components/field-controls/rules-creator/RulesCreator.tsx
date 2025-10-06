@@ -1,27 +1,7 @@
 import { memo } from 'react';
 import { RuleGroupRow } from './RuleGroupRow';
 import { RulesAccordion } from './RulesAccordion';
-import { RulesControl } from '@/features/form-creation/hooks/useFormFields';
-
-export type Rule = {
-    id: string;
-    type: 'rule';
-    fieldId?: string;
-    condition?: string;
-    operator?: string;
-    value?: string;
-};
-
-export type RuleCombinator = (typeof ruleCombinators)[number];
-
-export type RuleGroup = {
-    id: string;
-    type: 'group';
-    combinator: RuleCombinator;
-    rules: (Rule | RuleGroup)[];
-};
-
-export const ruleCombinators = ['AND', 'OR'] as const;
+import { RuleGroup, RulesControl, ruleCombinators } from '@/features/form-creation/lib/types';
 
 type Props = {
     fieldId: string;

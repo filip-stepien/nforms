@@ -1,8 +1,8 @@
 import { Button } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { QuestionModal } from './QuestionModal';
-import { Rule, RuleGroup } from './RulesCreator';
-import { useFormFieldsStore } from '@/features/form-creation/state/fieldsStore';
+import { useFormFieldsStore } from '@/features/form-creation/hooks/useFormFieldsStore';
+import { Rule, RuleGroup } from '@/features/form-creation/lib/types';
 
 type Props = {
     rule: Rule;

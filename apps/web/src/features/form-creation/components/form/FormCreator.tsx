@@ -2,20 +2,19 @@
 
 import { Flex, Group, TextInput } from '@mantine/core';
 import { FormField } from './FormField';
-import { useFormFields } from '../../hooks/useFormFields';
 import { DragDropContext, Droppable } from '@hello-pangea/dnd';
 import { useFormTitle } from '../../hooks/useFormTitle';
 import { IconDeviceFloppy, IconPlaylistAdd } from '@tabler/icons-react';
 import { ActionButton } from '../ui/ActionButton';
 import { useFormCreateAction } from '../../hooks/useFormCreateAction';
 import { useFormStatusEffect } from '../../hooks/useFormStatusEffect';
-import { useFormFieldsStore } from '../../state/fieldsStore';
+import { useFormFieldsStore } from '../../hooks/useFormFieldsStore';
 
 export function FormCreator() {
     const { title, onTitleChange, onTitleBlur } = useFormTitle();
     const { fields, reorderField, addField } = useFormFieldsStore();
-
     const { status, action, isLoading } = useFormCreateAction(title, fields);
+
     useFormStatusEffect(status);
 
     return (

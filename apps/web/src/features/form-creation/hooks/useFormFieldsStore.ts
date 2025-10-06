@@ -1,64 +1,9 @@
 import { create } from 'zustand';
 import { v4 as uuid } from 'uuid';
 import { keysEqual, printKeysOrType } from '../lib/utils';
-import { FieldOption } from '../components/field-controls/option-creator/OptionCreator';
-import { RuleGroup } from '../components/field-controls/rules-creator/RulesCreator';
-import { useShallow } from 'zustand/shallow';
+import { Field, FieldType, InitialFieldStates } from '../lib/types';
 
-// --- Typy z Twojego kodu ---
-
-export enum FieldType {
-    TEXT = 'Text',
-    SELECTION = 'Selection'
-}
-
-export type BaseSettings = {
-    required: boolean;
-};
-
-export type TextSettings = BaseSettings & {
-    analyseSentiment: boolean;
-    extractKeywords: boolean;
-    summarize: true;
-};
-
-export type SelectionSettings = BaseSettings & {
-    singleSelection: boolean;
-};
-
-export type OptionsControl = { options: FieldOption[] };
-export type RulesControl = { rules: RuleGroup };
-
-export type SettingsMap = {
-    [FieldType.TEXT]: TextSettings;
-    [FieldType.SELECTION]: SelectionSettings;
-};
-
-export type ControlsMap = {
-    [FieldType.TEXT]: RulesControl;
-    [FieldType.SELECTION]: OptionsControl;
-};
-
-export type Field = {
-    [K in FieldType]: {
-        id: string;
-        title: string;
-        type: K;
-        settings: SettingsMap[K];
-        controls: ControlsMap[K];
-    };
-}[FieldType];
-
-type InitialFieldStates = {
-    [K in FieldType]: {
-        settings: SettingsMap[K];
-        controls: ControlsMap[K];
-    };
-};
-
-// --- Stałe i wartości początkowe ---
-
-export const initialFieldStates: InitialFieldStates = {
+const initialFieldStates: InitialFieldStates = {
     [FieldType.TEXT]: {
         settings: {
             required: true,
@@ -86,9 +31,7 @@ export const initialFieldStates: InitialFieldStates = {
     }
 };
 
-// --- Zustand Store ---
-
-export interface FormFieldsState {
+export type FormFieldsState = {
     fields: Field[];
     lastAddedId: string | null;
     addField: () => void;
@@ -96,9 +39,9 @@ export interface FormFieldsState {
     reorderField: (from: number, to?: number) => void;
     setField: (id: string, updatedField: Partial<Field>) => void;
     reset: () => void;
-}
+};
 
-export const useFormFieldsStore = create<FormFieldsState>((set, get) => ({
+export const useFormFieldsStore = create<FormFieldsState>(set => ({
     fields: [],
     lastAddedId: null,
 
@@ -182,6 +125,3 @@ export const useFormFieldsStore = create<FormFieldsState>((set, get) => ({
 
     reset: () => set({ fields: [], lastAddedId: null })
 }));
-
-export const useShallowFormFieldsStore = (selector: (state: FormFieldsState) => void) =>
-    useFormFieldsStore(useShallow(selector));

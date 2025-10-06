@@ -1,7 +1,7 @@
 import { Checkbox, Divider, Stack } from '@mantine/core';
 import { ChangeEvent } from 'react';
-import { BaseSettings, SelectionSettings } from '../../hooks/useFormFields';
 import { BaseFieldSettings } from './BaseFieldSettings';
+import { SelectionSettings, BaseSettings } from '../../lib/types';
 
 export type Props = {
     settings: SelectionSettings;
