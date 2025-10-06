@@ -1,24 +1,26 @@
-import { useState } from 'react';
+import { useCallback, useRef } from 'react';
 import { FieldOption } from '../components/field-controls/option-creator/OptionCreator';
 import { v4 as uuid } from 'uuid';
 import { OptionsControl } from '../lib/types';
 
 export function useOptionCreator(
     options: FieldOption[] = [],
-    controlsChangeFn: (controls: OptionsControl) => void
+    onControlsChange: (controls: OptionsControl) => void
 ) {
-    const [lastAddedId, setLastAddedId] = useState<string | undefined>();
+    const lastAddedIdRef = useRef<string>(null);
 
     const onOptionAdd = () => {
         const id = uuid();
-        setLastAddedId(id);
-        controlsChangeFn({
+
+        lastAddedIdRef.current = id;
+
+        onControlsChange({
             options: [...options, { id, content: `Option ${options.length + 1}` }]
         });
     };
 
     const onOptionUpdate = (id: string, content: string) => {
-        controlsChangeFn({
+        onControlsChange({
             options: options.map(opt => (opt.id === id ? { ...opt, content } : opt))
         });
     };
@@ -35,24 +37,24 @@ export function useOptionCreator(
 
         updated.splice(dest, 0, moved);
 
-        controlsChangeFn({ options: updated });
+        onControlsChange({ options: updated });
     };
 
     const onOptionDelete = (id: string) => {
-        controlsChangeFn({ options: options.filter(opt => opt.id !== id) });
+        onControlsChange({ options: options.filter(opt => opt.id !== id) });
     };
 
     const onOptionSelect = () => {
-        setLastAddedId(undefined);
+        lastAddedIdRef.current = null;
     };
 
     return {
-        lastAddedId,
+        lastAddedId: lastAddedIdRef.current,
         options,
-        onOptionAdd,
-        onOptionUpdate,
-        onOptionReorder,
-        onOptionDelete,
-        onOptionSelect
+        onOptionAdd: useCallback(onOptionAdd, [options, onControlsChange]),
+        onOptionUpdate: useCallback(onOptionUpdate, [options, onControlsChange]),
+        onOptionReorder: useCallback(onOptionReorder, [options, onControlsChange]),
+        onOptionDelete: useCallback(onOptionDelete, [options, onControlsChange]),
+        onOptionSelect: useCallback(onOptionSelect, [])
     };
 }
