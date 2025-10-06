@@ -29,7 +29,7 @@ export function QuestionModal({ onClose, opened, rule, onRuleChange, rootGroup }
             onClose={onClose}
             title={
                 <div className='flex items-center gap-2'>
-                    <IconLinkPlus stroke={1.5} size={20} />
+                    <IconLinkPlus stroke={1.5} />
                     <span className='font-semibold text-sm'>Select question</span>
                 </div>
             }

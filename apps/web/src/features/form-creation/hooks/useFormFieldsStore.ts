@@ -26,7 +26,13 @@ const initialFieldStates: InitialFieldStates = {
             singleSelection: false
         },
         controls: {
-            options: []
+            options: [],
+            rules: {
+                id: uuid(),
+                combinator: 'AND',
+                type: 'group',
+                rules: []
+            }
         }
     }
 };

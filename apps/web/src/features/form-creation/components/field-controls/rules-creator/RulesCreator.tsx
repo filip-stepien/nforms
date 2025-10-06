@@ -1,18 +1,17 @@
 import { memo } from 'react';
 import { RuleGroupRow } from './RuleGroupRow';
 import { RulesAccordion } from './RulesAccordion';
-import { RuleGroup, RulesControl, ruleCombinators } from '@/features/form-creation/lib/types';
+import { FieldType, RuleGroup, ruleCombinators } from '@/features/form-creation/lib/types';
 
 type Props = {
     fieldId: string;
+    fieldType: FieldType;
     rules: RuleGroup;
-    onRulesChange: (controls: RulesControl) => void;
+    onRulesChange: (rules: RuleGroup) => void;
 };
 
-export const RulesCreator = memo(function RulesCreator({ fieldId, rules, onRulesChange }: Props) {
-    const handleRuleChange = (rules: RuleGroup) => {
-        onRulesChange({ rules });
-    };
+export const RulesCreator = memo(function RulesCreator(props: Props) {
+    const { fieldId, fieldType, rules, onRulesChange } = props;
 
     return (
         <RulesAccordion>
@@ -23,9 +22,10 @@ export const RulesCreator = memo(function RulesCreator({ fieldId, rules, onRules
                     isFirstGroup={true}
                     rootGroup={rules}
                     group={rules}
-                    onRuleChange={handleRuleChange}
+                    onRuleChange={onRulesChange}
                     combinators={[...ruleCombinators]}
                     fieldId={fieldId}
+                    fieldType={fieldType}
                     conditions={['sentiment', 'emotion']}
                     operators={['is', 'equals']}
                     values={['1', '2']}

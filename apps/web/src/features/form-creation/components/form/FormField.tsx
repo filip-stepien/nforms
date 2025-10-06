@@ -1,4 +1,4 @@
-import { Flex } from '@mantine/core';
+import { Flex, Stack } from '@mantine/core';
 import { memo, useCallback } from 'react';
 import { TextFieldSettings } from '../field-settings/TextFieldSettings';
 import { OptionCreator } from '../field-controls/option-creator/OptionCreator';
@@ -9,7 +9,14 @@ import { SelectionFieldSettings } from '../field-settings/SelectionFieldSettings
 import { RulesCreator } from '../field-controls/rules-creator/RulesCreator';
 import { useFormFieldsStore } from '../../hooks/useFormFieldsStore';
 import { useShallow } from 'zustand/shallow';
-import { Field, FieldType, ControlsMap, SettingsMap } from '../../lib/types';
+import {
+    Field,
+    FieldType,
+    ControlsMap,
+    SettingsMap,
+    RuleGroup,
+    FieldOption
+} from '../../lib/types';
 
 type Props = {
     index: number;
@@ -55,6 +62,16 @@ export const FormField = memo(function FormField(props: Props) {
         [field.id, setField]
     );
 
+    const handleRulesChange = useCallback(
+        (rules: RuleGroup) => handleControlsChange({ rules }),
+        [handleControlsChange]
+    );
+
+    const handleOptionsChange = useCallback(
+        (options: FieldOption[]) => handleControlsChange({ options, rules: field.controls.rules }),
+        [field.controls.rules, handleControlsChange]
+    );
+
     const getSettingsComponent = () => {
         switch (field.type) {
             case FieldType.TEXT:
@@ -80,16 +97,25 @@ export const FormField = memo(function FormField(props: Props) {
                 return (
                     <RulesCreator
                         fieldId={field.id}
+                        fieldType={field.type}
                         rules={field.controls.rules}
-                        onRulesChange={handleControlsChange}
+                        onRulesChange={handleRulesChange}
                     />
                 );
             case FieldType.SELECTION:
                 return (
-                    <OptionCreator
-                        options={field.controls.options}
-                        onOptionsChange={handleControlsChange}
-                    />
+                    <Stack>
+                        <RulesCreator
+                            fieldId={field.id}
+                            fieldType={field.type}
+                            rules={field.controls.rules}
+                            onRulesChange={handleRulesChange}
+                        />
+                        <OptionCreator
+                            options={field.controls.options}
+                            onOptionsChange={handleOptionsChange}
+                        />
+                    </Stack>
                 );
         }
     };

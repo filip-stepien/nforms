@@ -18,6 +18,12 @@ export type RuleGroup = {
     rules: (Rule | RuleGroup)[];
 };
 
+export type RuleConfig = {
+    condition: string;
+    operators: string[];
+    values?: string[];
+};
+
 export type FieldOption = {
     id: string;
     content: string;
@@ -53,7 +59,7 @@ export type SettingsMap = {
 
 export type ControlsMap = {
     [FieldType.TEXT]: RulesControl;
-    [FieldType.SELECTION]: OptionsControl;
+    [FieldType.SELECTION]: OptionsControl & RulesControl;
 };
 
 export type Field = {

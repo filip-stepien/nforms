@@ -2,21 +2,46 @@ import { Group, Input, Select } from '@mantine/core';
 import { IconX } from '@tabler/icons-react';
 import { IconButton } from '../../ui/IconButton';
 import { QuestionButton } from './QuestionButton';
-import { Rule, RuleGroup } from '@/features/form-creation/lib/types';
+import { FieldType, Rule, RuleConfig, RuleGroup } from '@/features/form-creation/lib/types';
 import { updateRule, deleteRule } from '@/features/form-creation/lib/rules';
 
 type Props = {
     rule: Rule;
     rootGroup: RuleGroup;
     onRuleChange: (root: RuleGroup) => void;
-    conditions: string[];
-    operators: string[];
-    values?: string[];
+    fieldType: FieldType;
+};
+
+const possibleRules: Record<FieldType, RuleConfig[]> = {
+    [FieldType.TEXT]: [
+        {
+            condition: 'sentiment',
+            operators: ['es', 'huj'],
+            values: ['POSITIVE', 'NEGATIVE']
+        },
+        {
+            condition: 'emotion',
+            operators: ['is'],
+            values: ['ANGER', 'HAPPINESS']
+        }
+    ],
+    [FieldType.SELECTION]: [
+        {
+            condition: 'answer',
+            operators: ['is'],
+            values: ['1', '2', '3']
+        }
+    ]
 };
 
 export function RuleRow(props: Props) {
-    const { rule, rootGroup, onRuleChange, conditions, operators, values } = props;
+    const { rule, rootGroup, onRuleChange, fieldType } = props;
     const { id, operator, condition, value } = rule;
+
+    const ruleConfig = possibleRules[fieldType];
+    const conditions = ruleConfig.map(cfg => cfg.condition);
+    const operators = ruleConfig.find(cfg => cfg.condition === condition)?.operators;
+    const values = ruleConfig.find(cfg => cfg.condition === condition)?.values;
 
     const handleRuleChange = (value: string | null, property: keyof Rule) => {
         onRuleChange(updateRule(rootGroup, id, rule => ({ ...rule, [property]: value })));
@@ -32,28 +57,18 @@ export function RuleRow(props: Props) {
             <Select
                 data={conditions}
                 value={condition}
-                defaultValue={conditions.at(0)}
                 onChange={value => handleRuleChange(value, 'condition')}
             />
             <Select
                 data={operators}
                 value={operator}
-                defaultValue={operators.at(0)}
                 onChange={value => handleRuleChange(value, 'operator')}
             />
-            {values ? (
-                <Select
-                    data={values}
-                    value={value}
-                    defaultValue={values.at(0)}
-                    onChange={value => handleRuleChange(value, 'value')}
-                />
-            ) : (
-                <Input
-                    value={value}
-                    onChange={event => handleRuleChange(event.target.value, 'value')}
-                />
-            )}
+            <Select
+                data={values}
+                value={value}
+                onChange={value => handleRuleChange(value, 'value')}
+            />
             <IconButton icon={IconX} variant='light' color='red' onClick={handleRuleDelete} />
         </Group>
     );

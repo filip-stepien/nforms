@@ -2,7 +2,6 @@ import { DragDropContext, Droppable } from '@hello-pangea/dnd';
 import { Button, Flex } from '@mantine/core';
 import { OptionItem } from './OptionItem';
 import { useOptionCreator } from '@/features/form-creation/hooks/useOptionCreator';
-import { OptionsControl } from '@/features/form-creation/lib/types';
 
 export type FieldOption = {
     id: string;
@@ -11,7 +10,7 @@ export type FieldOption = {
 
 type Props = {
     options: FieldOption[];
-    onOptionsChange: (controls: OptionsControl) => void;
+    onOptionsChange: (options: FieldOption[]) => void;
 };
 
 export function OptionCreator({ options, onOptionsChange }: Props) {
