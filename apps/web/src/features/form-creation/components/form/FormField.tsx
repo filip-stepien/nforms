@@ -1,5 +1,5 @@
 import { Flex, Stack } from '@mantine/core';
-import { memo, useCallback } from 'react';
+import { memo } from 'react';
 import { TextFieldSettings } from '../field-settings/TextFieldSettings';
 import { OptionCreator } from '../field-controls/option-creator/OptionCreator';
 import { Draggable } from '@hello-pangea/dnd';
@@ -7,70 +7,25 @@ import { FieldHeader } from './FieldHeader';
 import { FieldBody } from './FieldBody';
 import { SelectionFieldSettings } from '../field-settings/SelectionFieldSettings';
 import { RulesCreator } from '../field-controls/rules-creator/RulesCreator';
-import { useFormFieldsStore } from '../../hooks/useFormFieldsStore';
-import { useShallow } from 'zustand/shallow';
-import {
-    Field,
-    FieldType,
-    ControlsMap,
-    SettingsMap,
-    RuleGroup,
-    FieldOption
-} from '../../lib/types';
+import { Field, FieldType } from '../../lib/types';
+import { useFormFieldHandlers } from '../../hooks/useFormFieldHandlers';
 
 type Props = {
     index: number;
     field: Field;
 };
 
-export const FormField = memo(function FormField(props: Props) {
-    const { index, field } = props;
-    const { setField, deleteField, getLastAddedId, setLastAddedId } = useFormFieldsStore(
-        useShallow(state => ({
-            setField: state.setField,
-            deleteField: state.deleteField,
-            getLastAddedId: state.getLastAddedId,
-            setLastAddedId: state.setLastAddedId
-        }))
-    );
-
-    const handleSelect = useCallback(() => {
-        if (getLastAddedId() !== null) {
-            setLastAddedId(null);
-        }
-    }, [getLastAddedId, setLastAddedId]);
-
-    const handleTitleChange = useCallback(
-        (title: string) => setField(field.id, { title }),
-        [field.id, setField]
-    );
-
-    const handleTypeChange = useCallback(
-        (type: FieldType) => setField(field.id, { type }),
-        [field.id, setField]
-    );
-
-    const handleDelete = useCallback(() => deleteField(field.id), [field.id, deleteField]);
-
-    const handleControlsChange = useCallback(
-        (controls: ControlsMap[FieldType]) => setField(field.id, { controls } as Partial<Field>),
-        [field.id, setField]
-    );
-
-    const handleSettingsChange = useCallback(
-        (settings: SettingsMap[FieldType]) => setField(field.id, { settings } as Partial<Field>),
-        [field.id, setField]
-    );
-
-    const handleRulesChange = useCallback(
-        (rules: RuleGroup) => handleControlsChange({ rules }),
-        [handleControlsChange]
-    );
-
-    const handleOptionsChange = useCallback(
-        (options: FieldOption[]) => handleControlsChange({ options, rules: field.controls.rules }),
-        [field.controls.rules, handleControlsChange]
-    );
+export const FormField = memo(function FormField({ index, field }: Props) {
+    const {
+        isSelected,
+        onTitleChange,
+        onTypeChange,
+        onDelete,
+        onOptionsChange,
+        onRulesChange,
+        onSelect,
+        onSettingsChange
+    } = useFormFieldHandlers(field);
 
     const getSettingsComponent = () => {
         switch (field.type) {
@@ -78,14 +33,14 @@ export const FormField = memo(function FormField(props: Props) {
                 return (
                     <TextFieldSettings
                         settings={field.settings}
-                        onSettingsChange={handleSettingsChange}
+                        onSettingsChange={onSettingsChange}
                     />
                 );
             case FieldType.SELECTION:
                 return (
                     <SelectionFieldSettings
                         settings={field.settings}
-                        onSettingsChange={handleSettingsChange}
+                        onSettingsChange={onSettingsChange}
                     />
                 );
         }
@@ -99,7 +54,7 @@ export const FormField = memo(function FormField(props: Props) {
                         fieldId={field.id}
                         fieldType={field.type}
                         rules={field.controls.rules}
-                        onRulesChange={handleRulesChange}
+                        onRulesChange={onRulesChange}
                     />
                 );
             case FieldType.SELECTION:
@@ -109,11 +64,11 @@ export const FormField = memo(function FormField(props: Props) {
                             fieldId={field.id}
                             fieldType={field.type}
                             rules={field.controls.rules}
-                            onRulesChange={handleRulesChange}
+                            onRulesChange={onRulesChange}
                         />
                         <OptionCreator
                             options={field.controls.options}
-                            onOptionsChange={handleOptionsChange}
+                            onOptionsChange={onOptionsChange}
                         />
                     </Stack>
                 );
@@ -134,16 +89,16 @@ export const FormField = memo(function FormField(props: Props) {
                 >
                     <FieldHeader
                         title={field.title}
-                        selected={getLastAddedId() === field.id}
+                        selected={isSelected}
                         settingsComponent={getSettingsComponent()}
                         dragHandleProps={provided.dragHandleProps}
-                        onTitleChange={handleTitleChange}
-                        onDelete={handleDelete}
-                        onSelect={handleSelect}
+                        onTitleChange={onTitleChange}
+                        onDelete={onDelete}
+                        onSelect={onSelect}
                     />
                     <FieldBody
                         fieldType={field.type}
-                        onFieldTypeChange={handleTypeChange}
+                        onFieldTypeChange={onTypeChange}
                         controlsComponent={getControlsComponent()}
                     />
                 </Flex>
