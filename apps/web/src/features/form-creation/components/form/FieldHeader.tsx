@@ -4,13 +4,14 @@ import { DragButton } from '../ui/DragButton';
 import { IconButton } from '../ui/IconButton';
 import { JSX, ChangeEventHandler, FocusEventHandler, useEffect, useRef } from 'react';
 import { DraggableProvidedDragHandleProps } from '@hello-pangea/dnd';
+import { FieldUpdater } from '../../lib/types';
 
 type Props = {
     title: string;
     selected?: boolean;
     settingsComponent?: JSX.Element;
     dragHandleProps: DraggableProvidedDragHandleProps | null;
-    onTitleChange: (title: string) => void;
+    onFieldChange: FieldUpdater;
     onDelete: () => void;
     onSelect: () => void;
 };
@@ -25,7 +26,7 @@ export function FieldHeader(props: Props) {
         settingsComponent,
         onDelete,
         onSelect,
-        onTitleChange
+        onFieldChange
     } = props;
 
     useEffect(() => {
@@ -36,12 +37,12 @@ export function FieldHeader(props: Props) {
     }, [selected, onSelect]);
 
     const handleTitleChange: ChangeEventHandler<HTMLInputElement> = event => {
-        onTitleChange(event.target.value);
+        onFieldChange(prev => ({ ...prev, title: event.target.value }));
     };
 
     const handleTitleBlur: FocusEventHandler<HTMLInputElement> = event => {
         if (!event.target.value.trim()) {
-            onTitleChange('Untitled question');
+            onFieldChange(prev => ({ ...prev, title: 'Untitled question' }));
         }
     };
 

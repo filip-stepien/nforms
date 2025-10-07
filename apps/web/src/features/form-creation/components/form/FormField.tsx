@@ -1,5 +1,5 @@
 import { Flex, Stack } from '@mantine/core';
-import { memo } from 'react';
+import { memo, JSX } from 'react';
 import { TextFieldSettings } from '../field-settings/TextFieldSettings';
 import { OptionCreator } from '../field-controls/option-creator/OptionCreator';
 import { Draggable } from '@hello-pangea/dnd';
@@ -7,7 +7,7 @@ import { FieldHeader } from './FieldHeader';
 import { FieldBody } from './FieldBody';
 import { SelectionFieldSettings } from '../field-settings/SelectionFieldSettings';
 import { RulesCreator } from '../field-controls/rules-creator/RulesCreator';
-import { Field, FieldType } from '../../lib/types';
+import { ControlsMap, Field, FieldType, SettingsMap } from '../../lib/types';
 import { useFormFieldHandlers } from '../../hooks/useFormFieldHandlers';
 
 type Props = {
@@ -16,63 +16,46 @@ type Props = {
 };
 
 export const FormField = memo(function FormField({ index, field }: Props) {
-    const {
-        isSelected,
-        onTitleChange,
-        onTypeChange,
-        onDelete,
-        onOptionsChange,
-        onRulesChange,
-        onSelect,
-        onSettingsChange
-    } = useFormFieldHandlers(field);
+    const { isSelected, onDelete, onSelect, onChange } = useFormFieldHandlers(field);
 
-    const getSettingsComponent = () => {
-        switch (field.type) {
-            case FieldType.TEXT:
-                return (
-                    <TextFieldSettings
-                        settings={field.settings}
-                        onSettingsChange={onSettingsChange}
-                    />
-                );
-            case FieldType.SELECTION:
-                return (
-                    <SelectionFieldSettings
-                        settings={field.settings}
-                        onSettingsChange={onSettingsChange}
-                    />
-                );
-        }
+    const settingsComponents: Record<FieldType, JSX.Element> = {
+        [FieldType.TEXT]: (
+            <TextFieldSettings
+                settings={field.settings as SettingsMap[FieldType.TEXT]}
+                onFieldChange={onChange}
+            />
+        ),
+        [FieldType.SELECTION]: (
+            <SelectionFieldSettings
+                settings={field.settings as SettingsMap[FieldType.SELECTION]}
+                onFieldChange={onChange}
+            />
+        )
     };
 
-    const getControlsComponent = () => {
-        switch (field.type) {
-            case FieldType.TEXT:
-                return (
-                    <RulesCreator
-                        fieldId={field.id}
-                        fieldType={field.type}
-                        rules={field.controls.rules}
-                        onRulesChange={onRulesChange}
-                    />
-                );
-            case FieldType.SELECTION:
-                return (
-                    <Stack>
-                        <RulesCreator
-                            fieldId={field.id}
-                            fieldType={field.type}
-                            rules={field.controls.rules}
-                            onRulesChange={onRulesChange}
-                        />
-                        <OptionCreator
-                            options={field.controls.options}
-                            onOptionsChange={onOptionsChange}
-                        />
-                    </Stack>
-                );
-        }
+    const controlsComponents: Record<FieldType, JSX.Element> = {
+        [FieldType.TEXT]: (
+            <RulesCreator
+                fieldId={field.id}
+                fieldType={field.type}
+                rules={field.controls.rules}
+                onFieldChange={onChange}
+            />
+        ),
+        [FieldType.SELECTION]: (
+            <Stack>
+                <RulesCreator
+                    fieldId={field.id}
+                    fieldType={field.type}
+                    rules={field.controls.rules}
+                    onFieldChange={onChange}
+                />
+                <OptionCreator
+                    options={(field.controls as ControlsMap[FieldType.SELECTION]).options}
+                    onFieldChange={onChange}
+                />
+            </Stack>
+        )
     };
 
     console.count('rerender');
@@ -90,16 +73,16 @@ export const FormField = memo(function FormField({ index, field }: Props) {
                     <FieldHeader
                         title={field.title}
                         selected={isSelected}
-                        settingsComponent={getSettingsComponent()}
+                        settingsComponent={settingsComponents[field.type]}
                         dragHandleProps={provided.dragHandleProps}
-                        onTitleChange={onTitleChange}
+                        onFieldChange={onChange}
                         onDelete={onDelete}
                         onSelect={onSelect}
                     />
                     <FieldBody
                         fieldType={field.type}
-                        onFieldTypeChange={onTypeChange}
-                        controlsComponent={getControlsComponent()}
+                        onFieldChange={onChange}
+                        controlsComponent={controlsComponents[field.type]}
                     />
                 </Flex>
             )}

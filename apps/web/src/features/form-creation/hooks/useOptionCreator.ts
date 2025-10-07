@@ -1,55 +1,67 @@
 import { useCallback, useRef } from 'react';
 import { FieldOption } from '../components/field-controls/option-creator/OptionCreator';
 import { v4 as uuid } from 'uuid';
+import { FieldUpdater } from '../lib/types';
 
-export function useOptionCreator(
-    options: FieldOption[] = [],
-    onOptionsChange: (options: FieldOption[]) => void
-) {
+export function useOptionCreator(options: FieldOption[] = [], fieldUpdater: FieldUpdater) {
     const lastAddedIdRef = useRef<string>(null);
 
-    const onOptionAdd = () => {
+    const handleOptionsChange = useCallback(
+        (options: FieldOption[]) => {
+            fieldUpdater(prev => ({ ...prev, controls: { ...prev.controls, options } }));
+        },
+        [fieldUpdater]
+    );
+
+    const onOptionAdd = useCallback(() => {
         const id = uuid();
-
         lastAddedIdRef.current = id;
+        handleOptionsChange([...options, { id, content: `Option ${options.length + 1}` }]);
+    }, [options, handleOptionsChange]);
 
-        onOptionsChange([...options, { id, content: `Option ${options.length + 1}` }]);
-    };
+    const onOptionUpdate = useCallback(
+        (id: string, content: string) => {
+            handleOptionsChange(options.map(opt => (opt.id === id ? { ...opt, content } : opt)));
+        },
+        [options, handleOptionsChange]
+    );
 
-    const onOptionUpdate = (id: string, content: string) => {
-        onOptionsChange(options.map(opt => (opt.id === id ? { ...opt, content } : opt)));
-    };
+    const onOptionReorder = useCallback(
+        (from: number, to?: number) => {
+            const dest = to ?? from;
 
-    const onOptionReorder = (from: number, to?: number) => {
-        const dest = to ?? from;
+            if (from === dest) {
+                return;
+            }
 
-        if (from === dest) {
-            return;
-        }
+            const updated = [...options];
+            const [moved] = updated.splice(from, 1);
 
-        const updated = [...options];
-        const [moved] = updated.splice(from, 1);
+            updated.splice(dest, 0, moved);
 
-        updated.splice(dest, 0, moved);
+            handleOptionsChange(updated);
+        },
+        [options, handleOptionsChange]
+    );
 
-        onOptionsChange(updated);
-    };
+    const onOptionDelete = useCallback(
+        (id: string) => {
+            handleOptionsChange(options.filter(opt => opt.id !== id));
+        },
+        [options, handleOptionsChange]
+    );
 
-    const onOptionDelete = (id: string) => {
-        onOptionsChange(options.filter(opt => opt.id !== id));
-    };
-
-    const onOptionSelect = () => {
+    const onOptionSelect = useCallback(() => {
         lastAddedIdRef.current = null;
-    };
+    }, []);
 
     return {
         lastAddedId: lastAddedIdRef.current,
         options,
-        onOptionAdd: useCallback(onOptionAdd, [options, onOptionsChange]),
-        onOptionUpdate: useCallback(onOptionUpdate, [options, onOptionsChange]),
-        onOptionReorder: useCallback(onOptionReorder, [options, onOptionsChange]),
-        onOptionDelete: useCallback(onOptionDelete, [options, onOptionsChange]),
-        onOptionSelect: useCallback(onOptionSelect, [])
+        onOptionAdd,
+        onOptionUpdate,
+        onOptionReorder,
+        onOptionDelete,
+        onOptionSelect
     };
 }

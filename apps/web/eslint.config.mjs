@@ -33,7 +33,8 @@ const eslintConfig = [
                     argsIgnorePattern: '^_'
                 }
             ],
-            '@next/next/no-sync-scripts': 'off'
+            '@next/next/no-sync-scripts': 'off',
+            '@typescript-eslint/no-explicit-any': 'off'
         }
     }
 ];

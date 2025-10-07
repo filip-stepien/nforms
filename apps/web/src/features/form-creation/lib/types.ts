@@ -63,14 +63,14 @@ export type ControlsMap = {
 };
 
 export type Field = {
-    [K in FieldType]: {
-        id: string;
-        title: string;
-        type: K;
-        settings: SettingsMap[K];
-        controls: ControlsMap[K];
-    };
-}[FieldType];
+    id: string;
+    title: string;
+    type: FieldType;
+    settings: SettingsMap[FieldType];
+    controls: ControlsMap[FieldType];
+};
+
+export type FieldUpdater = (field: Field | ((prev: Field) => Field)) => any;
 
 export type InitialFieldStates = {
     [K in FieldType]: {

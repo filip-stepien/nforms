@@ -1,15 +1,18 @@
 import { Switch } from '@mantine/core';
 import { ChangeEventHandler } from 'react';
-import { BaseSettings } from '../../lib/types';
+import { BaseSettings, FieldUpdater } from '../../lib/types';
 
 export type Props = {
     settings: BaseSettings;
-    onSettingsChange: (settings: BaseSettings) => void;
+    onFieldChange: FieldUpdater;
 };
 
-export function BaseFieldSettings({ settings, onSettingsChange }: Props) {
+export function BaseFieldSettings({ settings, onFieldChange }: Props) {
     const handleRequiredChange: ChangeEventHandler<HTMLInputElement> = event => {
-        onSettingsChange({ ...settings, required: event.target.checked });
+        onFieldChange(prev => ({
+            ...prev,
+            settings: { ...prev.settings, required: event.target.checked }
+        }));
     };
 
     return (

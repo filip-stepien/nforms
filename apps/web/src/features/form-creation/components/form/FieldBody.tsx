@@ -1,16 +1,16 @@
 import { ChangeEventHandler, JSX } from 'react';
 import { Stack, NativeSelect } from '@mantine/core';
-import { FieldType } from '../../lib/types';
+import { FieldType, FieldUpdater } from '../../lib/types';
 
 type Props = {
     fieldType: FieldType;
-    onFieldTypeChange: (fieldType: FieldType) => void;
+    onFieldChange: FieldUpdater;
     controlsComponent: JSX.Element;
 };
 
-export function FieldBody({ fieldType, onFieldTypeChange, controlsComponent }: Props) {
+export function FieldBody({ fieldType, onFieldChange, controlsComponent }: Props) {
     const handleInputTypeChange: ChangeEventHandler<HTMLSelectElement> = event => {
-        onFieldTypeChange(event.target.value as FieldType);
+        onFieldChange(prev => ({ ...prev, type: event.target.value as FieldType }));
     };
 
     return (

@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useShallow } from 'zustand/shallow';
-import { FieldType, ControlsMap, Field, SettingsMap, RuleGroup, FieldOption } from '../lib/types';
+import { Field, FieldUpdater } from '../lib/types';
 import { useFormFieldsStore } from './useFormFieldsStore';
 
 export function useFormFieldHandlers(field: Field) {
@@ -13,53 +13,23 @@ export function useFormFieldHandlers(field: Field) {
         }))
     );
 
-    const onSelect = useCallback(() => {
+    const onSelect = () => {
         if (getLastAddedId() !== null) {
             setLastAddedId(null);
         }
-    }, [getLastAddedId, setLastAddedId]);
+    };
 
-    const onTitleChange = useCallback(
-        (title: string) => setField(field.id, { title }),
-        [field.id, setField]
-    );
+    const onDelete = () => deleteField(field.id);
 
-    const onTypeChange = useCallback(
-        (type: FieldType) => setField(field.id, { type }),
-        [field.id, setField]
-    );
-
-    const onDelete = useCallback(() => deleteField(field.id), [field.id, deleteField]);
-
-    const onControlsChange = useCallback(
-        (controls: ControlsMap[FieldType]) => setField(field.id, { controls } as Partial<Field>),
-        [field.id, setField]
-    );
-
-    const onSettingsChange = useCallback(
-        (settings: SettingsMap[FieldType]) => setField(field.id, { settings } as Partial<Field>),
-        [field.id, setField]
-    );
-
-    const onRulesChange = useCallback(
-        (rules: RuleGroup) => onControlsChange({ rules }),
-        [onControlsChange]
-    );
-
-    const onOptionsChange = useCallback(
-        (options: FieldOption[]) => onControlsChange({ options, rules: field.controls.rules }),
-        [field.controls.rules, onControlsChange]
-    );
+    const onChange: FieldUpdater = state => {
+        const newField = typeof state === 'function' ? state(field) : state;
+        setField(field.id, newField);
+    };
 
     return {
         isSelected: getLastAddedId() === field.id,
-        onSelect,
-        onTitleChange,
-        onTypeChange,
-        onDelete,
-        onSettingsChange,
-        onControlsChange,
-        onRulesChange,
-        onOptionsChange
+        onSelect: useCallback(onSelect, [getLastAddedId, setLastAddedId]),
+        onDelete: useCallback(onDelete, [field.id, deleteField]),
+        onChange: useCallback(onChange, [field, setField])
     };
 }

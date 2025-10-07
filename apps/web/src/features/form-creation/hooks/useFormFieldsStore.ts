@@ -110,7 +110,7 @@ export const useFormFieldsStore = create<FormFieldsState>(set => ({
                     controls: typeChanged
                         ? initialFieldStates[updatedFieldType].controls
                         : (updatedField.controls ?? field.controls)
-                } as Field;
+                };
 
                 const initial = initialFieldStates[newField.type];
 

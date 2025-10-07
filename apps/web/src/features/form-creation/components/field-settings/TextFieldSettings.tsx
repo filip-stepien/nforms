@@ -1,32 +1,29 @@
 import { Stack, Checkbox, Divider } from '@mantine/core';
 import { ChangeEvent } from 'react';
 import { BaseFieldSettings } from './BaseFieldSettings';
-import { TextSettings, BaseSettings } from '../../lib/types';
+import { TextSettings, FieldUpdater } from '../../lib/types';
 
 type Props = {
     settings: TextSettings;
-    onSettingsChange: (settings: TextSettings) => void;
+    onFieldChange: FieldUpdater;
 };
 
-export function TextFieldSettings({ settings, onSettingsChange }: Props) {
+export function TextFieldSettings({ settings, onFieldChange }: Props) {
     const handleTextSettingChange = (
         setting: keyof TextSettings,
         event: ChangeEvent<HTMLInputElement>
     ) => {
         if (settings) {
-            onSettingsChange({ ...settings, [setting]: event.target.checked });
-        }
-    };
-
-    const handleBaseSettingChange = (baseSettings: BaseSettings) => {
-        if (settings) {
-            onSettingsChange({ ...settings, ...baseSettings });
+            onFieldChange(prev => ({
+                ...prev,
+                settings: { ...prev.settings, [setting]: event.target.checked }
+            }));
         }
     };
 
     return (
         <>
-            <BaseFieldSettings settings={settings} onSettingsChange={handleBaseSettingChange} />
+            <BaseFieldSettings settings={settings} onFieldChange={onFieldChange} />
             <Divider />
             <Stack>
                 <Checkbox

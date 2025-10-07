@@ -1,17 +1,29 @@
-import { memo } from 'react';
+import { memo, useCallback } from 'react';
 import { RuleGroupRow } from './RuleGroupRow';
 import { RulesAccordion } from './RulesAccordion';
-import { FieldType, RuleGroup, ruleCombinators } from '@/features/form-creation/lib/types';
+import {
+    FieldType,
+    FieldUpdater,
+    RuleGroup,
+    ruleCombinators
+} from '@/features/form-creation/lib/types';
 
 type Props = {
     fieldId: string;
     fieldType: FieldType;
     rules: RuleGroup;
-    onRulesChange: (rules: RuleGroup) => void;
+    onFieldChange: FieldUpdater;
 };
 
 export const RulesCreator = memo(function RulesCreator(props: Props) {
-    const { fieldId, fieldType, rules, onRulesChange } = props;
+    const { fieldId, fieldType, rules, onFieldChange } = props;
+
+    const handleRuleChange = useCallback(
+        (rules: RuleGroup) => {
+            onFieldChange(prev => ({ ...prev, controls: { ...prev.controls, rules } }));
+        },
+        [onFieldChange]
+    );
 
     return (
         <RulesAccordion>
@@ -22,7 +34,7 @@ export const RulesCreator = memo(function RulesCreator(props: Props) {
                     isFirstGroup={true}
                     rootGroup={rules}
                     group={rules}
-                    onRuleChange={onRulesChange}
+                    onRuleChange={handleRuleChange}
                     combinators={[...ruleCombinators]}
                     fieldId={fieldId}
                     fieldType={fieldType}

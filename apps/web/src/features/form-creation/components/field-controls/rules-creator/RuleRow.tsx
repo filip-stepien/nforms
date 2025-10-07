@@ -1,4 +1,4 @@
-import { Group, Input, Select } from '@mantine/core';
+import { Group, Select } from '@mantine/core';
 import { IconX } from '@tabler/icons-react';
 import { IconButton } from '../../ui/IconButton';
 import { QuestionButton } from './QuestionButton';
