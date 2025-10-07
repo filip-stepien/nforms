@@ -1,3 +1,5 @@
+import { ruleCombinators } from './constants';
+
 export type Rule = {
     id: string;
     type: 'rule';
@@ -6,8 +8,6 @@ export type Rule = {
     operator?: string;
     value?: string;
 };
-
-export const ruleCombinators = ['AND', 'OR'] as const;
 
 export type RuleCombinator = (typeof ruleCombinators)[number];
 

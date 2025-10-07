@@ -1,41 +1,8 @@
 import { create } from 'zustand';
 import { v4 as uuid } from 'uuid';
 import { keysEqual, printKeysOrType } from '../lib/utils';
-import { Field, FieldType, InitialFieldStates } from '../lib/types';
-
-const initialFieldStates: InitialFieldStates = {
-    [FieldType.TEXT]: {
-        settings: {
-            required: true,
-            analyseSentiment: true,
-            extractKeywords: true,
-            summarize: true
-        },
-        controls: {
-            rules: {
-                id: uuid(),
-                combinator: 'AND',
-                type: 'group',
-                rules: []
-            }
-        }
-    },
-    [FieldType.SELECTION]: {
-        settings: {
-            required: true,
-            singleSelection: false
-        },
-        controls: {
-            options: [],
-            rules: {
-                id: uuid(),
-                combinator: 'AND',
-                type: 'group',
-                rules: []
-            }
-        }
-    }
-};
+import { Field, FieldType } from '../lib/types';
+import { initialFieldStates } from '../lib/constants';
 
 export type FormFieldsState = {
     fields: Field[];

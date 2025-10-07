@@ -7,6 +7,7 @@ import { IconButton } from '../../ui/IconButton';
 import { cn } from '@/lib/utils';
 import { RuleGroup, RuleCombinator, FieldType } from '@/features/form-creation/lib/types';
 import { updateGroup, deleteGroup } from '@/features/form-creation/lib/rules';
+import { possibleRules, ruleCombinators } from '@/features/form-creation/lib/constants';
 
 type Props = {
     hasBackgroundColor: boolean;
@@ -14,28 +15,13 @@ type Props = {
     group: RuleGroup;
     rootGroup: RuleGroup;
     onRuleChange: (root: RuleGroup) => void;
-    combinators: RuleCombinator[];
     fieldId: string;
     fieldType: FieldType;
-    conditions: string[];
-    operators: string[];
-    values?: string[];
 };
 
 export function RuleGroupRow(props: Props) {
-    const {
-        hasBackgroundColor,
-        isFirstGroup,
-        group,
-        rootGroup,
-        onRuleChange,
-        combinators,
-        fieldId,
-        fieldType,
-        conditions,
-        operators,
-        values
-    } = props;
+    const { hasBackgroundColor, isFirstGroup, group, rootGroup, onRuleChange, fieldId, fieldType } =
+        props;
 
     const { id, combinator, rules } = group;
 
@@ -48,9 +34,9 @@ export function RuleGroupRow(props: Props) {
                         id: uuid(),
                         type: 'rule' as const,
                         fieldId,
-                        condition: conditions.at(0),
-                        operator: operators.at(0),
-                        value: values ? values.at(0) : ''
+                        condition: possibleRules[fieldType].at(0)?.condition,
+                        operator: possibleRules[fieldType].at(0)?.operators.at(0),
+                        value: possibleRules[fieldType].at(0)?.values?.at(0)
                     },
                     ...group.rules
                 ]
@@ -93,7 +79,12 @@ export function RuleGroupRow(props: Props) {
             )}
         >
             <Group>
-                <Select data={combinators} value={combinator} onChange={handleCombinatorChange} />
+                <Select
+                    data={ruleCombinators}
+                    value={combinator}
+                    onChange={handleCombinatorChange}
+                    allowDeselect={false}
+                />
                 <ActionButton
                     label='Rule'
                     icon={IconPlus}
@@ -132,12 +123,8 @@ export function RuleGroupRow(props: Props) {
                         group={ruleOrGroup}
                         rootGroup={rootGroup}
                         onRuleChange={onRuleChange}
-                        combinators={combinators}
-                        conditions={conditions}
-                        operators={operators}
                         fieldId={fieldId}
                         fieldType={fieldType}
-                        values={values}
                     />
                 )
             )}

@@ -1,12 +1,7 @@
 import { memo, useCallback } from 'react';
 import { RuleGroupRow } from './RuleGroupRow';
 import { RulesAccordion } from './RulesAccordion';
-import {
-    FieldType,
-    FieldUpdater,
-    RuleGroup,
-    ruleCombinators
-} from '@/features/form-creation/lib/types';
+import { FieldType, FieldUpdater, RuleGroup } from '@/features/form-creation/lib/types';
 
 type Props = {
     fieldId: string;
@@ -35,12 +30,8 @@ export const RulesCreator = memo(function RulesCreator(props: Props) {
                     rootGroup={rules}
                     group={rules}
                     onRuleChange={handleRuleChange}
-                    combinators={[...ruleCombinators]}
                     fieldId={fieldId}
                     fieldType={fieldType}
-                    conditions={['sentiment', 'emotion']}
-                    operators={['is', 'equals']}
-                    values={['1', '2']}
                 />
             </div>
         </RulesAccordion>
