@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import { InitialFieldStates, FieldType, RuleConfig } from './types';
+import { InitialFieldStates, FieldType, RuleValueSource, RuleConfigMap } from './types';
 
 export const initialFieldStates: InitialFieldStates = {
     [FieldType.TEXT]: {
@@ -37,16 +37,18 @@ export const initialFieldStates: InitialFieldStates = {
 
 export const ruleCombinators = ['AND', 'OR'] as const;
 
-export const possibleRules: Record<FieldType, RuleConfig[]> = {
+export const ruleConfig: RuleConfigMap = {
     [FieldType.TEXT]: [
         {
             condition: 'sentiment',
-            operators: ['es', 'huj'],
+            operators: ['is'],
+            valueSource: RuleValueSource.STATIC,
             values: ['POSITIVE', 'NEGATIVE']
         },
         {
             condition: 'emotion',
             operators: ['is'],
+            valueSource: RuleValueSource.STATIC,
             values: ['ANGER', 'HAPPINESS']
         }
     ],
@@ -54,7 +56,8 @@ export const possibleRules: Record<FieldType, RuleConfig[]> = {
         {
             condition: 'answer',
             operators: ['is'],
-            values: ['1', '2', '3']
+            valueSource: RuleValueSource.DYNAMIC,
+            values: []
         }
     ]
 };

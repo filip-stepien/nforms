@@ -5,9 +5,14 @@ import { v4 as uuid } from 'uuid';
 import { IconCategoryPlus, IconPlus, IconX } from '@tabler/icons-react';
 import { IconButton } from '../../ui/IconButton';
 import { cn } from '@/lib/utils';
-import { RuleGroup, RuleCombinator, FieldType } from '@/features/form-creation/lib/types';
+import {
+    RuleGroup,
+    RuleCombinator,
+    FieldType,
+    RuleConfigMap
+} from '@/features/form-creation/lib/types';
 import { updateGroup, deleteGroup } from '@/features/form-creation/lib/rules';
-import { possibleRules, ruleCombinators } from '@/features/form-creation/lib/constants';
+import { ruleCombinators } from '@/features/form-creation/lib/constants';
 
 type Props = {
     hasBackgroundColor: boolean;
@@ -17,11 +22,20 @@ type Props = {
     onRuleChange: (root: RuleGroup) => void;
     fieldId: string;
     fieldType: FieldType;
+    ruleConfig: RuleConfigMap;
 };
 
 export function RuleGroupRow(props: Props) {
-    const { hasBackgroundColor, isFirstGroup, group, rootGroup, onRuleChange, fieldId, fieldType } =
-        props;
+    const {
+        hasBackgroundColor,
+        isFirstGroup,
+        group,
+        rootGroup,
+        onRuleChange,
+        fieldId,
+        fieldType,
+        ruleConfig
+    } = props;
 
     const { id, combinator, rules } = group;
 
@@ -34,9 +48,9 @@ export function RuleGroupRow(props: Props) {
                         id: uuid(),
                         type: 'rule' as const,
                         fieldId,
-                        condition: possibleRules[fieldType].at(0)?.condition,
-                        operator: possibleRules[fieldType].at(0)?.operators.at(0),
-                        value: possibleRules[fieldType].at(0)?.values?.at(0)
+                        condition: ruleConfig[fieldType].at(0)?.condition,
+                        operator: ruleConfig[fieldType].at(0)?.operators.at(0),
+                        value: ruleConfig[fieldType].at(0)?.values?.at(0)
                     },
                     ...group.rules
                 ]
@@ -114,6 +128,7 @@ export function RuleGroupRow(props: Props) {
                         rootGroup={rootGroup}
                         onRuleChange={onRuleChange}
                         fieldType={fieldType}
+                        ruleConfig={ruleConfig}
                     />
                 ) : (
                     <RuleGroupRow
@@ -125,6 +140,7 @@ export function RuleGroupRow(props: Props) {
                         onRuleChange={onRuleChange}
                         fieldId={fieldId}
                         fieldType={fieldType}
+                        ruleConfig={ruleConfig}
                     />
                 )
             )}

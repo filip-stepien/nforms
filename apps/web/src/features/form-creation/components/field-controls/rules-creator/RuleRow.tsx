@@ -2,29 +2,29 @@ import { Group, Select } from '@mantine/core';
 import { IconX } from '@tabler/icons-react';
 import { IconButton } from '../../ui/IconButton';
 import { QuestionButton } from './QuestionButton';
-import { FieldType, Rule, RuleGroup } from '@/features/form-creation/lib/types';
+import { FieldType, Rule, RuleConfigMap, RuleGroup } from '@/features/form-creation/lib/types';
 import { updateRule, deleteRule } from '@/features/form-creation/lib/rules';
-import { possibleRules } from '@/features/form-creation/lib/constants';
 
 type Props = {
     rule: Rule;
     rootGroup: RuleGroup;
     onRuleChange: (root: RuleGroup) => void;
+    ruleConfig: RuleConfigMap;
     fieldType: FieldType;
 };
 
 export function RuleRow(props: Props) {
-    const { rule, rootGroup, onRuleChange, fieldType } = props;
+    const { rule, rootGroup, onRuleChange, fieldType, ruleConfig } = props;
     const { id, operator, condition, value } = rule;
 
-    const conditions = possibleRules[fieldType].map(cfg => cfg.condition);
-    const operators = possibleRules[fieldType].find(cfg => cfg.condition === condition)?.operators;
-    const values = possibleRules[fieldType].find(cfg => cfg.condition === condition)?.values;
+    const conditions = ruleConfig[fieldType].map(cfg => cfg.condition);
+    const operators = ruleConfig[fieldType].find(cfg => cfg.condition === condition)?.operators;
+    const values = ruleConfig[fieldType].find(cfg => cfg.condition === condition)?.values;
 
     const handleRuleChange = (value: string | null, property: keyof Rule) => {
-        if (value) {
-            onRuleChange(updateRule(rootGroup, id, rule => ({ ...rule, [property]: value })));
-        }
+        onRuleChange(
+            updateRule(rootGroup, id, rule => ({ ...rule, [property]: value ?? undefined }))
+        );
     };
 
     const handleRuleDelete = () => {
@@ -37,10 +37,10 @@ export function RuleRow(props: Props) {
                 updateRule(rootGroup, id, rule => ({
                     ...rule,
                     condition: newCondition,
-                    operator: possibleRules[fieldType]
+                    operator: ruleConfig[fieldType]
                         .find(rule => rule.condition === newCondition)
                         ?.operators.at(0),
-                    value: possibleRules[fieldType]
+                    value: ruleConfig[fieldType]
                         .find(rule => rule.condition === newCondition)
                         ?.values?.at(0)
                 }))
@@ -53,7 +53,7 @@ export function RuleRow(props: Props) {
     };
 
     const handleValueChange = (newValue: string | null) => {
-        handleRuleChange(newValue, 'value');
+        handleRuleChange(newValue !== '' ? newValue : null, 'value');
     };
 
     return (
@@ -71,12 +71,22 @@ export function RuleRow(props: Props) {
                 onChange={handleOperatorChange}
                 allowDeselect={false}
             />
-            <Select
-                data={values}
-                value={value}
-                onChange={handleValueChange}
-                allowDeselect={false}
-            />
+            {values && values.length > 0 ? (
+                <Select
+                    data={values}
+                    value={value}
+                    onChange={handleValueChange}
+                    allowDeselect={false}
+                />
+            ) : (
+                <Select
+                    data={[{ label: '<No options available>', value: '' }]}
+                    value={''}
+                    disabled={true}
+                    onChange={handleValueChange}
+                    allowDeselect={false}
+                />
+            )}
             <IconButton icon={IconX} variant='light' color='red' onClick={handleRuleDelete} />
         </Group>
     );

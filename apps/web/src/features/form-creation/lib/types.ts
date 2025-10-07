@@ -18,11 +18,26 @@ export type RuleGroup = {
     rules: (Rule | RuleGroup)[];
 };
 
-export type RuleConfig = {
-    condition: string;
-    operators: string[];
-    values?: string[];
-};
+export enum RuleValueSource {
+    STATIC = 'static', // values are defined
+    DYNAMIC = 'dynamic' // values are resolved at runtime
+}
+
+export type RuleConfig =
+    | {
+          condition: 'sentiment' | 'emotion';
+          operators: string[];
+          valueSource: RuleValueSource.STATIC;
+          values: string[];
+      }
+    | {
+          condition: 'answer';
+          operators: string[];
+          valueSource: RuleValueSource.DYNAMIC;
+          values: string[];
+      };
+
+export type RuleConfigMap = Record<FieldType, RuleConfig[]>;
 
 export type FieldOption = {
     id: string;
