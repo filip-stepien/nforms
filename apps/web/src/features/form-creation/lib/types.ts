@@ -26,13 +26,10 @@ export type RuleConfigEntry = {
 
 export type RuleConfigMap = Record<FieldType, RuleConfigEntry[]>;
 
-export type RuleConfigUpdater<T extends FieldType> = (
-    ruleConfig: RuleConfigMap,
-    field: FieldMap[T]
-) => RuleConfigMap;
+export type RuleConfigUpdater = (ruleConfig: RuleConfigMap, field: Field) => RuleConfigMap;
 
 export type RuleConfigUpdatersMap = {
-    [K in FieldType]?: RuleConfigUpdater<K>;
+    [K in FieldType]?: RuleConfigUpdater;
 };
 
 export type FieldOption = {
@@ -73,17 +70,13 @@ export type ControlsMap = {
     [FieldType.SELECTION]: OptionsControl & RulesControl;
 };
 
-export type FieldMap = {
-    [K in FieldType]: {
-        id: string;
-        title: string;
-        type: K;
-        settings: SettingsMap[K];
-        controls: ControlsMap[K];
-    };
+export type Field = {
+    id: string;
+    title: string;
+    type: FieldType;
+    settings: SettingsMap[FieldType];
+    controls: ControlsMap[FieldType];
 };
-
-export type Field = FieldMap[FieldType];
 
 export type FieldUpdater = (field: Field | ((prev: Field) => Field)) => any;
 

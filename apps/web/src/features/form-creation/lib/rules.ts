@@ -1,5 +1,13 @@
 import { ruleConfigUpdaters } from './constants';
-import { RuleGroup, Rule, RuleConfigMap, FieldType, FieldMap, RuleConfigUpdater } from './types';
+import {
+    RuleGroup,
+    Rule,
+    RuleConfigMap,
+    FieldType,
+    RuleConfigUpdater,
+    Field,
+    ControlsMap
+} from './types';
 
 export function updateRule(root: RuleGroup, ruleId: string, updater: (r: Rule) => Rule): RuleGroup {
     return {
@@ -51,22 +59,21 @@ export function deleteGroup(root: RuleGroup, groupId: string): RuleGroup {
     };
 }
 
-export function resolveRuleConfig<T extends FieldType = FieldType>(
-    initialConfig: RuleConfigMap,
-    field: FieldMap[T]
-): RuleConfigMap {
+export function resolveRuleConfig(initialConfig: RuleConfigMap, field: Field): RuleConfigMap {
     const updater = ruleConfigUpdaters[field.type];
     return updater ? updater(initialConfig, field) : initialConfig;
 }
 
-export const updateSelectionAnswerValues: RuleConfigUpdater<FieldType.SELECTION> = (cfg, field) => {
+export const updateSelectionAnswerValues: RuleConfigUpdater = (cfg, field) => {
     return {
         ...cfg,
         [FieldType.SELECTION]: cfg[FieldType.SELECTION].map(rule =>
             rule.condition === 'answer'
                 ? {
                       ...rule,
-                      values: field.controls.options.map(ctrl => ctrl.id)
+                      values: (field.controls as ControlsMap[FieldType.SELECTION]).options.map(
+                          ctrl => ctrl.id
+                      )
                   }
                 : rule
         )
