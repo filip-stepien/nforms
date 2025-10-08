@@ -1,5 +1,6 @@
 import { v4 as uuid } from 'uuid';
-import { InitialFieldStates, FieldType, RuleValueSource, RuleConfigMap } from './types';
+import { InitialFieldStates, FieldType, RuleConfigMap, RuleConfigUpdatersMap } from './types';
+import { updateSelectionAnswerValues } from './rules';
 
 export const initialFieldStates: InitialFieldStates = {
     [FieldType.TEXT]: {
@@ -42,13 +43,11 @@ export const ruleConfig: RuleConfigMap = {
         {
             condition: 'sentiment',
             operators: ['is'],
-            valueSource: RuleValueSource.STATIC,
             values: ['POSITIVE', 'NEGATIVE']
         },
         {
             condition: 'emotion',
             operators: ['is'],
-            valueSource: RuleValueSource.STATIC,
             values: ['ANGER', 'HAPPINESS']
         }
     ],
@@ -56,8 +55,11 @@ export const ruleConfig: RuleConfigMap = {
         {
             condition: 'answer',
             operators: ['is'],
-            valueSource: RuleValueSource.DYNAMIC,
             values: []
         }
     ]
+};
+
+export const ruleConfigUpdaters: RuleConfigUpdatersMap = {
+    [FieldType.SELECTION]: updateSelectionAnswerValues
 };

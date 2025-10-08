@@ -18,26 +18,22 @@ export type RuleGroup = {
     rules: (Rule | RuleGroup)[];
 };
 
-export enum RuleValueSource {
-    STATIC = 'static', // values are defined
-    DYNAMIC = 'dynamic' // values are resolved at runtime
-}
+export type RuleConfigEntry = {
+    condition: 'sentiment' | 'emotion' | 'answer';
+    operators: string[];
+    values: string[];
+};
 
-export type RuleConfig =
-    | {
-          condition: 'sentiment' | 'emotion';
-          operators: string[];
-          valueSource: RuleValueSource.STATIC;
-          values: string[];
-      }
-    | {
-          condition: 'answer';
-          operators: string[];
-          valueSource: RuleValueSource.DYNAMIC;
-          values: string[];
-      };
+export type RuleConfigMap = Record<FieldType, RuleConfigEntry[]>;
 
-export type RuleConfigMap = Record<FieldType, RuleConfig[]>;
+export type RuleConfigUpdater<T extends FieldType> = (
+    ruleConfig: RuleConfigMap,
+    field: FieldMap[T]
+) => RuleConfigMap;
+
+export type RuleConfigUpdatersMap = {
+    [K in FieldType]?: RuleConfigUpdater<K>;
+};
 
 export type FieldOption = {
     id: string;
@@ -77,13 +73,17 @@ export type ControlsMap = {
     [FieldType.SELECTION]: OptionsControl & RulesControl;
 };
 
-export type Field = {
-    id: string;
-    title: string;
-    type: FieldType;
-    settings: SettingsMap[FieldType];
-    controls: ControlsMap[FieldType];
+export type FieldMap = {
+    [K in FieldType]: {
+        id: string;
+        title: string;
+        type: K;
+        settings: SettingsMap[K];
+        controls: ControlsMap[K];
+    };
 };
+
+export type Field = FieldMap[FieldType];
 
 export type FieldUpdater = (field: Field | ((prev: Field) => Field)) => any;
 

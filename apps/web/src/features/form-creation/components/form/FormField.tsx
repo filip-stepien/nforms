@@ -7,8 +7,9 @@ import { FieldHeader } from './FieldHeader';
 import { FieldBody } from './FieldBody';
 import { SelectionFieldSettings } from '../field-settings/SelectionFieldSettings';
 import { RulesCreator } from '../field-controls/rules-creator/RulesCreator';
-import { ControlsMap, Field, FieldType, RuleConfigMap, SettingsMap } from '../../lib/types';
+import { ControlsMap, Field, FieldType, SettingsMap } from '../../lib/types';
 import { useFormFieldHandlers } from '../../hooks/useFormFieldHandlers';
+import { resolveRuleConfig } from '../../lib/rules';
 import { ruleConfig } from '../../lib/constants';
 
 type Props = {
@@ -19,19 +20,7 @@ type Props = {
 export const FormField = memo(function FormField({ index, field }: Props) {
     const { isSelected, onDelete, onSelect, onChange } = useFormFieldHandlers(field);
 
-    const dynamicValuesRuleConfig: RuleConfigMap = {
-        ...ruleConfig,
-        [FieldType.SELECTION]: ruleConfig[FieldType.SELECTION].map(cfg =>
-            cfg.condition === 'answer' && field.type === FieldType.SELECTION
-                ? {
-                      ...cfg,
-                      values: (field.controls as ControlsMap[FieldType.SELECTION]).options.map(
-                          ctrl => ctrl.id
-                      )
-                  }
-                : cfg
-        )
-    };
+    const resolvedRuleConfig = resolveRuleConfig(ruleConfig, field);
 
     const settingsComponents: Record<FieldType, JSX.Element> = {
         [FieldType.TEXT]: (
@@ -54,7 +43,7 @@ export const FormField = memo(function FormField({ index, field }: Props) {
                 fieldId={field.id}
                 fieldType={field.type}
                 rules={field.controls.rules}
-                ruleConfig={dynamicValuesRuleConfig}
+                ruleConfig={resolvedRuleConfig}
                 onFieldChange={onChange}
             />
         ),
@@ -64,7 +53,7 @@ export const FormField = memo(function FormField({ index, field }: Props) {
                     fieldId={field.id}
                     fieldType={field.type}
                     rules={field.controls.rules}
-                    ruleConfig={dynamicValuesRuleConfig}
+                    ruleConfig={resolvedRuleConfig}
                     onFieldChange={onChange}
                 />
                 <OptionCreator
