@@ -9,7 +9,9 @@ import {
     RuleGroup,
     RuleCombinator,
     FieldType,
-    RuleConfigMap
+    RuleConfigMap,
+    Field,
+    ControlsMap
 } from '@/features/form-creation/lib/types';
 import { updateGroup, deleteGroup } from '@/features/form-creation/lib/rules';
 import { ruleCombinators } from '@/features/form-creation/lib/constants';
@@ -23,6 +25,7 @@ type Props = {
     fieldId: string;
     fieldType: FieldType;
     ruleConfig: RuleConfigMap;
+    field: Field;
 };
 
 export function RuleGroupRow(props: Props) {
@@ -34,7 +37,8 @@ export function RuleGroupRow(props: Props) {
         onRuleChange,
         fieldId,
         fieldType,
-        ruleConfig
+        ruleConfig,
+        field
     } = props;
 
     const { id, combinator, rules } = group;
@@ -50,7 +54,11 @@ export function RuleGroupRow(props: Props) {
                         fieldId,
                         condition: ruleConfig[fieldType].at(0)?.condition,
                         operator: ruleConfig[fieldType].at(0)?.operators.at(0),
-                        value: ruleConfig[fieldType].at(0)?.values?.at(0)
+                        value:
+                            fieldType === FieldType.SELECTION
+                                ? (field.controls as ControlsMap[FieldType.SELECTION]).options.at(0)
+                                      ?.id
+                                : ruleConfig[fieldType].at(0)?.values.at(0)
                     },
                     ...group.rules
                 ]
@@ -129,6 +137,7 @@ export function RuleGroupRow(props: Props) {
                         onRuleChange={onRuleChange}
                         fieldType={fieldType}
                         ruleConfig={ruleConfig}
+                        field={field}
                     />
                 ) : (
                     <RuleGroupRow
@@ -141,6 +150,7 @@ export function RuleGroupRow(props: Props) {
                         fieldId={fieldId}
                         fieldType={fieldType}
                         ruleConfig={ruleConfig}
+                        field={field}
                     />
                 )
             )}

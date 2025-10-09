@@ -35,6 +35,20 @@ export function deleteRule(root: RuleGroup, ruleId: string): RuleGroup {
     };
 }
 
+export function findRules(root: RuleGroup, predicate: (r: Rule) => boolean = () => true): Rule[] {
+    const result: Rule[] = [];
+
+    for (const r of root.rules) {
+        if (r.type === 'rule') {
+            if (predicate(r)) result.push(r);
+        } else if (r.type === 'group') {
+            result.push(...findRules(r, predicate));
+        }
+    }
+
+    return result;
+}
+
 export function updateGroup(
     root: RuleGroup,
     groupId: string,

@@ -2,6 +2,7 @@ import { memo, useCallback } from 'react';
 import { RuleGroupRow } from './RuleGroupRow';
 import { RulesAccordion } from './RulesAccordion';
 import {
+    Field,
     FieldType,
     FieldUpdater,
     RuleConfigMap,
@@ -14,10 +15,11 @@ type Props = {
     rules: RuleGroup;
     ruleConfig: RuleConfigMap;
     onFieldChange: FieldUpdater;
+    field: Field;
 };
 
 export const RulesCreator = memo(function RulesCreator(props: Props) {
-    const { fieldId, fieldType, rules, ruleConfig, onFieldChange } = props;
+    const { fieldId, fieldType, rules, ruleConfig, onFieldChange, field } = props;
 
     const handleRuleChange = useCallback(
         (rules: RuleGroup) => {
@@ -39,6 +41,7 @@ export const RulesCreator = memo(function RulesCreator(props: Props) {
                     fieldId={fieldId}
                     fieldType={fieldType}
                     ruleConfig={ruleConfig}
+                    field={field}
                 />
             </div>
         </RulesAccordion>

@@ -60,6 +60,4 @@ export const ruleConfig: RuleConfigMap = {
     ]
 };
 
-export const ruleConfigUpdaters: RuleConfigUpdatersMap = {
-    [FieldType.SELECTION]: updateSelectionAnswerValues
-};
+export const ruleConfigUpdaters: RuleConfigUpdatersMap = {};

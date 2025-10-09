@@ -9,7 +9,6 @@ import { SelectionFieldSettings } from '../field-settings/SelectionFieldSettings
 import { RulesCreator } from '../field-controls/rules-creator/RulesCreator';
 import { ControlsMap, Field, FieldType, SettingsMap } from '../../lib/types';
 import { useFormFieldHandlers } from '../../hooks/useFormFieldHandlers';
-import { resolveRuleConfig } from '../../lib/rules';
 import { ruleConfig } from '../../lib/constants';
 
 type Props = {
@@ -20,7 +19,8 @@ type Props = {
 export const FormField = memo(function FormField({ index, field }: Props) {
     const { isSelected, onDelete, onSelect, onChange } = useFormFieldHandlers(field);
 
-    const resolvedRuleConfig = resolveRuleConfig(ruleConfig, field);
+    //const resolvedRuleConfig = resolveRuleConfig(ruleConfig, field);
+    const resolvedRuleConfig = ruleConfig;
 
     const settingsComponents: Record<FieldType, JSX.Element> = {
         [FieldType.TEXT]: (
@@ -45,6 +45,7 @@ export const FormField = memo(function FormField({ index, field }: Props) {
                 rules={field.controls.rules}
                 ruleConfig={resolvedRuleConfig}
                 onFieldChange={onChange}
+                field={field}
             />
         ),
         [FieldType.SELECTION]: (
@@ -55,16 +56,18 @@ export const FormField = memo(function FormField({ index, field }: Props) {
                     rules={field.controls.rules}
                     ruleConfig={resolvedRuleConfig}
                     onFieldChange={onChange}
+                    field={field}
                 />
                 <OptionCreator
                     options={(field.controls as ControlsMap[FieldType.SELECTION]).options}
+                    field={field}
                     onFieldChange={onChange}
                 />
             </Stack>
         )
     };
 
-    console.count('rerender');
+    // console.count('rerender');
 
     return (
         <Draggable draggableId={field.id} index={index}>

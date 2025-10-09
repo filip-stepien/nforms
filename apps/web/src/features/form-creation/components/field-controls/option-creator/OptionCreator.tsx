@@ -2,7 +2,7 @@ import { DragDropContext, Droppable } from '@hello-pangea/dnd';
 import { Button, Flex } from '@mantine/core';
 import { OptionItem } from './OptionItem';
 import { useOptionCreator } from '@/features/form-creation/hooks/useOptionCreator';
-import { FieldUpdater } from '@/features/form-creation/lib/types';
+import { Field, FieldUpdater } from '@/features/form-creation/lib/types';
 
 export type FieldOption = {
     id: string;
@@ -11,10 +11,11 @@ export type FieldOption = {
 
 type Props = {
     options: FieldOption[];
+    field: Field;
     onFieldChange: FieldUpdater;
 };
 
-export function OptionCreator({ options, onFieldChange }: Props) {
+export function OptionCreator({ options, onFieldChange, field }: Props) {
     const {
         lastAddedId,
         onOptionAdd,
@@ -22,7 +23,7 @@ export function OptionCreator({ options, onFieldChange }: Props) {
         onOptionUpdate,
         onOptionReorder,
         onOptionSelect
-    } = useOptionCreator(options, onFieldChange);
+    } = useOptionCreator(options, onFieldChange, field);
 
     return (
         <div>
