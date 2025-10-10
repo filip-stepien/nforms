@@ -70,19 +70,16 @@ export type ControlsMap = {
     [FieldType.SELECTION]: OptionsControl & RulesControl;
 };
 
-export type Field = {
-    id: string;
-    title: string;
-    type: FieldType;
-    settings: SettingsMap[FieldType];
-    controls: ControlsMap[FieldType];
-};
-
-export type FieldUpdater = (field: Field | ((prev: Field) => Field)) => any;
-
-export type InitialFieldStates = {
-    [K in FieldType]: {
-        settings: SettingsMap[K];
-        controls: ControlsMap[K];
+export type FieldMap = {
+    [T in FieldType]: {
+        id: string;
+        title: string;
+        type: T;
+        settings: SettingsMap[T];
+        controls: ControlsMap[T];
     };
 };
+
+export type Field = FieldMap[FieldType];
+
+export type FieldUpdater = (field: Field | ((prev: Field) => Field)) => any;

@@ -1,25 +1,20 @@
 import { useCallback } from 'react';
-import { useShallow } from 'zustand/shallow';
 import { Field, FieldUpdater } from '../lib/types';
-import { useFormFieldsStore } from './useFormFieldsStore';
+import { useDispatch } from 'react-redux';
+import { deleteField } from '../state/formFieldsSlice';
 
 export function useFormFieldHandlers(field: Field) {
-    const { setField, deleteField, getLastAddedId, setLastAddedId } = useFormFieldsStore(
-        useShallow(state => ({
-            setField: state.setField,
-            deleteField: state.deleteField,
-            getLastAddedId: state.getLastAddedId,
-            setLastAddedId: state.setLastAddedId
-        }))
-    );
+    const dispatch = useDispatch();
 
     const onSelect = () => {
-        if (getLastAddedId() !== null) {
-            setLastAddedId(null);
-        }
+        // if (getLastAddedId() !== null) {
+        //     setLastAddedId(null);
+        // }
     };
 
-    const onDelete = () => deleteField(field.id);
+    const onDelete = () => {
+        dispatch(deleteField(field.id));
+    };
 
     const onChange: FieldUpdater = state => {
         const newField = typeof state === 'function' ? state(field) : state;

@@ -1,16 +1,32 @@
-import { ChangeEventHandler, JSX } from 'react';
+import { ChangeEventHandler, ReactNode } from 'react';
 import { Stack, NativeSelect } from '@mantine/core';
-import { FieldType, FieldUpdater } from '../../lib/types';
+import { FieldType } from '../../lib/types';
+import { OptionCreator } from '../field-controls/option-creator/OptionCreator';
+import { RulesCreator } from '../field-controls/rules-creator/RulesCreator';
+import { useFormSelector } from '../../hooks/useFormSelector';
+import { selectFieldById, setField } from '../../state/formFieldsSlice';
+import { useDispatch } from 'react-redux';
 
 type Props = {
-    fieldType: FieldType;
-    onFieldChange: FieldUpdater;
-    controlsComponent: JSX.Element;
+    fieldId: string;
 };
 
-export function FieldBody({ fieldType, onFieldChange, controlsComponent }: Props) {
+export function FieldBody({ fieldId }: Props) {
+    const dispatch = useDispatch();
+    const fieldType = useFormSelector(state => selectFieldById(state, fieldId).type);
+
+    const controlsComponents: Record<FieldType, ReactNode> = {
+        [FieldType.TEXT]: <RulesCreator fieldId={fieldId} />,
+        [FieldType.SELECTION]: (
+            <Stack>
+                <RulesCreator fieldId={fieldId} />
+                <OptionCreator fieldId={fieldId} />
+            </Stack>
+        )
+    };
+
     const handleInputTypeChange: ChangeEventHandler<HTMLSelectElement> = event => {
-        onFieldChange(prev => ({ ...prev, type: event.target.value as FieldType }));
+        dispatch(setField({ fieldId, field: { type: event.target.value as FieldType } }));
     };
 
     return (
@@ -22,7 +38,7 @@ export function FieldBody({ fieldType, onFieldChange, controlsComponent }: Props
                 className='flex-1'
                 onChange={handleInputTypeChange}
             />
-            {controlsComponent && <Stack>{controlsComponent}</Stack>}
+            {controlsComponents[fieldType] && <Stack>{controlsComponents[fieldType]}</Stack>}
         </Stack>
     );
 }

@@ -6,31 +6,34 @@ import { DragDropContext, Droppable } from '@hello-pangea/dnd';
 import { useFormTitle } from '../../hooks/useFormTitle';
 import { useFormCreateAction } from '../../hooks/useFormCreateAction';
 import { useFormStatusEffect } from '../../hooks/useFormStatusEffect';
-import { useFormFieldsStore } from '../../hooks/useFormFieldsStore';
 import { FormTitle } from './FormTitle';
 import { FormControls } from './FormControls';
-import { useShallow } from 'zustand/shallow';
+import { addField, reorderField } from '../../state/formFieldsSlice';
+import { useFormDispatch } from '../../hooks/useFormDispatch';
+import { useFormSelector } from '../../hooks/useFormSelector';
 
 export function FormCreator() {
+    const dispatch = useFormDispatch();
     const { title, onTitleChange, onTitleBlur } = useFormTitle();
-    const { fields, reorderField, addField } = useFormFieldsStore(
-        useShallow(state => ({
-            fields: state.fields,
-            reorderField: state.reorderField,
-            addField: state.addField
-        }))
-    );
-
+    const fields = useFormSelector(state => state.formFields.fields);
     const { status, action, isLoading } = useFormCreateAction(title, fields);
 
     useFormStatusEffect(status);
 
+    // const { fields, reorderField, addField } = useFormFieldsStore(
+    //     useShallow(state => ({
+    //         fields: state.fields,
+    //         reorderField: state.reorderField,
+    //         addField: state.addField
+    //     }))
+    // );
+
     return (
         <form action={action}>
             <DragDropContext
-                onDragEnd={({ destination, source }) =>
-                    reorderField(source.index, destination?.index)
-                }
+                onDragEnd={({ destination, source }) => {
+                    dispatch(reorderField({ from: source.index, to: destination?.index }));
+                }}
             >
                 <Droppable droppableId='form-creator'>
                     {provided => (
@@ -45,10 +48,13 @@ export function FormCreator() {
                                 onBlur={onTitleBlur}
                             />
                             {fields.map((field, index) => (
-                                <FormField key={field.id} index={index} field={field} />
+                                <FormField key={field.id} index={index} fieldId={field.id} />
                             ))}
                             {provided.placeholder}
-                            <FormControls addField={addField} isLoading={isLoading} />
+                            <FormControls
+                                addField={() => dispatch(addField())}
+                                isLoading={isLoading}
+                            />
                         </Flex>
                     )}
                 </Droppable>

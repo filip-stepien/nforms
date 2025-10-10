@@ -1,24 +1,39 @@
-import { useFormFieldsStore } from '@/features/form-creation/hooks/useFormFieldsStore';
+import { useFormDispatch } from '@/features/form-creation/hooks/useFormDispatch';
+import { useFormSelector } from '@/features/form-creation/hooks/useFormSelector';
 import { updateRule } from '@/features/form-creation/lib/rules';
-import { Rule, RuleGroup } from '@/features/form-creation/lib/types';
+import { Rule } from '@/features/form-creation/lib/types';
 import { truncateText } from '@/features/form-creation/lib/utils';
+import { selectFieldById, setField } from '@/features/form-creation/state/formFieldsSlice';
+import { FormRootState } from '@/features/form-creation/state/formStore';
 import { Modal, Select } from '@mantine/core';
+import { createSelector } from '@reduxjs/toolkit';
 import { IconLinkPlus } from '@tabler/icons-react';
 
 type Props = {
     onClose: () => void;
     opened: boolean;
     rule: Rule;
-    rootGroup: RuleGroup;
-    onRuleChange: (root: RuleGroup) => void;
+    fieldId: string;
 };
 
-export function QuestionModal({ onClose, opened, rule, onRuleChange, rootGroup }: Props) {
-    const fields = useFormFieldsStore(state => state.fields);
+const selectDataSelector = createSelector(
+    (state: FormRootState) => state.formFields.fields,
+    fields => fields.map(f => ({ value: f.id, label: truncateText(f.title, 30) }))
+);
 
-    const handleSelectChange = (fieldId: string | null) => {
-        if (fieldId) {
-            onRuleChange(updateRule(rootGroup, rule.id, rule => ({ ...rule, fieldId })));
+export function QuestionModal({ onClose, opened, rule, fieldId }: Props) {
+    const dispatch = useFormDispatch();
+    const root = useFormSelector(state => selectFieldById(state, fieldId).controls.rules);
+    const selectData = useFormSelector(selectDataSelector);
+
+    const handleSelectChange = (selectedId: string | null) => {
+        if (selectedId) {
+            const updatedRules = updateRule(root, rule.id, rule => ({
+                ...rule,
+                fieldId: selectedId
+            }));
+
+            dispatch(setField({ fieldId, field: { controls: { rules: updatedRules } } }));
             onClose();
         }
     };
@@ -35,9 +50,10 @@ export function QuestionModal({ onClose, opened, rule, onRuleChange, rootGroup }
             }
         >
             <Select
-                data={fields.map(f => ({ value: f.id, label: truncateText(f.title, 30) }))}
+                data={selectData}
                 value={rule.fieldId}
                 onChange={handleSelectChange}
+                allowDeselect={false}
             />
         </Modal>
     );

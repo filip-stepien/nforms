@@ -1,29 +1,36 @@
 import { Checkbox, Divider, Stack } from '@mantine/core';
 import { ChangeEvent } from 'react';
 import { BaseFieldSettings } from './BaseFieldSettings';
-import { SelectionSettings, FieldUpdater } from '../../lib/types';
+import { FieldType, SettingsMap } from '../../lib/types';
+import { useFormDispatch } from '../../hooks/useFormDispatch';
+import { useFormSelector } from '../../hooks/useFormSelector';
+import { selectFieldById, setField } from '../../state/formFieldsSlice';
 
-export type Props = {
-    settings: SelectionSettings;
-    onFieldChange: FieldUpdater;
+type Props = {
+    fieldId: string;
 };
 
-export function SelectionFieldSettings({ settings, onFieldChange }: Props) {
+export function SelectionFieldSettings({ fieldId }: Props) {
+    const dispatch = useFormDispatch();
+    const settings = useFormSelector(
+        state => selectFieldById<FieldType.SELECTION>(state, fieldId).settings
+    );
+
     const handleSelectionSettingChange = (
-        setting: keyof SelectionSettings,
+        setting: keyof SettingsMap[FieldType.SELECTION],
         event: ChangeEvent<HTMLInputElement>
     ) => {
-        if (settings) {
-            onFieldChange(prev => ({
-                ...prev,
-                settings: { ...settings, [setting]: event.target.checked }
-            }));
-        }
+        dispatch(
+            setField<FieldType.SELECTION>({
+                fieldId,
+                field: { settings: { [setting]: event.target.checked } }
+            })
+        );
     };
 
     return (
         <>
-            <BaseFieldSettings settings={settings} onFieldChange={onFieldChange} />
+            <BaseFieldSettings fieldId={fieldId} />
             <Divider />
             <Stack>
                 <Checkbox

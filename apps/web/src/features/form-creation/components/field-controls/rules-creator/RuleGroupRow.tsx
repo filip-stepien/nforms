@@ -5,60 +5,53 @@ import { v4 as uuid } from 'uuid';
 import { IconCategoryPlus, IconPlus, IconX } from '@tabler/icons-react';
 import { IconButton } from '../../ui/IconButton';
 import { cn } from '@/lib/utils';
+import { updateGroup, deleteGroup } from '@/features/form-creation/lib/rules';
+import { ruleCombinators, ruleConfig } from '@/features/form-creation/lib/constants';
+import { useFormDispatch } from '@/features/form-creation/hooks/useFormDispatch';
+import { useFormSelector } from '@/features/form-creation/hooks/useFormSelector';
+import { selectFieldById, setField } from '@/features/form-creation/state/formFieldsSlice';
 import {
     RuleGroup,
     RuleCombinator,
     FieldType,
-    RuleConfigMap,
-    Field,
     ControlsMap
 } from '@/features/form-creation/lib/types';
-import { updateGroup, deleteGroup } from '@/features/form-creation/lib/rules';
-import { ruleCombinators } from '@/features/form-creation/lib/constants';
 
 type Props = {
     hasBackgroundColor: boolean;
     isFirstGroup: boolean;
     group: RuleGroup;
-    rootGroup: RuleGroup;
-    onRuleChange: (root: RuleGroup) => void;
     fieldId: string;
-    fieldType: FieldType;
-    ruleConfig: RuleConfigMap;
-    field: Field;
 };
 
 export function RuleGroupRow(props: Props) {
-    const {
-        hasBackgroundColor,
-        isFirstGroup,
-        group,
-        rootGroup,
-        onRuleChange,
-        fieldId,
-        fieldType,
-        ruleConfig,
-        field
-    } = props;
-
+    const { hasBackgroundColor, isFirstGroup, group, fieldId } = props;
     const { id, combinator, rules } = group;
 
+    const dispatch = useFormDispatch();
+    const field = useFormSelector(state => selectFieldById(state, fieldId));
+    const root = field.controls.rules;
+
+    const dispatchRules = (updatedRules: RuleGroup) => {
+        dispatch(setField({ fieldId, field: { controls: { rules: updatedRules } } }));
+    };
+
     const handleAddRule = () => {
-        onRuleChange(
-            updateGroup(rootGroup, id, group => ({
+        dispatchRules(
+            updateGroup(root, id, group => ({
                 ...group,
                 rules: [
                     {
                         id: uuid(),
                         type: 'rule' as const,
                         fieldId,
-                        condition: ruleConfig[fieldType].at(0)?.condition,
-                        operator: ruleConfig[fieldType].at(0)?.operators.at(0),
+                        condition: ruleConfig[field.type].at(0)?.condition,
+                        operator: ruleConfig[field.type].at(0)?.operators.at(0),
                         value:
-                            fieldType === FieldType.SELECTION
+                            field.type === FieldType.SELECTION
                                 ? (field.controls as ControlsMap[FieldType.SELECTION]).options.at(0)
                                       ?.id
-                                : ruleConfig[fieldType].at(0)?.values.at(0)
+                                : ruleConfig[field.type].at(0)?.values.at(0)
                     },
                     ...group.rules
                 ]
@@ -67,8 +60,8 @@ export function RuleGroupRow(props: Props) {
     };
 
     const handleAddGroup = () => {
-        onRuleChange(
-            updateGroup(rootGroup, id, group => ({
+        dispatchRules(
+            updateGroup(root, id, group => ({
                 ...group,
                 rules: [
                     ...group.rules,
@@ -84,12 +77,12 @@ export function RuleGroupRow(props: Props) {
     };
 
     const handleGroupDelete = () => {
-        onRuleChange(deleteGroup(rootGroup, id));
+        dispatchRules(deleteGroup(root, id));
     };
 
     const handleCombinatorChange = (value: string | null) => {
-        onRuleChange(
-            updateGroup(rootGroup, id, group => ({ ...group, combinator: value as RuleCombinator }))
+        dispatchRules(
+            updateGroup(root, id, group => ({ ...group, combinator: value as RuleCombinator }))
         );
     };
 
@@ -133,11 +126,8 @@ export function RuleGroupRow(props: Props) {
                     <RuleRow
                         key={ruleOrGroup.id}
                         rule={ruleOrGroup}
-                        rootGroup={rootGroup}
-                        onRuleChange={onRuleChange}
-                        fieldType={fieldType}
                         ruleConfig={ruleConfig}
-                        field={field}
+                        fieldId={fieldId}
                     />
                 ) : (
                     <RuleGroupRow
@@ -145,12 +135,7 @@ export function RuleGroupRow(props: Props) {
                         hasBackgroundColor={!hasBackgroundColor}
                         isFirstGroup={false}
                         group={ruleOrGroup}
-                        rootGroup={rootGroup}
-                        onRuleChange={onRuleChange}
                         fieldId={fieldId}
-                        fieldType={fieldType}
-                        ruleConfig={ruleConfig}
-                        field={field}
                     />
                 )
             )}

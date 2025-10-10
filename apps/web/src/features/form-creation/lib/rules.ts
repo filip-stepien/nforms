@@ -9,21 +9,36 @@ import {
     ControlsMap
 } from './types';
 
-export function updateRule(root: RuleGroup, ruleId: string, updater: (r: Rule) => Rule): RuleGroup {
+export function updateRule(root: RuleGroup, ruleId: string, update: (r: Rule) => Rule): RuleGroup {
     return {
         ...root,
         rules: root.rules.map(r => {
             if (r.type === 'rule' && r.id === ruleId) {
-                return updater(r);
+                return update(r);
             }
 
             if (r.type === 'group') {
-                return updateRule(r, ruleId, updater);
+                return updateRule(r, ruleId, update);
             }
 
             return r;
         })
     };
+}
+
+export function updateRules(
+    root: RuleGroup,
+    where: (r: Rule) => boolean,
+    update: (r: Rule) => Rule
+): RuleGroup {
+    const rules = findRules(root, where);
+    let newRoot: RuleGroup = root;
+
+    for (const { id } of rules) {
+        newRoot = updateRule(root, id, update);
+    }
+
+    return newRoot;
 }
 
 export function deleteRule(root: RuleGroup, ruleId: string): RuleGroup {
@@ -35,14 +50,14 @@ export function deleteRule(root: RuleGroup, ruleId: string): RuleGroup {
     };
 }
 
-export function findRules(root: RuleGroup, predicate: (r: Rule) => boolean = () => true): Rule[] {
+export function findRules(root: RuleGroup, where: (r: Rule) => boolean): Rule[] {
     const result: Rule[] = [];
 
     for (const r of root.rules) {
         if (r.type === 'rule') {
-            if (predicate(r)) result.push(r);
+            if (where(r)) result.push(r);
         } else if (r.type === 'group') {
-            result.push(...findRules(r, predicate));
+            result.push(...findRules(r, where));
         }
     }
 

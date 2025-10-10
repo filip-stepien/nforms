@@ -1,18 +1,24 @@
 import { Switch } from '@mantine/core';
 import { ChangeEventHandler } from 'react';
-import { BaseSettings, FieldUpdater } from '../../lib/types';
+import { useFormDispatch } from '../../hooks/useFormDispatch';
+import { useFormSelector } from '../../hooks/useFormSelector';
+import { selectFieldById, setField } from '../../state/formFieldsSlice';
 
-export type Props = {
-    settings: BaseSettings;
-    onFieldChange: FieldUpdater;
+type Props = {
+    fieldId: string;
 };
 
-export function BaseFieldSettings({ settings, onFieldChange }: Props) {
+export function BaseFieldSettings({ fieldId }: Props) {
+    const dispatch = useFormDispatch();
+    const settings = useFormSelector(state => selectFieldById(state, fieldId).settings);
+
     const handleRequiredChange: ChangeEventHandler<HTMLInputElement> = event => {
-        onFieldChange(prev => ({
-            ...prev,
-            settings: { ...prev.settings, required: event.target.checked }
-        }));
+        dispatch(
+            setField({
+                fieldId,
+                field: { settings: { required: event.target.checked } }
+            })
+        );
     };
 
     return (

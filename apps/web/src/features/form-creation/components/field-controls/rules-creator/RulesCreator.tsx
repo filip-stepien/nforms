@@ -1,32 +1,15 @@
-import { memo, useCallback } from 'react';
+import { memo } from 'react';
 import { RuleGroupRow } from './RuleGroupRow';
 import { RulesAccordion } from './RulesAccordion';
-import {
-    Field,
-    FieldType,
-    FieldUpdater,
-    RuleConfigMap,
-    RuleGroup
-} from '@/features/form-creation/lib/types';
+import { useFormSelector } from '@/features/form-creation/hooks/useFormSelector';
+import { selectFieldById } from '@/features/form-creation/state/formFieldsSlice';
 
 type Props = {
     fieldId: string;
-    fieldType: FieldType;
-    rules: RuleGroup;
-    ruleConfig: RuleConfigMap;
-    onFieldChange: FieldUpdater;
-    field: Field;
 };
 
-export const RulesCreator = memo(function RulesCreator(props: Props) {
-    const { fieldId, fieldType, rules, ruleConfig, onFieldChange, field } = props;
-
-    const handleRuleChange = useCallback(
-        (rules: RuleGroup) => {
-            onFieldChange(prev => ({ ...prev, controls: { ...prev.controls, rules } }));
-        },
-        [onFieldChange]
-    );
+export const RulesCreator = memo(function RulesCreator({ fieldId }: Props) {
+    const rules = useFormSelector(state => selectFieldById(state, fieldId).controls.rules);
 
     return (
         <RulesAccordion>
@@ -35,13 +18,8 @@ export const RulesCreator = memo(function RulesCreator(props: Props) {
                     key={rules.id}
                     hasBackgroundColor={false}
                     isFirstGroup={true}
-                    rootGroup={rules}
                     group={rules}
-                    onRuleChange={handleRuleChange}
                     fieldId={fieldId}
-                    fieldType={fieldType}
-                    ruleConfig={ruleConfig}
-                    field={field}
                 />
             </div>
         </RulesAccordion>

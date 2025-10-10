@@ -2,53 +2,58 @@ import { Group, Select } from '@mantine/core';
 import { IconX } from '@tabler/icons-react';
 import { IconButton } from '../../ui/IconButton';
 import { QuestionButton } from './QuestionButton';
+import { updateRule, deleteRule } from '@/features/form-creation/lib/rules';
+import { useFormDispatch } from '@/features/form-creation/hooks/useFormDispatch';
+import { useFormSelector } from '@/features/form-creation/hooks/useFormSelector';
+import { selectFieldById, setField } from '@/features/form-creation/state/formFieldsSlice';
 import {
     ControlsMap,
-    Field,
     FieldType,
     Rule,
     RuleConfigMap,
     RuleGroup
 } from '@/features/form-creation/lib/types';
-import { updateRule, deleteRule } from '@/features/form-creation/lib/rules';
 
 type Props = {
     rule: Rule;
-    rootGroup: RuleGroup;
-    onRuleChange: (root: RuleGroup) => void;
     ruleConfig: RuleConfigMap;
-    fieldType: FieldType;
-    field: Field;
+    fieldId: string;
 };
 
 export function RuleRow(props: Props) {
-    const { rule, rootGroup, onRuleChange, fieldType, ruleConfig, field } = props;
+    const { rule, fieldId, ruleConfig } = props;
     const { id, operator, condition, value } = rule;
 
-    const conditions = ruleConfig[fieldType].map(cfg => cfg.condition);
-    const operators = ruleConfig[fieldType].find(cfg => cfg.condition === condition)?.operators;
-    const values = ruleConfig[fieldType].find(cfg => cfg.condition === condition)?.values;
+    const dispatch = useFormDispatch();
+    const field = useFormSelector(state => selectFieldById(state, fieldId));
+    const root = field.controls.rules;
+
+    const conditions = ruleConfig[field.type].map(cfg => cfg.condition);
+    const operators = ruleConfig[field.type].find(cfg => cfg.condition === condition)?.operators;
+    const values = ruleConfig[field.type].find(cfg => cfg.condition === condition)?.values;
+
+    const dispatchRules = (updatedRules: RuleGroup) => {
+        dispatch(setField({ fieldId, field: { controls: { rules: updatedRules } } }));
+    };
 
     const handleRuleChange = (value: string | null, property: keyof Rule) => {
-        onRuleChange(
-            updateRule(rootGroup, id, rule => ({ ...rule, [property]: value ?? undefined }))
-        );
+        dispatchRules(updateRule(root, id, rule => ({ ...rule, [property]: value ?? undefined })));
     };
 
     const handleRuleDelete = () => {
-        onRuleChange(deleteRule(rootGroup, id));
+        dispatchRules(deleteRule(root, id));
     };
 
     const handleConditionChange = (newCondition: string | null) => {
         if (newCondition) {
-            onRuleChange(
-                updateRule(rootGroup, id, rule => ({
+            dispatchRules(
+                updateRule(root, id, rule => ({
                     ...rule,
                     condition: newCondition,
-                    operator: ruleConfig[fieldType]
+                    operator: ruleConfig[field.type]
                         .find(rule => rule.condition === newCondition)
                         ?.operators.at(0),
-                    value: ruleConfig[fieldType]
+                    value: ruleConfig[field.type]
                         .find(rule => rule.condition === newCondition)
                         ?.values?.at(0)
                 }))
@@ -66,7 +71,7 @@ export function RuleRow(props: Props) {
 
     let selectComponent = null;
 
-    if (fieldType === FieldType.SELECTION) {
+    if (field.type === FieldType.SELECTION) {
         const selectionValues = [
             ...(field.controls as ControlsMap[FieldType.SELECTION]).options.map(opt => ({
                 label: opt.content,
@@ -125,7 +130,7 @@ export function RuleRow(props: Props) {
 
     return (
         <Group>
-            <QuestionButton rule={rule} rootGroup={rootGroup} onRuleChange={onRuleChange} />
+            <QuestionButton rule={rule} fieldId={fieldId} />
             <Select
                 data={conditions}
                 value={condition}

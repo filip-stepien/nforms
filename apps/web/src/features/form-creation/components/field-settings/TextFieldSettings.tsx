@@ -1,48 +1,53 @@
 import { Stack, Checkbox, Divider } from '@mantine/core';
 import { ChangeEvent } from 'react';
 import { BaseFieldSettings } from './BaseFieldSettings';
-import { TextSettings, FieldUpdater } from '../../lib/types';
+import { FieldType, SettingsMap } from '../../lib/types';
+import { selectFieldById, setField } from '../../state/formFieldsSlice';
+import { useFormDispatch } from '../../hooks/useFormDispatch';
+import { useFormSelector } from '../../hooks/useFormSelector';
 
 type Props = {
-    settings: TextSettings;
-    onFieldChange: FieldUpdater;
+    fieldId: string;
 };
 
-export function TextFieldSettings({ settings, onFieldChange }: Props) {
-    const handleTextSettingChange = (
-        setting: keyof TextSettings,
-        event: ChangeEvent<HTMLInputElement>
-    ) => {
-        if (settings) {
-            onFieldChange(prev => ({
-                ...prev,
-                settings: { ...prev.settings, [setting]: event.target.checked }
-            }));
-        }
-    };
+export function TextFieldSettings({ fieldId }: Props) {
+    const dispatch = useFormDispatch();
+    const settings = useFormSelector(
+        state => selectFieldById<FieldType.TEXT>(state, fieldId).settings
+    );
+
+    const handleTextSettingChange =
+        (setting: keyof SettingsMap[FieldType.TEXT]) => (event: ChangeEvent<HTMLInputElement>) => {
+            dispatch(
+                setField<FieldType.TEXT>({
+                    fieldId,
+                    field: { settings: { [setting]: event.target.checked } }
+                })
+            );
+        };
 
     return (
         <>
-            <BaseFieldSettings settings={settings} onFieldChange={onFieldChange} />
+            <BaseFieldSettings fieldId={fieldId} />
             <Divider />
             <Stack>
                 <Checkbox
                     label='Summarize'
                     description='Generate summaries of user responses'
-                    checked={settings?.summarize}
-                    onChange={e => handleTextSettingChange('summarize', e)}
+                    checked={settings.summarize}
+                    onChange={handleTextSettingChange('summarize')}
                 />
                 <Checkbox
                     label='Analyse sentiment'
                     description='Analyze whether responses are positive, negative, neutral or irrelevant'
-                    checked={settings?.analyseSentiment}
-                    onChange={e => handleTextSettingChange('analyseSentiment', e)}
+                    checked={settings.analyseSentiment}
+                    onChange={handleTextSettingChange('analyseSentiment')}
                 />
                 <Checkbox
                     label='Extract keywords'
                     description='Extract important keywords from user answers'
-                    checked={settings?.extractKeywords}
-                    onChange={e => handleTextSettingChange('extractKeywords', e)}
+                    checked={settings.extractKeywords}
+                    onChange={handleTextSettingChange('extractKeywords')}
                 />
             </Stack>
         </>

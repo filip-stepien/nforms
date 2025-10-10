@@ -2,48 +2,57 @@ import { Flex, TextInput, Menu, Stack } from '@mantine/core';
 import { IconAdjustments, IconTrash } from '@tabler/icons-react';
 import { DragButton } from '../ui/DragButton';
 import { IconButton } from '../ui/IconButton';
-import { JSX, ChangeEventHandler, FocusEventHandler, useEffect, useRef } from 'react';
+import { ChangeEventHandler, FocusEventHandler, useRef, useEffect, ReactNode } from 'react';
 import { DraggableProvidedDragHandleProps } from '@hello-pangea/dnd';
-import { FieldUpdater } from '../../lib/types';
+import { useFormSelector } from '../../hooks/useFormSelector';
+import {
+    deleteField,
+    selectFieldById,
+    setField,
+    setLastAddedId
+} from '../../state/formFieldsSlice';
+import { useFormDispatch } from '../../hooks/useFormDispatch';
+import { FieldType } from '../../lib/types';
+import { SelectionFieldSettings } from '../field-settings/SelectionFieldSettings';
+import { TextFieldSettings } from '../field-settings/TextFieldSettings';
 
 type Props = {
-    title: string;
-    selected?: boolean;
-    settingsComponent?: JSX.Element;
     dragHandleProps: DraggableProvidedDragHandleProps | null;
-    onFieldChange: FieldUpdater;
-    onDelete: () => void;
-    onSelect: () => void;
+    fieldId: string;
 };
 
-export function FieldHeader(props: Props) {
+export function FieldHeader({ dragHandleProps, fieldId }: Props) {
+    const dispatch = useFormDispatch();
     const titleRef = useRef<HTMLInputElement>(null);
+    const lastAddedId = useFormSelector(state => state.formFields.lastAddedId);
+    const fieldType = useFormSelector(state => selectFieldById(state, fieldId).type);
+    const fieldTitle = useFormSelector(state => selectFieldById(state, fieldId).title);
+    const selected = lastAddedId === fieldId;
 
-    const {
-        dragHandleProps,
-        title,
-        selected,
-        settingsComponent,
-        onDelete,
-        onSelect,
-        onFieldChange
-    } = props;
+    const settingsComponents: Record<FieldType, ReactNode> = {
+        [FieldType.TEXT]: <TextFieldSettings fieldId={fieldId} />,
+        [FieldType.SELECTION]: <SelectionFieldSettings fieldId={fieldId} />
+    };
 
     useEffect(() => {
         if (selected) {
             titleRef.current?.select();
-            onSelect();
+            dispatch(setLastAddedId(null));
         }
-    }, [selected, onSelect]);
+    }, [dispatch, selected]);
 
     const handleTitleChange: ChangeEventHandler<HTMLInputElement> = event => {
-        onFieldChange(prev => ({ ...prev, title: event.target.value }));
+        dispatch(setField({ fieldId, field: { title: event.target.value } }));
     };
 
     const handleTitleBlur: FocusEventHandler<HTMLInputElement> = event => {
         if (!event.target.value.trim()) {
-            onFieldChange(prev => ({ ...prev, title: 'Untitled question' }));
+            dispatch(setField({ fieldId, field: { title: 'Untitled question' } }));
         }
+    };
+
+    const handleDelete = () => {
+        dispatch(deleteField(fieldId));
     };
 
     return (
@@ -55,22 +64,22 @@ export function FieldHeader(props: Props) {
                 placeholder='Question title...'
                 className='flex-1 border-b-1 border-outline font-semibold'
                 size='sm'
-                value={title}
+                value={fieldTitle}
                 onChange={handleTitleChange}
                 onBlur={handleTitleBlur}
             />
-            {settingsComponent && (
+            {settingsComponents[fieldType] && (
                 <Menu shadow='md' width={300} position='bottom-end'>
                     <Menu.Target>
                         <IconButton variant='light' icon={IconAdjustments} />
                     </Menu.Target>
                     <Menu.Dropdown>
                         <Menu.Label>Field settings</Menu.Label>
-                        <Stack className='p-sm'>{settingsComponent}</Stack>
+                        <Stack className='p-sm'>{settingsComponents[fieldType]}</Stack>
                     </Menu.Dropdown>
                 </Menu>
             )}
-            <IconButton icon={IconTrash} variant='light' color='red' onClick={onDelete} />
+            <IconButton icon={IconTrash} variant='light' color='red' onClick={handleDelete} />
         </Flex>
     );
 }

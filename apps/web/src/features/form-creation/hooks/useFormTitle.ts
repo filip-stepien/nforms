@@ -1,22 +1,31 @@
-import { ChangeEventHandler, FocusEventHandler, useCallback, useState } from 'react';
+import { ChangeEventHandler, FocusEventHandler, useCallback } from 'react';
+import { setTitle, titleInitialState } from '../state/formTitleSlice';
+import { useFormDispatch } from './useFormDispatch';
+import { useFormSelector } from './useFormSelector';
 
-export function useFormTitle(initialTitle?: string) {
-    const defaultTitle = 'Untitled form';
-    const [title, setTitle] = useState(initialTitle ?? defaultTitle);
+export function useFormTitle() {
+    const dispatch = useFormDispatch();
+    const title = useFormSelector(state => state.formTitle.title);
 
-    const onTitleChange: ChangeEventHandler<HTMLInputElement> = event => {
-        setTitle(event.target.value);
-    };
+    const onTitleChange: ChangeEventHandler<HTMLInputElement> = useCallback(
+        event => {
+            dispatch(setTitle(event.target.value));
+        },
+        [dispatch]
+    );
 
-    const onTitleBlur: FocusEventHandler<HTMLInputElement> = event => {
-        if (!event.target.value.trim()) {
-            setTitle(defaultTitle);
-        }
-    };
+    const onTitleBlur: FocusEventHandler<HTMLInputElement> = useCallback(
+        event => {
+            if (!event.target.value.trim()) {
+                dispatch(setTitle(titleInitialState.title));
+            }
+        },
+        [dispatch]
+    );
 
     return {
         title,
-        onTitleChange: useCallback(onTitleChange, []),
-        onTitleBlur: useCallback(onTitleBlur, [])
+        onTitleChange,
+        onTitleBlur
     };
 }
