@@ -1,10 +1,11 @@
-import { DragDropContext, Droppable } from '@hello-pangea/dnd';
+import { DragDropContext, Droppable, DropResult } from '@hello-pangea/dnd';
 import { Button, Flex } from '@mantine/core';
 import { OptionItem } from './OptionItem';
-import { useOptionCreator } from '@/features/form-creation/hooks/useOptionCreator';
-import { useFormSelector } from '@/features/form-creation/hooks/useFormSelector';
-import { selectFieldById } from '@/features/form-creation/state/formFieldsSlice';
-import { FieldType } from '@/features/form-creation/lib/types';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { selectFieldOptions } from '@/features/form-creation/state/selectors';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { addOption, reorderOption } from '@/features/form-creation/state/slices/options';
+import { v4 as uuid } from 'uuid';
 
 export type FieldOption = {
     id: string;
@@ -16,20 +17,31 @@ type Props = {
 };
 
 export function OptionCreator({ fieldId }: Props) {
-    const { onOptionAdd, onOptionReorder } = useOptionCreator(fieldId);
+    const dispatch = useAppDispatch();
+    const options = useAppSelector(state => selectFieldOptions(state, fieldId));
 
-    const options = useFormSelector(
-        state => selectFieldById<FieldType.SELECTION>(state, fieldId).controls.options
-    );
+    const handleDragEnd = ({ source, destination }: DropResult) => {
+        dispatch(reorderOption({ fieldId, from: source.index, to: destination?.index }));
+    };
+
+    const handleOptionAdd = () => {
+        dispatch(
+            addOption({
+                fieldId,
+                option: { id: uuid(), content: `Option ${options.length + 1}` }
+                // rules: updateRules(
+                //     rules,
+                //     r => !r.value,
+                //     r => ({ ...r, value: id })
+                // ),
+            })
+        );
+    };
 
     return (
         <div>
             <span className='text-xs mb-xs text-font-secondary'>Enter options</span>
-            <DragDropContext
-                onDragEnd={({ destination, source }) =>
-                    onOptionReorder(source.index, destination?.index)
-                }
-            >
+            <DragDropContext onDragEnd={handleDragEnd}>
                 <Droppable droppableId='option-creator'>
                     {provided => (
                         <Flex
@@ -37,15 +49,20 @@ export function OptionCreator({ fieldId }: Props) {
                             ref={provided.innerRef}
                             {...provided.droppableProps}
                         >
-                            {options?.map((opt, i) => (
-                                <OptionItem key={opt.id} index={i} option={opt} fieldId={fieldId} />
+                            {options?.map((option, i) => (
+                                <OptionItem
+                                    key={option.id}
+                                    index={i}
+                                    optionId={option.id}
+                                    fieldId={fieldId}
+                                />
                             ))}
                             {provided.placeholder}
                         </Flex>
                     )}
                 </Droppable>
             </DragDropContext>
-            <Button onClick={onOptionAdd} variant='transparent'>
+            <Button onClick={handleOptionAdd} variant='transparent'>
                 + Add
             </Button>
         </div>

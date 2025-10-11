@@ -1,30 +1,32 @@
 import { Stack, Checkbox, Divider } from '@mantine/core';
 import { ChangeEvent } from 'react';
 import { BaseFieldSettings } from './BaseFieldSettings';
-import { FieldType, SettingsMap } from '../../lib/types';
-import { selectFieldById, setField } from '../../state/formFieldsSlice';
-import { useFormDispatch } from '../../hooks/useFormDispatch';
-import { useFormSelector } from '../../hooks/useFormSelector';
+import { FieldType } from '../../state/slices/fields';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { FieldSettingsMap, setSettings } from '../../state/slices/settings';
+import { selectFieldSettings } from '../../state/selectors';
 
 type Props = {
     fieldId: string;
 };
 
 export function TextFieldSettings({ fieldId }: Props) {
-    const dispatch = useFormDispatch();
-    const settings = useFormSelector(
-        state => selectFieldById<FieldType.TEXT>(state, fieldId).settings
-    );
+    const dispatch = useAppDispatch();
+    const settings = useAppSelector(state => selectFieldSettings<FieldType.TEXT>(state, fieldId));
 
     const handleTextSettingChange =
-        (setting: keyof SettingsMap[FieldType.TEXT]) => (event: ChangeEvent<HTMLInputElement>) => {
+        (setting: keyof FieldSettingsMap[FieldType.TEXT]) =>
+        (event: ChangeEvent<HTMLInputElement>) => {
             dispatch(
-                setField<FieldType.TEXT>({
+                setSettings<FieldType.TEXT>({
                     fieldId,
-                    field: { settings: { [setting]: event.target.checked } }
+                    settings: { [setting]: event.target.checked }
                 })
             );
         };
+
+    console.log(settings);
 
     return (
         <>

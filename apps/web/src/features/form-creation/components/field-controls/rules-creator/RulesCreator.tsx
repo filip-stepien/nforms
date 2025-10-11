@@ -1,24 +1,24 @@
 import { memo } from 'react';
 import { RuleGroupRow } from './RuleGroupRow';
 import { RulesAccordion } from './RulesAccordion';
-import { useFormSelector } from '@/features/form-creation/hooks/useFormSelector';
-import { selectFieldById } from '@/features/form-creation/state/formFieldsSlice';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { selectFieldRules } from '@/features/form-creation/state/selectors';
 
 type Props = {
     fieldId: string;
 };
 
 export const RulesCreator = memo(function RulesCreator({ fieldId }: Props) {
-    const rules = useFormSelector(state => selectFieldById(state, fieldId).controls.rules);
+    const rootGroupId = useAppSelector(state => selectFieldRules(state, fieldId).rootGroupId);
 
     return (
         <RulesAccordion>
             <div className='flex flex-col'>
                 <RuleGroupRow
-                    key={rules.id}
+                    key={rootGroupId}
                     hasBackgroundColor={false}
                     isFirstGroup={true}
-                    group={rules}
+                    groupId={rootGroupId}
                     fieldId={fieldId}
                 />
             </div>

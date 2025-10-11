@@ -1,19 +1,20 @@
 import { ChangeEventHandler, ReactNode } from 'react';
 import { Stack, NativeSelect } from '@mantine/core';
-import { FieldType } from '../../lib/types';
 import { OptionCreator } from '../field-controls/option-creator/OptionCreator';
 import { RulesCreator } from '../field-controls/rules-creator/RulesCreator';
-import { useFormSelector } from '../../hooks/useFormSelector';
-import { selectFieldById, setField } from '../../state/formFieldsSlice';
-import { useDispatch } from 'react-redux';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { FieldType } from '../../state/slices/fields';
+import { selectField } from '../../state/selectors';
+import { setField } from '../../state/thunks';
 
 type Props = {
     fieldId: string;
 };
 
 export function FieldBody({ fieldId }: Props) {
-    const dispatch = useDispatch();
-    const fieldType = useFormSelector(state => selectFieldById(state, fieldId).type);
+    const dispatch = useAppDispatch();
+    const fieldType = useAppSelector(state => selectField(state, fieldId).type);
 
     const controlsComponents: Record<FieldType, ReactNode> = {
         [FieldType.TEXT]: <RulesCreator fieldId={fieldId} />,

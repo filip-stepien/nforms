@@ -1,13 +1,16 @@
+import { useAppSelector } from '@/hooks/useAppSelector';
 import { saveFormAction } from '../lib/actions';
 import { useActionState } from 'react';
-import { Field } from '../lib/types';
 
 export type FormCreateActionStatus = {
     success: boolean;
     message: string;
 };
 
-export function useFormCreateAction(title: string, fields: Field[]) {
+export function useFormCreateAction() {
+    const title = useAppSelector(state => state.formTitle.title);
+    const fields = useAppSelector(state => state.formFields);
+
     const formCreateAction = async (): Promise<FormCreateActionStatus> => {
         try {
             await saveFormAction(title, fields);

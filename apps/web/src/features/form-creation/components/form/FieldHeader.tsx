@@ -2,19 +2,15 @@ import { Flex, TextInput, Menu, Stack } from '@mantine/core';
 import { IconAdjustments, IconTrash } from '@tabler/icons-react';
 import { DragButton } from '../ui/DragButton';
 import { IconButton } from '../ui/IconButton';
-import { ChangeEventHandler, FocusEventHandler, useRef, useEffect, ReactNode } from 'react';
+import { ChangeEventHandler, FocusEventHandler, useRef, ReactNode } from 'react';
 import { DraggableProvidedDragHandleProps } from '@hello-pangea/dnd';
-import { useFormSelector } from '../../hooks/useFormSelector';
-import {
-    deleteField,
-    selectFieldById,
-    setField,
-    setLastAddedId
-} from '../../state/formFieldsSlice';
-import { useFormDispatch } from '../../hooks/useFormDispatch';
-import { FieldType } from '../../lib/types';
 import { SelectionFieldSettings } from '../field-settings/SelectionFieldSettings';
 import { TextFieldSettings } from '../field-settings/TextFieldSettings';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { FieldType } from '../../state/slices/fields';
+import { deleteField, setField } from '../../state/thunks';
+import { selectField } from '../../state/selectors';
 
 type Props = {
     dragHandleProps: DraggableProvidedDragHandleProps | null;
@@ -22,24 +18,25 @@ type Props = {
 };
 
 export function FieldHeader({ dragHandleProps, fieldId }: Props) {
-    const dispatch = useFormDispatch();
+    const dispatch = useAppDispatch();
     const titleRef = useRef<HTMLInputElement>(null);
-    const lastAddedId = useFormSelector(state => state.formFields.lastAddedId);
-    const fieldType = useFormSelector(state => selectFieldById(state, fieldId).type);
-    const fieldTitle = useFormSelector(state => selectFieldById(state, fieldId).title);
-    const selected = lastAddedId === fieldId;
+    const { title: fieldTitle, type: fieldType } = useAppSelector(state =>
+        selectField(state, fieldId)
+    );
+
+    // const selected = lastAddedId === fieldId;
+
+    // useEffect(() => {
+    //     if (selected) {
+    //         titleRef.current?.select();
+    //         dispatch(setLastAddedId(null));
+    //     }
+    // }, [dispatch, selected]);
 
     const settingsComponents: Record<FieldType, ReactNode> = {
         [FieldType.TEXT]: <TextFieldSettings fieldId={fieldId} />,
         [FieldType.SELECTION]: <SelectionFieldSettings fieldId={fieldId} />
     };
-
-    useEffect(() => {
-        if (selected) {
-            titleRef.current?.select();
-            dispatch(setLastAddedId(null));
-        }
-    }, [dispatch, selected]);
 
     const handleTitleChange: ChangeEventHandler<HTMLInputElement> = event => {
         dispatch(setField({ fieldId, field: { title: event.target.value } }));
@@ -52,7 +49,7 @@ export function FieldHeader({ dragHandleProps, fieldId }: Props) {
     };
 
     const handleDelete = () => {
-        dispatch(deleteField(fieldId));
+        dispatch(deleteField({ fieldId }));
     };
 
     return (

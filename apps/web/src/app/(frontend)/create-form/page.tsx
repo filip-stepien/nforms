@@ -1,13 +1,12 @@
 'use client';
 
 import { FormCreator } from '@/features/form-creation/components/form/FormCreator';
-import { formStore } from '@/features/form-creation/state/formStore';
-import { Provider } from 'react-redux';
+import StoreProvider from '@/providers/StoreProvider';
 
 export default function CreateFormPage() {
     return (
-        <Provider store={formStore}>
+        <StoreProvider>
             <FormCreator />
-        </Provider>
+        </StoreProvider>
     );
 }

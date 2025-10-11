@@ -5,85 +5,75 @@ import { v4 as uuid } from 'uuid';
 import { IconCategoryPlus, IconPlus, IconX } from '@tabler/icons-react';
 import { IconButton } from '../../ui/IconButton';
 import { cn } from '@/lib/utils';
-import { updateGroup, deleteGroup } from '@/features/form-creation/lib/rules';
-import { ruleCombinators, ruleConfig } from '@/features/form-creation/lib/constants';
-import { useFormDispatch } from '@/features/form-creation/hooks/useFormDispatch';
-import { useFormSelector } from '@/features/form-creation/hooks/useFormSelector';
-import { selectFieldById, setField } from '@/features/form-creation/state/formFieldsSlice';
+import { selectRuleGroup } from '@/features/form-creation/state/selectors';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
 import {
-    RuleGroup,
     RuleCombinator,
-    FieldType,
-    ControlsMap
-} from '@/features/form-creation/lib/types';
+    setGroup,
+    addRule,
+    addGroup,
+    deleteGroup,
+    ruleCombinators
+} from '@/features/form-creation/state/slices/rules';
 
 type Props = {
     hasBackgroundColor: boolean;
     isFirstGroup: boolean;
-    group: RuleGroup;
+    groupId: string;
     fieldId: string;
 };
 
 export function RuleGroupRow(props: Props) {
-    const { hasBackgroundColor, isFirstGroup, group, fieldId } = props;
-    const { id, combinator, rules } = group;
-
-    const dispatch = useFormDispatch();
-    const field = useFormSelector(state => selectFieldById(state, fieldId));
-    const root = field.controls.rules;
-
-    const dispatchRules = (updatedRules: RuleGroup) => {
-        dispatch(setField({ fieldId, field: { controls: { rules: updatedRules } } }));
-    };
+    const { hasBackgroundColor, isFirstGroup, groupId, fieldId } = props;
+    const dispatch = useAppDispatch();
+    const { combinator, childrenGroups, childrenRules } = useAppSelector(state =>
+        selectRuleGroup(state, fieldId, groupId)
+    );
 
     const handleAddRule = () => {
-        dispatchRules(
-            updateGroup(root, id, group => ({
-                ...group,
-                rules: [
-                    {
-                        id: uuid(),
-                        type: 'rule' as const,
-                        fieldId,
-                        condition: ruleConfig[field.type].at(0)?.condition,
-                        operator: ruleConfig[field.type].at(0)?.operators.at(0),
-                        value:
-                            field.type === FieldType.SELECTION
-                                ? (field.controls as ControlsMap[FieldType.SELECTION]).options.at(0)
-                                      ?.id
-                                : ruleConfig[field.type].at(0)?.values.at(0)
-                    },
-                    ...group.rules
-                ]
-            }))
+        dispatch(
+            addRule({
+                fieldId,
+                groupId,
+                rule: {
+                    id: uuid(),
+                    type: 'rule',
+                    targetFieldId: fieldId,
+                    condition: '',
+                    operator: '',
+                    value: ''
+                }
+            })
         );
     };
 
     const handleAddGroup = () => {
-        dispatchRules(
-            updateGroup(root, id, group => ({
-                ...group,
-                rules: [
-                    ...group.rules,
-                    {
-                        id: uuid(),
-                        type: 'group',
-                        combinator: 'AND',
-                        rules: []
-                    }
-                ]
-            }))
+        dispatch(
+            addGroup({
+                fieldId,
+                groupId,
+                group: {
+                    id: uuid(),
+                    type: 'group',
+                    combinator: 'OR',
+                    childrenGroups: [],
+                    childrenRules: []
+                }
+            })
         );
     };
 
     const handleGroupDelete = () => {
-        dispatchRules(deleteGroup(root, id));
+        dispatch(deleteGroup({ fieldId, groupId }));
     };
 
     const handleCombinatorChange = (value: string | null) => {
-        dispatchRules(
-            updateGroup(root, id, group => ({ ...group, combinator: value as RuleCombinator }))
-        );
+        if (value) {
+            dispatch(
+                setGroup({ fieldId, groupId, group: { combinator: value as RuleCombinator } })
+            );
+        }
     };
 
     return (
@@ -121,24 +111,18 @@ export function RuleGroupRow(props: Props) {
                     />
                 )}
             </Group>
-            {rules.map(ruleOrGroup =>
-                ruleOrGroup.type === 'rule' ? (
-                    <RuleRow
-                        key={ruleOrGroup.id}
-                        rule={ruleOrGroup}
-                        ruleConfig={ruleConfig}
-                        fieldId={fieldId}
-                    />
-                ) : (
-                    <RuleGroupRow
-                        key={ruleOrGroup.id}
-                        hasBackgroundColor={!hasBackgroundColor}
-                        isFirstGroup={false}
-                        group={ruleOrGroup}
-                        fieldId={fieldId}
-                    />
-                )
-            )}
+            {childrenRules.map(id => (
+                <RuleRow key={id} ruleId={id} fieldId={fieldId} />
+            ))}
+            {childrenGroups.map(id => (
+                <RuleGroupRow
+                    key={id}
+                    hasBackgroundColor={!hasBackgroundColor}
+                    isFirstGroup={false}
+                    groupId={id}
+                    fieldId={fieldId}
+                />
+            ))}
         </Stack>
     );
 }

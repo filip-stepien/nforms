@@ -4,13 +4,15 @@ export type FormTitleState = {
     title: string;
 };
 
-export const titleInitialState: FormTitleState = {
-    title: 'Untitled form'
+export const initialTitle = 'Untitled form';
+
+const initialState: FormTitleState = {
+    title: initialTitle
 };
 
 const formTitleSlice = createSlice({
     name: 'formTitle',
-    initialState: titleInitialState,
+    initialState,
     reducers: {
         setTitle: (state, action: PayloadAction<string>) => {
             state.title = action.payload;

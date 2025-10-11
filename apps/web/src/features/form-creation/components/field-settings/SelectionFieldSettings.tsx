@@ -1,29 +1,30 @@
 import { Checkbox, Divider, Stack } from '@mantine/core';
 import { ChangeEvent } from 'react';
 import { BaseFieldSettings } from './BaseFieldSettings';
-import { FieldType, SettingsMap } from '../../lib/types';
-import { useFormDispatch } from '../../hooks/useFormDispatch';
-import { useFormSelector } from '../../hooks/useFormSelector';
-import { selectFieldById, setField } from '../../state/formFieldsSlice';
+import { selectFieldSettings } from '../../state/selectors';
+import { FieldType } from '../../state/slices/fields';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { FieldSettingsMap, setSettings } from '../../state/slices/settings';
 
 type Props = {
     fieldId: string;
 };
 
 export function SelectionFieldSettings({ fieldId }: Props) {
-    const dispatch = useFormDispatch();
-    const settings = useFormSelector(
-        state => selectFieldById<FieldType.SELECTION>(state, fieldId).settings
+    const dispatch = useAppDispatch();
+    const settings = useAppSelector(state =>
+        selectFieldSettings<FieldType.SELECTION>(state, fieldId)
     );
 
     const handleSelectionSettingChange = (
-        setting: keyof SettingsMap[FieldType.SELECTION],
+        setting: keyof FieldSettingsMap[FieldType.SELECTION],
         event: ChangeEvent<HTMLInputElement>
     ) => {
         dispatch(
-            setField<FieldType.SELECTION>({
+            setSettings<FieldType.SELECTION>({
                 fieldId,
-                field: { settings: { [setting]: event.target.checked } }
+                settings: { [setting]: event.target.checked }
             })
         );
     };
@@ -36,7 +37,7 @@ export function SelectionFieldSettings({ fieldId }: Props) {
                 <Checkbox
                     label='Single selection'
                     description='Whether only one option should be checked'
-                    checked={settings?.singleSelection}
+                    checked={settings.singleSelection}
                     onChange={e => handleSelectionSettingChange('singleSelection', e)}
                 />
             </Stack>

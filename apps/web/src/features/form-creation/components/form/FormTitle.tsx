@@ -1,18 +1,15 @@
 import { TextInput } from '@mantine/core';
-import { ChangeEventHandler, FocusEventHandler, memo } from 'react';
+import { useFormTitle } from '../../hooks/useFormTitle';
+import { memo } from 'react';
 
-type Props = {
-    title: string;
-    onChange: ChangeEventHandler<HTMLInputElement>;
-    onBlur: FocusEventHandler<HTMLInputElement>;
-};
+export const FormTitle = memo(function FormTitle() {
+    const { title, onTitleChange, onTitleBlur } = useFormTitle();
 
-export const FormTitle = memo(function FormTitle({ onChange, onBlur, title }: Props) {
     return (
         <TextInput
             value={title}
-            onChange={onChange}
-            onBlur={onBlur}
+            onChange={onTitleChange}
+            onBlur={onTitleBlur}
             label='Form title'
             description='Enter a title for your form. This will be visible to respondents.'
             placeholder='Form title...'

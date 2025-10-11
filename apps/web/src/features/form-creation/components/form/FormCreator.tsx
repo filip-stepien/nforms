@@ -2,39 +2,29 @@
 
 import { Flex } from '@mantine/core';
 import { FormField } from './FormField';
-import { DragDropContext, Droppable } from '@hello-pangea/dnd';
-import { useFormTitle } from '../../hooks/useFormTitle';
+import { DragDropContext, Droppable, DropResult } from '@hello-pangea/dnd';
 import { useFormCreateAction } from '../../hooks/useFormCreateAction';
 import { useFormStatusEffect } from '../../hooks/useFormStatusEffect';
 import { FormTitle } from './FormTitle';
-import { FormControls } from './FormControls';
-import { addField, reorderField } from '../../state/formFieldsSlice';
-import { useFormDispatch } from '../../hooks/useFormDispatch';
-import { useFormSelector } from '../../hooks/useFormSelector';
+import { FormActions } from './FormActions';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { reorderField } from '../../state/slices/fields';
 
 export function FormCreator() {
-    const dispatch = useFormDispatch();
-    const { title, onTitleChange, onTitleBlur } = useFormTitle();
-    const fields = useFormSelector(state => state.formFields.fields);
-    const { status, action, isLoading } = useFormCreateAction(title, fields);
+    const { status, action, isLoading } = useFormCreateAction();
+    const fields = useAppSelector(state => state.formFields);
+    const dispatch = useAppDispatch();
 
     useFormStatusEffect(status);
 
-    // const { fields, reorderField, addField } = useFormFieldsStore(
-    //     useShallow(state => ({
-    //         fields: state.fields,
-    //         reorderField: state.reorderField,
-    //         addField: state.addField
-    //     }))
-    // );
+    const handleDragEnd = ({ source, destination }: DropResult) => {
+        dispatch(reorderField({ from: source.index, to: destination?.index }));
+    };
 
     return (
         <form action={action}>
-            <DragDropContext
-                onDragEnd={({ destination, source }) => {
-                    dispatch(reorderField({ from: source.index, to: destination?.index }));
-                }}
-            >
+            <DragDropContext onDragEnd={handleDragEnd}>
                 <Droppable droppableId='form-creator'>
                     {provided => (
                         <Flex
@@ -42,19 +32,12 @@ export function FormCreator() {
                             ref={provided.innerRef}
                             {...provided.droppableProps}
                         >
-                            <FormTitle
-                                title={title}
-                                onChange={onTitleChange}
-                                onBlur={onTitleBlur}
-                            />
+                            <FormTitle />
                             {fields.map((field, index) => (
                                 <FormField key={field.id} index={index} fieldId={field.id} />
                             ))}
                             {provided.placeholder}
-                            <FormControls
-                                addField={() => dispatch(addField())}
-                                isLoading={isLoading}
-                            />
+                            <FormActions isLoading={isLoading} />
                         </Flex>
                     )}
                 </Droppable>

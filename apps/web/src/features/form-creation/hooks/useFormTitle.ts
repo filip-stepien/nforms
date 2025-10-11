@@ -1,11 +1,11 @@
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
 import { ChangeEventHandler, FocusEventHandler, useCallback } from 'react';
-import { setTitle, titleInitialState } from '../state/formTitleSlice';
-import { useFormDispatch } from './useFormDispatch';
-import { useFormSelector } from './useFormSelector';
+import { setTitle, initialTitle } from '../state/slices/title';
 
 export function useFormTitle() {
-    const dispatch = useFormDispatch();
-    const title = useFormSelector(state => state.formTitle.title);
+    const dispatch = useAppDispatch();
+    const title = useAppSelector(state => state.formTitle.title);
 
     const onTitleChange: ChangeEventHandler<HTMLInputElement> = useCallback(
         event => {
@@ -17,7 +17,7 @@ export function useFormTitle() {
     const onTitleBlur: FocusEventHandler<HTMLInputElement> = useCallback(
         event => {
             if (!event.target.value.trim()) {
-                dispatch(setTitle(titleInitialState.title));
+                dispatch(setTitle(initialTitle));
             }
         },
         [dispatch]
