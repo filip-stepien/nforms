@@ -16,8 +16,7 @@ type Props = {
     groupId: string;
 };
 
-export function RuleRow(props: Props) {
-    const { ruleId, groupId } = props;
+export function RuleRow({ ruleId, groupId }: Props) {
     const dispatch = useAppDispatch();
     const fields = useAppSelector(state => selectFields(state));
     const { targetFieldId, operator, condition, value } = useAppSelector(state =>

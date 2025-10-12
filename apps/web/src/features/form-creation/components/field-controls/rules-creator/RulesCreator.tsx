@@ -1,4 +1,3 @@
-import { memo } from 'react';
 import { RuleGroupRow } from './RuleGroupRow';
 import { RulesAccordion } from './RulesAccordion';
 import { useAppSelector } from '@/hooks/useAppSelector';
@@ -8,7 +7,7 @@ type Props = {
     fieldId: string;
 };
 
-export const RulesCreator = memo(function RulesCreator({ fieldId }: Props) {
+export function RulesCreator({ fieldId }: Props) {
     const rootGroupId = useAppSelector(state => selectRootGroupId(state, fieldId));
 
     return (
@@ -24,4 +23,4 @@ export const RulesCreator = memo(function RulesCreator({ fieldId }: Props) {
             </div>
         </RulesAccordion>
     );
-});
+}

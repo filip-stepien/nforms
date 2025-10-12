@@ -1,9 +1,22 @@
 import { TextInput } from '@mantine/core';
-import { useFormTitle } from '../../hooks/useFormTitle';
-import { memo } from 'react';
+import { ChangeEventHandler, FocusEventHandler, memo } from 'react';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { useAppSelector } from '@/hooks/useAppSelector';
+import { setTitle, initialTitle } from '../../state/slices/title';
 
 export const FormTitle = memo(function FormTitle() {
-    const { title, onTitleChange, onTitleBlur } = useFormTitle();
+    const dispatch = useAppDispatch();
+    const title = useAppSelector(state => state.formTitle.title);
+
+    const onTitleChange: ChangeEventHandler<HTMLInputElement> = event => {
+        dispatch(setTitle(event.target.value));
+    };
+
+    const onTitleBlur: FocusEventHandler<HTMLInputElement> = event => {
+        if (!event.target.value.trim()) {
+            dispatch(setTitle(initialTitle));
+        }
+    };
 
     return (
         <TextInput

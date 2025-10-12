@@ -1,5 +1,3 @@
-'use client';
-
 import { Flex } from '@mantine/core';
 import { FormField } from './FormField';
 import { DragDropContext, Droppable, DropResult } from '@hello-pangea/dnd';

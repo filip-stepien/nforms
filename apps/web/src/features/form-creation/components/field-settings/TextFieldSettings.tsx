@@ -31,8 +31,6 @@ export function TextFieldSettings({ fieldId }: Props) {
             );
         };
 
-    console.log(settings);
-
     return (
         <>
             <BaseFieldSettings fieldId={fieldId} />

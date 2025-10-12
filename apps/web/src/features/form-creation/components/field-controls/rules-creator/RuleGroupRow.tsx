@@ -24,8 +24,7 @@ type Props = {
     fieldId: string;
 };
 
-export function RuleGroupRow(props: Props) {
-    const { hasBackgroundColor, isFirstGroup, groupId, fieldId } = props;
+export function RuleGroupRow({ hasBackgroundColor, isFirstGroup, groupId, fieldId }: Props) {
     const dispatch = useAppDispatch();
     const { combinator, childrenGroups, childrenRules } = useAppSelector(state =>
         selectGroupById(state, groupId)
