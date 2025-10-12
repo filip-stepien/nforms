@@ -5,7 +5,6 @@ import { v4 as uuid } from 'uuid';
 import { IconCategoryPlus, IconPlus, IconX } from '@tabler/icons-react';
 import { IconButton } from '../../ui/IconButton';
 import { cn } from '@/lib/utils';
-import { selectRuleGroup } from '@/features/form-creation/state/selectors';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import {
@@ -14,7 +13,8 @@ import {
     addRule,
     addGroup,
     deleteGroup,
-    ruleCombinators
+    ruleCombinators,
+    selectGroupById
 } from '@/features/form-creation/state/slices/rules';
 
 type Props = {
@@ -28,17 +28,17 @@ export function RuleGroupRow(props: Props) {
     const { hasBackgroundColor, isFirstGroup, groupId, fieldId } = props;
     const dispatch = useAppDispatch();
     const { combinator, childrenGroups, childrenRules } = useAppSelector(state =>
-        selectRuleGroup(state, fieldId, groupId)
+        selectGroupById(state, groupId)
     );
 
     const handleAddRule = () => {
         dispatch(
             addRule({
-                fieldId,
                 groupId,
                 rule: {
                     id: uuid(),
                     type: 'rule',
+                    fieldId,
                     targetFieldId: fieldId,
                     condition: '',
                     operator: '',
@@ -51,10 +51,10 @@ export function RuleGroupRow(props: Props) {
     const handleAddGroup = () => {
         dispatch(
             addGroup({
-                fieldId,
-                groupId,
+                parentGroupId: groupId,
                 group: {
                     id: uuid(),
+                    fieldId,
                     type: 'group',
                     combinator: 'OR',
                     childrenGroups: [],
@@ -112,7 +112,7 @@ export function RuleGroupRow(props: Props) {
                 )}
             </Group>
             {childrenRules.map(id => (
-                <RuleRow key={id} ruleId={id} fieldId={fieldId} />
+                <RuleRow key={id} ruleId={id} groupId={groupId} />
             ))}
             {childrenGroups.map(id => (
                 <RuleGroupRow

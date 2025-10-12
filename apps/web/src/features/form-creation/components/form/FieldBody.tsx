@@ -4,8 +4,7 @@ import { OptionCreator } from '../field-controls/option-creator/OptionCreator';
 import { RulesCreator } from '../field-controls/rules-creator/RulesCreator';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { FieldType } from '../../state/slices/fields';
-import { selectField } from '../../state/selectors';
+import { FieldType, selectFieldById } from '../../state/slices/fields';
 import { setField } from '../../state/thunks';
 
 type Props = {
@@ -14,7 +13,7 @@ type Props = {
 
 export function FieldBody({ fieldId }: Props) {
     const dispatch = useAppDispatch();
-    const fieldType = useAppSelector(state => selectField(state, fieldId).type);
+    const fieldType = useAppSelector(state => selectFieldById(state, fieldId).type);
 
     const controlsComponents: Record<FieldType, ReactNode> = {
         [FieldType.TEXT]: <RulesCreator fieldId={fieldId} />,

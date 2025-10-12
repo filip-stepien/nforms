@@ -9,11 +9,11 @@ import { FormTitle } from './FormTitle';
 import { FormActions } from './FormActions';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { reorderField } from '../../state/slices/fields';
+import { reorderField, selectFields } from '../../state/slices/fields';
 
 export function FormCreator() {
     const { status, action, isLoading } = useFormCreateAction();
-    const fields = useAppSelector(state => state.formFields);
+    const fields = useAppSelector(state => selectFields(state));
     const dispatch = useAppDispatch();
 
     useFormStatusEffect(status);

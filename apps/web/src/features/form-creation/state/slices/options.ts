@@ -1,71 +1,65 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { RootState } from '@/lib/store';
+import { createSlice, createEntityAdapter, PayloadAction, createSelector } from '@reduxjs/toolkit';
 
 export type FieldOption = {
     id: string;
+    fieldId: string;
     content: string;
+    order: number;
 };
 
 export type FieldOptionPatch = Partial<Omit<FieldOption, 'id'>>;
 
-export type OptionsControl = {
-    options: FieldOption[];
-};
+const fieldOptionsAdapter = createEntityAdapter<FieldOption>({
+    sortComparer: (a, b) => a.order - b.order
+});
 
-export type FieldOptionsState = {
-    fieldId: string;
-    options: FieldOption[];
-}[];
-
-const initialState: FieldOptionsState = [];
+const initialState = fieldOptionsAdapter.getInitialState();
 
 const fieldOptionsSlice = createSlice({
     name: 'fieldOptions',
     initialState,
     reducers: {
-        initializeOptions: (state, action: PayloadAction<{ fieldId: string }>) => {
-            state.push({ fieldId: action.payload.fieldId, options: [] });
+        addOption: (state, action: PayloadAction<Omit<FieldOption, 'order'>>) => {
+            const { id, fieldId, content } = action.payload;
+
+            const existingOptions = Object.values(state.entities).filter(
+                opt => opt?.fieldId === fieldId
+            );
+
+            const maxOrder = existingOptions.length
+                ? Math.max(...existingOptions.map(opt => opt!.order))
+                : -1;
+
+            fieldOptionsAdapter.addOne(state, {
+                id,
+                fieldId,
+                content,
+                order: maxOrder + 1
+            });
         },
 
-        addOption: (state, action: PayloadAction<{ fieldId: string; option: FieldOption }>) => {
-            const { fieldId, option } = action.payload;
-            const field = state.find(f => f.fieldId === fieldId);
-
-            if (field) {
-                field.options.push(option);
-            }
+        deleteOption: (state, action: PayloadAction<{ optionId: string }>) => {
+            fieldOptionsAdapter.removeOne(state, action.payload.optionId);
         },
 
-        deleteOption: (state, action: PayloadAction<{ fieldId: string; optionId: string }>) => {
-            const { fieldId, optionId } = action.payload;
-            const field = state.find(f => f.fieldId === fieldId);
+        deleteOptionsByField: (state, action: PayloadAction<{ fieldId: string }>) => {
+            const idsToRemove = Object.values(state.entities)
+                .filter(opt => opt?.fieldId === action.payload.fieldId)
+                .map(opt => opt!.id);
 
-            if (field) {
-                field.options = field.options.filter(opt => opt.id !== optionId);
-            }
-        },
-
-        deleteOptions: (state, action: PayloadAction<{ fieldId: string }>) => {
-            state = state.filter(f => f.fieldId !== action.payload.fieldId);
+            fieldOptionsAdapter.removeMany(state, idsToRemove);
         },
 
         setOption: (
             state,
-            action: PayloadAction<{
-                fieldId: string;
-                optionId: string;
-                option: FieldOptionPatch;
-            }>
+            action: PayloadAction<{ optionId: string; option: FieldOptionPatch }>
         ) => {
-            const { fieldId, optionId, option: optionPatch } = action.payload;
-            const field = state.find(f => f.fieldId === fieldId);
-
-            if (field) {
-                const option = field.options.find(opt => opt.id === optionId);
-
-                if (option) {
-                    Object.assign(option, optionPatch);
-                }
-            }
+            const { optionId, option } = action.payload;
+            fieldOptionsAdapter.updateOne(state, {
+                id: optionId,
+                changes: option
+            });
         },
 
         reorderOption: (
@@ -73,26 +67,31 @@ const fieldOptionsSlice = createSlice({
             action: PayloadAction<{ fieldId: string; from: number; to?: number }>
         ) => {
             const { fieldId, from, to } = action.payload;
-            const field = state.find(f => f.fieldId === fieldId);
 
-            if (field) {
-                console.log('ELO');
-                const options = [...field.options];
-                const [moved] = options.splice(from, 1);
-                options.splice(to ?? from, 0, moved);
-                field.options = options;
-            }
+            const optionsForField = Object.values(state.entities)
+                .filter(opt => opt.fieldId === fieldId)
+                .sort((a, b) => a.order - b.order);
+
+            const [moved] = optionsForField.splice(from, 1);
+            optionsForField.splice(to ?? from, 0, moved);
+
+            optionsForField.forEach((opt, index) => {
+                fieldOptionsAdapter.updateOne(state, {
+                    id: opt.id,
+                    changes: { order: index }
+                });
+            });
         }
     }
 });
 
-export const {
-    addOption,
-    deleteOption,
-    setOption,
-    reorderOption,
-    deleteOptions,
-    initializeOptions
-} = fieldOptionsSlice.actions;
+export const { addOption, deleteOption, deleteOptionsByField, setOption, reorderOption } =
+    fieldOptionsSlice.actions;
 
 export const fieldOptionsReducer = fieldOptionsSlice.reducer;
+
+export const { selectAll: selectOptions, selectById: selectOptionById } =
+    fieldOptionsAdapter.getSelectors<RootState>(state => state.fieldOptions);
+
+export const selectOptionsByFieldId = (fieldId: string) =>
+    createSelector(selectOptions, options => options.filter(option => option.fieldId === fieldId));

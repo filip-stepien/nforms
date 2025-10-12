@@ -3,29 +3,34 @@ import { IconX } from '@tabler/icons-react';
 import { IconButton } from '../../ui/IconButton';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { selectRule } from '@/features/form-creation/state/selectors';
-import { deleteRule, RulePatch, setRule } from '@/features/form-creation/state/slices/rules';
+import {
+    deleteRule,
+    RulePatch,
+    selectRuleById,
+    setRule
+} from '@/features/form-creation/state/slices/rules';
+import { selectFields } from '@/features/form-creation/state/slices/fields';
 
 type Props = {
     ruleId: string;
-    fieldId: string;
+    groupId: string;
 };
 
 export function RuleRow(props: Props) {
-    const { ruleId, fieldId } = props;
+    const { ruleId, groupId } = props;
     const dispatch = useAppDispatch();
-    const fields = useAppSelector(state => state.formFields);
+    const fields = useAppSelector(state => selectFields(state));
     const { targetFieldId, operator, condition, value } = useAppSelector(state =>
-        selectRule(state, fieldId, ruleId)
+        selectRuleById(state, ruleId)
     );
 
     const handleRuleDelete = () => {
-        dispatch(deleteRule({ fieldId, ruleId }));
+        dispatch(deleteRule({ groupId, ruleId }));
     };
 
     const handleRuleChange = (key: keyof RulePatch) => (value: string | null) => {
         if (value) {
-            dispatch(setRule({ fieldId, ruleId, rule: { [key]: value } }));
+            dispatch(setRule({ ruleId, rule: { [key]: value } }));
         }
     };
 

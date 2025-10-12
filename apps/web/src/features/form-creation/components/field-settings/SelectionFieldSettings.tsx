@@ -1,11 +1,14 @@
 import { Checkbox, Divider, Stack } from '@mantine/core';
 import { ChangeEvent } from 'react';
 import { BaseFieldSettings } from './BaseFieldSettings';
-import { selectFieldSettings } from '../../state/selectors';
 import { FieldType } from '../../state/slices/fields';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { FieldSettingsMap, setSettings } from '../../state/slices/settings';
+import {
+    FieldSettingsMap,
+    selectSettingsByFieldId,
+    setSettings
+} from '../../state/slices/settings';
 
 type Props = {
     fieldId: string;
@@ -14,7 +17,7 @@ type Props = {
 export function SelectionFieldSettings({ fieldId }: Props) {
     const dispatch = useAppDispatch();
     const settings = useAppSelector(state =>
-        selectFieldSettings<FieldType.SELECTION>(state, fieldId)
+        selectSettingsByFieldId<FieldType.SELECTION>(state, fieldId)
     );
 
     const handleSelectionSettingChange = (

@@ -5,32 +5,34 @@ import { IconButton } from '../../ui/IconButton';
 import { ChangeEventHandler, FocusEventHandler } from 'react';
 import { DragButton } from '../../ui/DragButton';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { selectOption } from '@/features/form-creation/state/selectors';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { deleteOption, setOption } from '@/features/form-creation/state/slices/options';
+import {
+    deleteOption,
+    selectOptionById,
+    setOption
+} from '@/features/form-creation/state/slices/options';
 
 type Props = {
     index: number;
     optionId: string;
-    fieldId: string;
 };
 
-export function OptionItem({ index, optionId, fieldId }: Props) {
+export function OptionItem({ index, optionId }: Props) {
     const dispatch = useAppDispatch();
-    const option = useAppSelector(state => selectOption(state, fieldId, optionId));
+    const option = useAppSelector(state => selectOptionById(state, optionId));
 
     const handleOptionBlur: FocusEventHandler<HTMLInputElement> = event => {
         if (!event.target.value.trim()) {
-            dispatch(setOption({ fieldId, optionId, option: { content: 'Option' } }));
+            dispatch(setOption({ optionId, option: { content: 'Option' } }));
         }
     };
 
     const handleOptionChange: ChangeEventHandler<HTMLInputElement> = event => {
-        dispatch(setOption({ fieldId, optionId, option: { content: event.target.value } }));
+        dispatch(setOption({ optionId, option: { content: event.target.value } }));
     };
 
     const handleOptionDelete = () => {
-        dispatch(deleteOption({ fieldId, optionId }));
+        dispatch(deleteOption({ optionId }));
     };
 
     return (

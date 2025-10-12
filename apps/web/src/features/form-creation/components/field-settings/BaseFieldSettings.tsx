@@ -1,9 +1,8 @@
 import { Switch } from '@mantine/core';
 import { ChangeEventHandler } from 'react';
-import { selectFieldSettings } from '../../state/selectors';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { setSettings } from '../../state/slices/settings';
+import { selectSettingsByFieldId, setSettings } from '../../state/slices/settings';
 
 type Props = {
     fieldId: string;
@@ -11,7 +10,7 @@ type Props = {
 
 export function BaseFieldSettings({ fieldId }: Props) {
     const dispatch = useAppDispatch();
-    const settings = useAppSelector(state => selectFieldSettings(state, fieldId));
+    const settings = useAppSelector(state => selectSettingsByFieldId(state, fieldId));
 
     const handleRequiredChange: ChangeEventHandler<HTMLInputElement> = event => {
         dispatch(

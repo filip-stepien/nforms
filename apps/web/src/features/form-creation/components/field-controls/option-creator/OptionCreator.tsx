@@ -2,9 +2,12 @@ import { DragDropContext, Droppable, DropResult } from '@hello-pangea/dnd';
 import { Button, Flex } from '@mantine/core';
 import { OptionItem } from './OptionItem';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { selectFieldOptions } from '@/features/form-creation/state/selectors';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { addOption, reorderOption } from '@/features/form-creation/state/slices/options';
+import {
+    addOption,
+    reorderOption,
+    selectOptionsByFieldId
+} from '@/features/form-creation/state/slices/options';
 import { v4 as uuid } from 'uuid';
 
 export type FieldOption = {
@@ -18,7 +21,7 @@ type Props = {
 
 export function OptionCreator({ fieldId }: Props) {
     const dispatch = useAppDispatch();
-    const options = useAppSelector(state => selectFieldOptions(state, fieldId));
+    const options = useAppSelector(selectOptionsByFieldId(fieldId));
 
     const handleDragEnd = ({ source, destination }: DropResult) => {
         dispatch(reorderOption({ fieldId, from: source.index, to: destination?.index }));
@@ -27,13 +30,9 @@ export function OptionCreator({ fieldId }: Props) {
     const handleOptionAdd = () => {
         dispatch(
             addOption({
+                id: uuid(),
                 fieldId,
-                option: { id: uuid(), content: `Option ${options.length + 1}` }
-                // rules: updateRules(
-                //     rules,
-                //     r => !r.value,
-                //     r => ({ ...r, value: id })
-                // ),
+                content: `Option ${options.length + 1}`
             })
         );
     };
@@ -50,12 +49,7 @@ export function OptionCreator({ fieldId }: Props) {
                             {...provided.droppableProps}
                         >
                             {options?.map((option, i) => (
-                                <OptionItem
-                                    key={option.id}
-                                    index={i}
-                                    optionId={option.id}
-                                    fieldId={fieldId}
-                                />
+                                <OptionItem key={option.id} index={i} optionId={option.id} />
                             ))}
                             {provided.placeholder}
                         </Flex>

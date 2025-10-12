@@ -2,14 +2,14 @@ import { memo } from 'react';
 import { RuleGroupRow } from './RuleGroupRow';
 import { RulesAccordion } from './RulesAccordion';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { selectFieldRules } from '@/features/form-creation/state/selectors';
+import { selectRootGroupId } from '@/features/form-creation/state/slices/rules';
 
 type Props = {
     fieldId: string;
 };
 
 export const RulesCreator = memo(function RulesCreator({ fieldId }: Props) {
-    const rootGroupId = useAppSelector(state => selectFieldRules(state, fieldId).rootGroupId);
+    const rootGroupId = useAppSelector(state => selectRootGroupId(state, fieldId));
 
     return (
         <RulesAccordion>

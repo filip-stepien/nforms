@@ -4,8 +4,11 @@ import { BaseFieldSettings } from './BaseFieldSettings';
 import { FieldType } from '../../state/slices/fields';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { FieldSettingsMap, setSettings } from '../../state/slices/settings';
-import { selectFieldSettings } from '../../state/selectors';
+import {
+    FieldSettingsMap,
+    selectSettingsByFieldId,
+    setSettings
+} from '../../state/slices/settings';
 
 type Props = {
     fieldId: string;
@@ -13,7 +16,9 @@ type Props = {
 
 export function TextFieldSettings({ fieldId }: Props) {
     const dispatch = useAppDispatch();
-    const settings = useAppSelector(state => selectFieldSettings<FieldType.TEXT>(state, fieldId));
+    const settings = useAppSelector(state =>
+        selectSettingsByFieldId<FieldType.TEXT>(state, fieldId)
+    );
 
     const handleTextSettingChange =
         (setting: keyof FieldSettingsMap[FieldType.TEXT]) =>

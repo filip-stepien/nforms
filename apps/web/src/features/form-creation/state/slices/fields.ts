@@ -1,4 +1,5 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { RootState } from '@/lib/store';
+import { createSlice, createEntityAdapter, PayloadAction } from '@reduxjs/toolkit';
 
 export enum FieldType {
     TEXT = 'Text',
@@ -13,39 +14,37 @@ export type Field = {
 
 export type FieldPatch = Partial<Omit<Field, 'id'>>;
 
-export type FormFieldsState = Field[];
+const fieldsAdapter = createEntityAdapter<Field>();
 
-const initialState: FormFieldsState = [];
+const initialState = fieldsAdapter.getInitialState();
 
 const formFieldsSlice = createSlice({
     name: 'formFields',
     initialState,
     reducers: {
-        _addField: (state, action: PayloadAction<Field>) => {
-            state.push(action.payload);
-        },
+        _addField: fieldsAdapter.addOne,
         _deleteField: (state, action: PayloadAction<{ fieldId: string }>) => {
-            const index = state.findIndex(f => f.id === action.payload.fieldId);
-            if (index !== -1) {
-                state.splice(index, 1);
-            }
+            fieldsAdapter.removeOne(state, action.payload.fieldId);
         },
         _setField: (state, action: PayloadAction<{ fieldId: string; field: FieldPatch }>) => {
-            const { fieldId, field: fieldPatch } = action.payload;
-            const field = state.find(f => f.id === fieldId);
-
-            if (field) {
-                Object.assign(field, fieldPatch);
-            }
+            const { fieldId, field } = action.payload;
+            fieldsAdapter.updateOne(state, {
+                id: fieldId,
+                changes: field
+            });
         },
         reorderField: (state, action: PayloadAction<{ from: number; to?: number }>) => {
+            const allIds = [...state.ids];
             const { from, to } = action.payload;
-            const [moved] = state.splice(from, 1);
-            state.splice(to ?? from, 0, moved);
+            const [moved] = allIds.splice(from, 1);
+            allIds.splice(to ?? from, 0, moved);
+            state.ids = allIds;
         }
     }
 });
 
 export const formFieldsReducer = formFieldsSlice.reducer;
-
 export const { _addField, _deleteField, _setField, reorderField } = formFieldsSlice.actions;
+
+export const { selectAll: selectFields, selectById: selectFieldById } =
+    fieldsAdapter.getSelectors<RootState>(state => state.formFields);

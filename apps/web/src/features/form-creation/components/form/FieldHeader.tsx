@@ -8,9 +8,8 @@ import { SelectionFieldSettings } from '../field-settings/SelectionFieldSettings
 import { TextFieldSettings } from '../field-settings/TextFieldSettings';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { FieldType } from '../../state/slices/fields';
+import { FieldType, selectFieldById } from '../../state/slices/fields';
 import { deleteField, setField } from '../../state/thunks';
-import { selectField } from '../../state/selectors';
 
 type Props = {
     dragHandleProps: DraggableProvidedDragHandleProps | null;
@@ -21,7 +20,7 @@ export function FieldHeader({ dragHandleProps, fieldId }: Props) {
     const dispatch = useAppDispatch();
     const titleRef = useRef<HTMLInputElement>(null);
     const { title: fieldTitle, type: fieldType } = useAppSelector(state =>
-        selectField(state, fieldId)
+        selectFieldById(state, fieldId)
     );
 
     // const selected = lastAddedId === fieldId;

@@ -1,38 +1,18 @@
-import { AppDispatch, RootState } from '@/lib/store';
-import { Field, FieldPatch, FieldType, _addField, _deleteField, _setField } from './slices/fields';
+import { AppDispatch } from '@/lib/store';
+import { Field, FieldPatch, _addField, _deleteField, _setField } from './slices/fields';
 import { addSettings, deleteSettings, initializeSettings } from './slices/settings';
-import { addGroup } from './slices/rules';
+import { addGroup, deleteRulesAndGroups } from './slices/rules';
 import { v4 as uuid } from 'uuid';
-import { deleteOptions, initializeOptions } from './slices/options';
-
-type FieldSpecificDispatchers = Record<
-    FieldType,
-    {
-        onTypeChange?: (dispatch: AppDispatch, fieldId: string) => any;
-        onDelete?: (dispatch: AppDispatch, fieldId: string) => any;
-    }
->;
-
-const fieldSpecificDispatchers: FieldSpecificDispatchers = {
-    [FieldType.SELECTION]: {
-        onTypeChange: (dispatch, fieldId) => {
-            dispatch(initializeOptions({ fieldId }));
-        },
-        onDelete: (dispatch, fieldId) => {
-            dispatch(deleteOptions({ fieldId }));
-        }
-    },
-    [FieldType.TEXT]: {}
-};
+import { deleteOptionsByField } from './slices/options';
 
 export const addField = (field: Field) => (dispatch: AppDispatch) => {
     dispatch(_addField(field));
     dispatch(addSettings({ fieldId: field.id, fieldType: field.type }));
     dispatch(
         addGroup({
-            fieldId: field.id,
             group: {
                 id: uuid(),
+                fieldId: field.id,
                 type: 'group',
                 combinator: 'OR',
                 childrenGroups: [],
@@ -44,30 +24,24 @@ export const addField = (field: Field) => (dispatch: AppDispatch) => {
 
 export const deleteField =
     ({ fieldId }: { fieldId: string }) =>
-    (dispatch: AppDispatch, getState: () => RootState) => {
-        const field = getState().formFields.find(f => f.id === fieldId);
-        if (!field) return;
-
+    (dispatch: AppDispatch) => {
         dispatch(deleteSettings({ fieldId }));
         dispatch(_deleteField({ fieldId }));
-
-        fieldSpecificDispatchers[field.type].onDelete?.(dispatch, fieldId);
+        dispatch(deleteRulesAndGroups({ fieldId }));
+        deleteOptionsByField({ fieldId });
     };
 
 export const setField =
-    (payload: { fieldId: string; field: FieldPatch }) =>
-    (dispatch: AppDispatch, getState: () => RootState) => {
+    (payload: { fieldId: string; field: FieldPatch }) => (dispatch: AppDispatch) => {
         const { fieldId, field: fieldPatch } = payload;
 
-        const field = getState().formFields.find(f => f.id === fieldId);
-        if (!field) return;
+        const newType = fieldPatch.type;
+        const typeChanged = newType && newType !== fieldId;
+
+        if (typeChanged) {
+            dispatch(initializeSettings({ fieldId, fieldType: newType }));
+            dispatch(deleteOptionsByField({ fieldId }));
+        }
 
         dispatch(_setField(payload));
-
-        const newType = fieldPatch.type;
-        const typeChanged = newType && newType !== field.id;
-        if (!typeChanged) return;
-
-        dispatch(initializeSettings({ fieldId, fieldType: newType }));
-        fieldSpecificDispatchers[newType].onTypeChange?.(dispatch, fieldId);
     };

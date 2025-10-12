@@ -1,6 +1,7 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { formatActionName, withPayloadType } from '@/lib/utils';
 import { FieldType } from './fields';
+import { RootState } from '@/lib/store';
 
 export type BaseSettings = {
     required: boolean;
@@ -9,7 +10,7 @@ export type BaseSettings = {
 export type TextSettings = BaseSettings & {
     analyseSentiment: boolean;
     extractKeywords: boolean;
-    summarize: true;
+    summarize: boolean;
 };
 
 export type SelectionSettings = BaseSettings & {
@@ -63,8 +64,13 @@ const initialState: FieldSettingsState = [];
 export const fieldSettingsReducer = createReducer(initialState, builder => {
     builder.addCase(_initializeSettings, (state, action) => {
         const { fieldId, fieldType } = action.payload;
-        const index = state.findIndex(setting => setting.fieldId === fieldId);
-        state[index].settings = initialSettings[fieldType];
+        const existing = state.find(setting => setting.fieldId === fieldId);
+
+        if (existing) {
+            existing.settings = initialSettings[fieldType];
+        } else {
+            state.push({ fieldId, settings: initialSettings[fieldType] });
+        }
     });
 
     builder.addCase(_addSettings, (state, action) => {
@@ -99,4 +105,9 @@ export const { addSettings, deleteSettings, initializeSettings, setSettings } = 
         fieldId: string;
         settings: Partial<FieldSettingsMap[T]>;
     }) => _setSettings({ ...payload })
+};
+
+export const selectSettingsByFieldId = <T extends FieldType>(state: RootState, fieldId: string) => {
+    const fieldSettings = state.fieldSettings.find(f => f.fieldId === fieldId);
+    return fieldSettings!.settings as FieldSettingsMap[T];
 };
