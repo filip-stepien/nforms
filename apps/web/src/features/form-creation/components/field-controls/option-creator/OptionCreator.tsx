@@ -3,12 +3,12 @@ import { Button, Flex } from '@mantine/core';
 import { OptionItem } from './OptionItem';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { v4 as uuid } from 'uuid';
 import {
     addOption,
     reorderOption,
     selectOptionsByFieldId
 } from '@/features/form-creation/state/slices/options';
-import { v4 as uuid } from 'uuid';
 
 export type FieldOption = {
     id: string;

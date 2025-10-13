@@ -39,7 +39,7 @@ const fieldOptionsSlice = createSlice({
             });
         },
 
-        deleteOption: (state, action: PayloadAction<{ optionId: string }>) => {
+        _deleteOption: (state, action: PayloadAction<{ optionId: string }>) => {
             fieldOptionsAdapter.removeOne(state, action.payload.optionId);
         },
 
@@ -85,7 +85,7 @@ const fieldOptionsSlice = createSlice({
     }
 });
 
-export const { addOption, deleteOption, deleteOptionsByField, setOption, reorderOption } =
+export const { addOption, _deleteOption, deleteOptionsByField, setOption, reorderOption } =
     fieldOptionsSlice.actions;
 
 export const fieldOptionsReducer = fieldOptionsSlice.reducer;

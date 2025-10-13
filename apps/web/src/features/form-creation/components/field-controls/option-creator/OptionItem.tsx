@@ -6,11 +6,8 @@ import { ChangeEventHandler, FocusEventHandler } from 'react';
 import { DragButton } from '../../ui/DragButton';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import {
-    deleteOption,
-    selectOptionById,
-    setOption
-} from '@/features/form-creation/state/slices/options';
+import { selectOptionById, setOption } from '@/features/form-creation/state/slices/options';
+import { deleteOption } from '@/features/form-creation/state/thunks';
 
 type Props = {
     index: number;

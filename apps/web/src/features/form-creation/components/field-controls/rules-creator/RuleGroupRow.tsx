@@ -7,6 +7,8 @@ import { IconButton } from '../../ui/IconButton';
 import { cn } from '@/lib/utils';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
+import { selectFieldById } from '@/features/form-creation/state/slices/fields';
+import { useRuleSelectValues } from '@/features/form-creation/hooks/useRuleSelectValues';
 import {
     RuleCombinator,
     setGroup,
@@ -26,11 +28,15 @@ type Props = {
 
 export function RuleGroupRow({ hasBackgroundColor, isFirstGroup, groupId, fieldId }: Props) {
     const dispatch = useAppDispatch();
+    const fieldType = useAppSelector(state => selectFieldById(state, fieldId).type);
+    const { selectValues, transformValue } = useRuleSelectValues(fieldId);
     const { combinator, childrenGroups, childrenRules } = useAppSelector(state =>
         selectGroupById(state, groupId)
     );
 
     const handleAddRule = () => {
+        const firstValuesRecord = selectValues[fieldType][0];
+
         dispatch(
             addRule({
                 groupId,
@@ -39,9 +45,9 @@ export function RuleGroupRow({ hasBackgroundColor, isFirstGroup, groupId, fieldI
                     type: 'rule',
                     fieldId,
                     targetFieldId: fieldId,
-                    condition: '',
-                    operator: '',
-                    value: ''
+                    condition: firstValuesRecord.condition,
+                    operator: firstValuesRecord.operators[0],
+                    value: transformValue(firstValuesRecord.values[0])
                 }
             })
         );

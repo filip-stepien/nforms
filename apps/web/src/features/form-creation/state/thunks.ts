@@ -1,9 +1,14 @@
 import { AppDispatch } from '@/lib/store';
 import { Field, FieldPatch, _addField, _deleteField, _setField } from './slices/fields';
-import { addSettings, deleteSettings, initializeSettings } from './slices/settings';
-import { addGroup, deleteRulesAndGroups } from './slices/rules';
+import { addSettings, deleteSettings } from './slices/settings';
 import { v4 as uuid } from 'uuid';
-import { deleteOptionsByField } from './slices/options';
+import { _deleteOption, deleteOptionsByField } from './slices/options';
+import {
+    addGroup,
+    deleteRulesAndGroups,
+    deleteRulesByFieldId,
+    deleteRulesByValue
+} from './slices/rules';
 
 export const addField = (field: Field) => (dispatch: AppDispatch) => {
     dispatch(_addField(field));
@@ -25,10 +30,11 @@ export const addField = (field: Field) => (dispatch: AppDispatch) => {
 export const deleteField =
     ({ fieldId }: { fieldId: string }) =>
     (dispatch: AppDispatch) => {
-        dispatch(deleteSettings({ fieldId }));
         dispatch(_deleteField({ fieldId }));
+        dispatch(deleteSettings({ fieldId }));
         dispatch(deleteRulesAndGroups({ fieldId }));
-        deleteOptionsByField({ fieldId });
+        dispatch(deleteOptionsByField({ fieldId }));
+        dispatch(deleteRulesByFieldId({ fieldId }));
     };
 
 export const setField =
@@ -39,9 +45,30 @@ export const setField =
         const typeChanged = newType && newType !== fieldId;
 
         if (typeChanged) {
-            dispatch(initializeSettings({ fieldId, fieldType: newType }));
+            dispatch(addSettings({ fieldId, fieldType: newType }));
             dispatch(deleteOptionsByField({ fieldId }));
+            dispatch(deleteRulesAndGroups({ fieldId }));
+            dispatch(deleteRulesByFieldId({ fieldId }));
+            dispatch(
+                addGroup({
+                    group: {
+                        id: uuid(),
+                        fieldId,
+                        type: 'group',
+                        combinator: 'OR',
+                        childrenGroups: [],
+                        childrenRules: []
+                    }
+                })
+            );
         }
 
         dispatch(_setField(payload));
+    };
+
+export const deleteOption =
+    ({ optionId }: { optionId: string }) =>
+    (dispatch: AppDispatch) => {
+        dispatch(_deleteOption({ optionId }));
+        dispatch(deleteRulesByValue({ value: optionId }));
     };

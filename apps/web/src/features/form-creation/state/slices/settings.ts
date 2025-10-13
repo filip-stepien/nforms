@@ -41,11 +41,6 @@ const _setSettings = createAction(
     withPayloadType<{ fieldId: string; settings: Partial<FieldSettingsMap[FieldType]> }>()
 );
 
-const _initializeSettings = createAction(
-    formatActionName(sliceName, 'initializeSettings'),
-    withPayloadType<{ fieldId: string; fieldType: FieldType }>()
-);
-
 const initialSettings: FieldSettingsMap = {
     [FieldType.TEXT]: {
         required: true,
@@ -62,7 +57,7 @@ const initialSettings: FieldSettingsMap = {
 const initialState: FieldSettingsState = [];
 
 export const fieldSettingsReducer = createReducer(initialState, builder => {
-    builder.addCase(_initializeSettings, (state, action) => {
+    builder.addCase(_addSettings, (state, action) => {
         const { fieldId, fieldType } = action.payload;
         const existing = state.find(setting => setting.fieldId === fieldId);
 
@@ -71,11 +66,6 @@ export const fieldSettingsReducer = createReducer(initialState, builder => {
         } else {
             state.push({ fieldId, settings: initialSettings[fieldType] });
         }
-    });
-
-    builder.addCase(_addSettings, (state, action) => {
-        const { fieldId, fieldType } = action.payload;
-        state.push({ fieldId, settings: initialSettings[fieldType] });
     });
 
     builder.addCase(_deleteSettings, (state, action) => {
@@ -97,10 +87,9 @@ export const fieldSettingsReducer = createReducer(initialState, builder => {
     });
 });
 
-export const { addSettings, deleteSettings, initializeSettings, setSettings } = {
+export const { addSettings, deleteSettings, setSettings } = {
     addSettings: _addSettings,
     deleteSettings: _deleteSettings,
-    initializeSettings: _initializeSettings,
     setSettings: <T extends FieldType>(payload: {
         fieldId: string;
         settings: Partial<FieldSettingsMap[T]>;
