@@ -10,11 +10,6 @@ import {
     selectOptionsByFieldId
 } from '@/features/form-creation/state/slices/options';
 
-export type FieldOption = {
-    id: string;
-    content: string;
-};
-
 type Props = {
     fieldId: string;
 };

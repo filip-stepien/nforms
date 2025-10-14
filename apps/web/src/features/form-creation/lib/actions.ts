@@ -1,8 +1,8 @@
 'use server';
 
-import { Field } from '../state/slices/fields';
+import { FormState } from '@/lib/store';
 import { saveForm } from './data';
 
-export async function saveFormAction(title: string, fields: Field[]) {
-    return await saveForm(title, fields);
+export async function saveFormAction(formState: FormState) {
+    return await saveForm(formState);
 }

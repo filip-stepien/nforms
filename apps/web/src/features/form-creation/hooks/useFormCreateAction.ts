@@ -1,6 +1,6 @@
-import { useAppSelector } from '@/hooks/useAppSelector';
 import { saveFormAction } from '../lib/actions';
 import { useActionState } from 'react';
+import { useAppStore } from '@/hooks/useAppStore';
 
 export type FormCreateActionStatus = {
     success: boolean;
@@ -8,12 +8,11 @@ export type FormCreateActionStatus = {
 };
 
 export function useFormCreateAction() {
-    const title = useAppSelector(state => state.formTitle.title);
-    const fields = useAppSelector(state => state.formFields);
+    const store = useAppStore();
 
     const formCreateAction = async (): Promise<FormCreateActionStatus> => {
         try {
-            await saveFormAction(title, fields);
+            await saveFormAction(store.getState());
             return { success: true, message: 'Form has been saved successfully.' };
         } catch {
             return { success: false, message: 'Something went wrong.\nPlease try again.' };
