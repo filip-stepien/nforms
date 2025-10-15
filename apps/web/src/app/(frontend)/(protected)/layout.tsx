@@ -1,9 +1,8 @@
 import '@/styles/globals.css';
 import type { ReactNode } from 'react';
 import { Toaster } from 'react-hot-toast';
-import { UserSessionProvider } from '@/providers/UserSessionProvider';
-import { getAuthSession } from '@/auth';
 import { Layout } from '@/components/Layout';
+import { AuthGuard } from '@/providers/AuthGuard';
 
 type Props = {
     children: ReactNode;
@@ -11,9 +10,9 @@ type Props = {
 
 export default async function ProtectedRouteLayout({ children }: Props) {
     return (
-        <UserSessionProvider session={await getAuthSession()}>
+        <AuthGuard>
             <Toaster />
             <Layout>{children}</Layout>
-        </UserSessionProvider>
+        </AuthGuard>
     );
 }
