@@ -1,11 +1,12 @@
 import { ReactNode } from 'react';
-import { FieldType, selectFieldById } from '../../state/slices/fields';
+import { selectFieldById } from '../../state/slices/fields';
 import { SelectionFieldSettings } from '../field-settings/SelectionFieldSettings';
 import { TextFieldSettings } from '../field-settings/TextFieldSettings';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { Menu, Stack } from '@mantine/core';
 import { IconAdjustments } from '@tabler/icons-react';
 import { IconButton } from '../ui/IconButton';
+import { FieldType } from '@packages/db/schemas/form';
 
 type Props = {
     fieldId: string;

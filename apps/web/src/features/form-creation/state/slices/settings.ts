@@ -1,26 +1,7 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { formatActionName, withPayloadType } from '@/lib/utils';
-import { FieldType } from './fields';
 import { RootState } from '@/lib/store';
-
-export type BaseSettings = {
-    required: boolean;
-};
-
-export type TextSettings = BaseSettings & {
-    analyseSentiment: boolean;
-    extractKeywords: boolean;
-    summarize: boolean;
-};
-
-export type SelectionSettings = BaseSettings & {
-    singleSelection: boolean;
-};
-
-export type FieldSettingsMap = {
-    [FieldType.TEXT]: TextSettings;
-    [FieldType.SELECTION]: SelectionSettings;
-};
+import { FieldSettingsMap, FieldType } from '@packages/db/schemas/form';
 
 export type FieldSettingsState = { fieldId: string; settings: FieldSettingsMap[FieldType] }[];
 

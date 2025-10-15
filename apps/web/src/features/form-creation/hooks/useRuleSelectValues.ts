@@ -1,7 +1,7 @@
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { FieldType } from '../state/slices/fields';
 import { selectOptionsByFieldId } from '../state/slices/options';
 import { useCallback } from 'react';
+import { FieldType } from '@packages/db/schemas/form';
 
 export type RuleLabeledValue = { label: string; value: string };
 

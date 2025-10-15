@@ -1,35 +1,33 @@
 import { z } from 'zod';
-import { FieldType, ruleCombinators } from '../../types/form';
 
-const fieldSchema = z.object({
-    id: z.string(),
-    title: z.string(),
-    type: z.enum(FieldType)
-});
+export enum FieldType {
+    TEXT = 'Text',
+    SELECTION = 'Selection'
+}
 
-const textFieldSettingsSchema = z.object({
+export const FieldSchema = z.object({ id: z.string(), title: z.string(), type: z.enum(FieldType) });
+
+const TextFieldSettingsSchema = z.object({
     required: z.boolean(),
     analyseSentiment: z.boolean(),
     extractKeywords: z.boolean(),
     summarize: z.boolean()
 });
 
-const selectionFieldSettingsSchema = z.object({
+const SelectionFieldSettingsSchema = z.object({
     required: z.boolean(),
     singleSelection: z.boolean()
 });
 
-const fieldSettingsSchema = z.object({
+export const FieldSettingsSchema = z.object({
     fieldId: z.string(),
-    settings: z.union([textFieldSettingsSchema, selectionFieldSettingsSchema])
+    settings: z.union([TextFieldSettingsSchema, SelectionFieldSettingsSchema])
 });
 
-const relationSchema = z.object({
-    fieldId: z.string(),
-    rootGroupId: z.string()
-});
+export const RuleRelationSchema = z.object({ fieldId: z.string(), rootGroupId: z.string() });
 
-const ruleSchema = z.object({
+export const RuleSchema = z.object({
+    id: z.string(),
     type: z.string(),
     fieldId: z.string(),
     targetFieldId: z.string(),
@@ -38,7 +36,10 @@ const ruleSchema = z.object({
     value: z.string()
 });
 
-const groupSchema = z.object({
+export const ruleCombinators = ['AND', 'OR'] as const;
+
+export const RuleGroupSchema = z.object({
+    id: z.string(),
     fieldId: z.string(),
     type: z.string(),
     combinator: z.enum(ruleCombinators),
@@ -46,31 +47,53 @@ const groupSchema = z.object({
     childrenRules: z.array(z.string())
 });
 
-const optionSchema = z.object({
+export const FieldOptionSchema = z.object({
+    id: z.string(),
     fieldId: z.string(),
     content: z.string(),
     order: z.number()
 });
 
-const rulesSchema = z.object({
-    relations: z.array(relationSchema),
-    rules: z.array(ruleSchema),
-    groups: z.array(groupSchema)
+export const FieldRulesSchema = z.object({
+    relations: z.array(RuleRelationSchema),
+    rules: z.array(RuleSchema),
+    groups: z.array(RuleGroupSchema)
 });
 
-const controlsSchema = z.object({
-    rules: rulesSchema,
-    options: z.array(optionSchema)
+export const FieldControlsSchema = z.object({
+    rules: FieldRulesSchema,
+    options: z.array(FieldOptionSchema)
 });
 
-export const formSchema = z.object({
+export const FormSchema = z.object({
     id: z.string(),
     title: z.string(),
-    fields: z.array(fieldSchema),
-    settings: z.array(fieldSettingsSchema),
-    controls: controlsSchema,
+    fields: z.array(FieldSchema),
+    settings: z.array(FieldSettingsSchema),
+    controls: FieldControlsSchema,
     createdAt: z.date(),
     userId: z.string()
 });
 
-export type Form = z.infer<typeof formSchema>;
+export type Field = z.infer<typeof FieldSchema>;
+
+export type FieldSettingsMap = {
+    [FieldType.TEXT]: z.infer<typeof TextFieldSettingsSchema>;
+    [FieldType.SELECTION]: z.infer<typeof SelectionFieldSettingsSchema>;
+};
+
+export type RuleRelation = z.infer<typeof RuleRelationSchema>;
+
+export type Rule = z.infer<typeof RuleSchema>;
+
+export type RuleGroup = z.infer<typeof RuleGroupSchema>;
+
+export type RuleCombinator = (typeof ruleCombinators)[number];
+
+export type FieldOption = z.infer<typeof FieldOptionSchema>;
+
+export type FieldRules = z.infer<typeof FieldRulesSchema>;
+
+export type FieldControls = z.infer<typeof FieldControlsSchema>;
+
+export type Form = z.infer<typeof FormSchema>;

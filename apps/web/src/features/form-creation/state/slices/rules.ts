@@ -1,37 +1,13 @@
 import { RootState } from '@/lib/store';
+import { Rule, RuleGroup, RuleRelation } from '@packages/db/schemas/form';
 import { createEntityAdapter, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RuleCombinator } from '@packages/types/form';
-
-export type Rule = {
-    id: string;
-    type: 'rule';
-    fieldId: string;
-    targetFieldId: string;
-    condition: string;
-    operator: string;
-    value: string | null;
-};
-
-export type RuleGroup = {
-    id: string;
-    type: 'group';
-    fieldId: string;
-    combinator: RuleCombinator;
-    childrenRules: string[];
-    childrenGroups: string[];
-};
-
-export type FieldRulesRelation = {
-    fieldId: string;
-    rootGroupId: string;
-};
 
 export type RulePatch = Partial<Omit<Rule, 'id' | 'type'>>;
 
 export type RuleGroupPatch = Partial<Omit<RuleGroup, 'id' | 'type'>>;
 
 export type RulesState = {
-    relations: FieldRulesRelation[];
+    relations: RuleRelation[];
     rules: ReturnType<typeof rulesAdapter.getInitialState>;
     groups: ReturnType<typeof groupsAdapter.getInitialState>;
 };

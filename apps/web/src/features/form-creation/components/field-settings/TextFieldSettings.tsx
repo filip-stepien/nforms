@@ -1,14 +1,10 @@
 import { Stack, Checkbox, Divider } from '@mantine/core';
 import { ChangeEvent } from 'react';
 import { BaseFieldSettings } from './BaseFieldSettings';
-import { FieldType } from '../../state/slices/fields';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import {
-    FieldSettingsMap,
-    selectSettingsByFieldId,
-    setSettings
-} from '../../state/slices/settings';
+import { selectSettingsByFieldId, setSettings } from '../../state/slices/settings';
+import { FieldType, FieldSettingsMap } from '@packages/db/schemas/form';
 
 type Props = {
     fieldId: string;

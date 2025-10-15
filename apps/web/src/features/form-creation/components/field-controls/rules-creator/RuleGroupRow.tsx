@@ -9,13 +9,12 @@ import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { selectFieldById } from '@/features/form-creation/state/slices/fields';
 import { useRuleSelectValues } from '@/features/form-creation/hooks/useRuleSelectValues';
+import { RuleCombinator, ruleCombinators } from '@packages/db/schemas/form';
 import {
-    RuleCombinator,
     setGroup,
     addRule,
     addGroup,
     deleteGroup,
-    ruleCombinators,
     selectGroupById
 } from '@/features/form-creation/state/slices/rules';
 

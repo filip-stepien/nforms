@@ -1,8 +1,9 @@
 import { AppDispatch } from '@/lib/store';
-import { Field, FieldPatch, _addField, _deleteField, _setField } from './slices/fields';
+import { FieldPatch, _addField, _deleteField, _setField } from './slices/fields';
 import { addSettings, deleteSettings } from './slices/settings';
 import { v4 as uuid } from 'uuid';
 import { _deleteOption, deleteOptionsByField } from './slices/options';
+import { Field } from '@packages/db/schemas/form';
 import {
     addGroup,
     deleteRulesAndGroups,

@@ -1,14 +1,8 @@
 import { RootState } from '@/lib/store';
-import { createSlice, createEntityAdapter, PayloadAction, createSelector } from '@reduxjs/toolkit';
+import { FieldOption } from '@packages/db/schemas/form';
+import { createSlice, createEntityAdapter, createSelector, PayloadAction } from '@reduxjs/toolkit';
 
-export type FieldOption = {
-    id: string;
-    fieldId: string;
-    content: string;
-    order: number;
-};
-
-export type FieldOptionPatch = Partial<Omit<FieldOption, 'id'>>;
+export type FieldOptionPatch = Partial<FieldOption>;
 
 const fieldOptionsAdapter = createEntityAdapter<FieldOption>({
     sortComparer: (a, b) => a.order - b.order

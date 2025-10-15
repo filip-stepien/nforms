@@ -5,11 +5,12 @@ import { IconTrash } from '@tabler/icons-react';
 import { DragButton } from '../ui/DragButton';
 import { IconButton } from '../ui/IconButton';
 import { FieldSettings } from './FieldSettings';
-import { FieldType, selectFieldById } from '../../state/slices/fields';
+import { selectFieldById } from '../../state/slices/fields';
 import { deleteField, setField } from '../../state/thunks';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { FieldControls } from './FieldControls';
+import { FieldType } from '@packages/db/schemas/form';
 
 type Props = {
     index: number;

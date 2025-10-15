@@ -5,7 +5,7 @@ import { ActionButton } from '../ui/ActionButton';
 import { addField } from '../../state/thunks';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { v4 as uuid } from 'uuid';
-import { FieldType } from '../../state/slices/fields';
+import { FieldType } from '@packages/db/schemas/form';
 
 type Props = {
     isLoading: boolean;

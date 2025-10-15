@@ -2,7 +2,6 @@ import 'server-only';
 
 import { verifyUser } from '@/auth';
 import { FormState } from '@/lib/store';
-import { stripId } from './utils';
 import { prisma } from '@packages/db';
 
 function serializeFormState(formState: FormState) {
@@ -13,10 +12,10 @@ function serializeFormState(formState: FormState) {
         controls: {
             rules: {
                 relations: formState.fieldRules.relations,
-                rules: Object.values(formState.fieldRules.rules.entities).map(stripId),
-                groups: Object.values(formState.fieldRules.groups.entities).map(stripId)
+                rules: Object.values(formState.fieldRules.rules.entities),
+                groups: Object.values(formState.fieldRules.groups.entities)
             },
-            options: Object.values(formState.fieldOptions.entities).map(stripId)
+            options: Object.values(formState.fieldOptions.entities)
         }
     };
 }

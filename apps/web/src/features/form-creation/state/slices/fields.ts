@@ -1,12 +1,6 @@
 import { RootState } from '@/lib/store';
+import { Field } from '@packages/db/schemas/form';
 import { createSlice, createEntityAdapter, PayloadAction } from '@reduxjs/toolkit';
-import { FieldType } from '@packages/types/form';
-
-export type Field = {
-    id: string;
-    type: FieldType;
-    title: string;
-};
 
 export type FieldPatch = Partial<Omit<Field, 'id'>>;
 

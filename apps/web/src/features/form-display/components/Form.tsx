@@ -1,8 +1,8 @@
 import { Flex, Stack } from '@mantine/core';
-import { Form as FormType } from '@packages/db/schemas/form';
+import { ParsedForm } from '../lib/data';
 
 type Props = {
-    form: FormType;
+    form: ParsedForm;
 };
 
 export function Form({ form }: Props) {

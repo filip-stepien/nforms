@@ -1,9 +1,10 @@
 import { Stack } from '@mantine/core';
 import { ReactNode } from 'react';
-import { FieldType, selectFieldById } from '../../state/slices/fields';
+import { selectFieldById } from '../../state/slices/fields';
 import { OptionCreator } from '../field-controls/option-creator/OptionCreator';
 import { RulesCreator } from '../field-controls/rules-creator/RulesCreator';
 import { useAppSelector } from '@/hooks/useAppSelector';
+import { FieldType } from '@packages/db/schemas/form';
 
 type Props = {
     fieldId: string;
