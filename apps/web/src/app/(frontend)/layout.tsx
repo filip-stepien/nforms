@@ -1,3 +1,4 @@
+import '@/styles/globals.css';
 import { ColorSchemeScript, mantineHtmlProps, MantineProvider } from '@mantine/core';
 import { Toaster } from 'react-hot-toast';
 

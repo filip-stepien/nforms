@@ -1,9 +1,6 @@
 import { RootState } from '@/lib/store';
 import { createEntityAdapter, createSlice, PayloadAction } from '@reduxjs/toolkit';
-
-export const ruleCombinators = ['AND', 'OR'] as const;
-
-export type RuleCombinator = (typeof ruleCombinators)[number];
+import { RuleCombinator } from '@packages/types/form';
 
 export type Rule = {
     id: string;

@@ -1,10 +1,6 @@
 import { RootState } from '@/lib/store';
 import { createSlice, createEntityAdapter, PayloadAction } from '@reduxjs/toolkit';
-
-export enum FieldType {
-    TEXT = 'Text',
-    SELECTION = 'Selection'
-}
+import { FieldType } from '@packages/types/form';
 
 export type Field = {
     id: string;

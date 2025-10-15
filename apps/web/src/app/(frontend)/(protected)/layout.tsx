@@ -1,4 +1,3 @@
-import '@/styles/globals.css';
 import type { ReactNode } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { Layout } from '@/components/Layout';
