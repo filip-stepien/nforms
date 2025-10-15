@@ -1,7 +1,7 @@
 import { Loading } from '@/components/Loading';
-import { FormsTable } from '@/features/form-display/components/table/FormsTable';
-import { getFormsTableData } from '@/features/form-display/lib/data';
-import { getPaginationSearchParams } from '@/features/form-display/lib/pagination';
+import { FormsTable } from '@/features/form-listings/components/table/FormsTable';
+import { getFormsTableData } from '@/features/form-listings/lib/data';
+import { getPaginationSearchParams } from '@/features/form-listings/lib/pagination';
 import { Flex, Stack } from '@mantine/core';
 import { IconLayout } from '@tabler/icons-react';
 import { Suspense } from 'react';
