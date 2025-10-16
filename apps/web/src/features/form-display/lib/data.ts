@@ -1,5 +1,7 @@
 import { prisma } from '@packages/db';
 import { FieldOption, FieldSettingsMap, FieldType, FormSchema } from '@packages/db/schemas/form';
+import { LanguageProcessing } from '@packages/db/schemas/nlp';
+import { enumValues, uniqueArray } from './utils';
 
 export type ParsedField =
     | {
@@ -7,6 +9,7 @@ export type ParsedField =
           title: string;
           type: FieldType.TEXT;
           settings: FieldSettingsMap[FieldType.TEXT];
+          requiredProcessings: LanguageProcessing[];
       }
     | {
           id: string;
@@ -34,6 +37,7 @@ export async function getParsedForm(id: string): Promise<ParsedForm> {
 
     const fields = data.fields.map((field): ParsedField => {
         const fieldSettings = data.settings.find(s => s.fieldId === field.id);
+        const fieldRules = data.controls.rules.rules.filter(r => r.targetFieldId === field.id);
 
         if (!fieldSettings) {
             throw new Error(`Missing settings for field ${field.id}`);
@@ -44,7 +48,12 @@ export async function getParsedForm(id: string): Promise<ParsedForm> {
                 return {
                     ...field,
                     type: FieldType.TEXT,
-                    settings: fieldSettings.settings as FieldSettingsMap[FieldType.TEXT]
+                    settings: fieldSettings.settings as FieldSettingsMap[FieldType.TEXT],
+                    requiredProcessings: uniqueArray(
+                        fieldRules
+                            .filter(r => enumValues(LanguageProcessing).includes(r.condition))
+                            .map(r => r.condition as LanguageProcessing)
+                    )
                 };
             }
 
