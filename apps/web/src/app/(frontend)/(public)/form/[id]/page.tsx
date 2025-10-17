@@ -9,8 +9,8 @@ type Props = {
 export default async function DisplayFormPage({ params }: Props) {
     try {
         const { id } = await params;
-        const form = await getParsedForm(id);
-        return <Form form={form} />;
+        const parsedForm = await getParsedForm(id);
+        return <Form parsedForm={parsedForm} />;
     } catch {
         notFound();
     }

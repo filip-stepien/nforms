@@ -31,7 +31,7 @@ const initialSettings: FieldSettingsMap = {
     },
     [FieldType.SELECTION]: {
         required: true,
-        singleSelection: false
+        multiSelection: false
     }
 };
 

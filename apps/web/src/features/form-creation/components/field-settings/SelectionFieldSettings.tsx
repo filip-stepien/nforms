@@ -34,10 +34,10 @@ export function SelectionFieldSettings({ fieldId }: Props) {
             <Divider />
             <Stack>
                 <Checkbox
-                    label='Single selection'
-                    description='Whether only one option should be checked'
-                    checked={settings.singleSelection}
-                    onChange={e => handleSelectionSettingChange('singleSelection', e)}
+                    label='Multi selection'
+                    description='Whether more than one option could be checked'
+                    checked={settings.multiSelection}
+                    onChange={e => handleSelectionSettingChange('multiSelection', e)}
                 />
             </Stack>
         </>

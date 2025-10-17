@@ -16,7 +16,7 @@ const TextFieldSettingsSchema = z.object({
 
 const SelectionFieldSettingsSchema = z.object({
     required: z.boolean(),
-    singleSelection: z.boolean()
+    multiSelection: z.boolean()
 });
 
 export const FieldSettingsSchema = z.object({

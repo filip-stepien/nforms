@@ -15,7 +15,7 @@
     --color-foreground: var(--foreground);
     --color-danger: rgb(250, 82, 82);
     --color-neutral-background: rgba(20, 20, 20, 0.05);
-
+    --color-placeholder: #adb5bd;
     --shadow-card: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 
     --spacing-xs: calc(0.625rem * var(--mantine-scale));
