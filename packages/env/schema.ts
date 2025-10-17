@@ -1,10 +1,14 @@
 import z from 'zod';
 
-const envSchema = z.object({
+const EnvSchema = z.object({
     NODE_ENV: z.literal(['production', 'development']).default('development'),
 
-    DATABASE_URL: z.string().min(1),
+    BASE_URL: z
+        .string()
+        .min(1)
+        .transform(url => (url.endsWith('/') ? url : url + '/')),
 
+    DATABASE_URL: z.string().min(1),
     SIGN_IN_URL: z.string().min(1),
 
     KEYCLOAK_ISSUER: z.string().min(1),
@@ -29,4 +33,4 @@ const envSchema = z.object({
         .transform(url => (url.endsWith('/') ? url : url + '/'))
 });
 
-export default envSchema;
+export default EnvSchema;

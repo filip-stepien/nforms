@@ -18,7 +18,7 @@ export function FormsTableBody({ data }: Props) {
                     <TextCell text={form.createdOn} />
                     <ResponsesCell responses={form.responses} />
                     <StatusCell status={form.status} />
-                    <ActionsCell actions={form.actions} />
+                    <ActionsCell formId={form.id} actions={form.actions} />
                 </Table.Tr>
             ))}
         </Table.Tbody>

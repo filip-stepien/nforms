@@ -14,7 +14,7 @@ type Props = {
 export function FormsTable({ formData }: Props) {
     const { data, pagination } = use(formData);
 
-    return (
+    return data.length > 0 ? (
         <Flex direction='column'>
             <Table verticalSpacing='sm'>
                 <FormsTableHeader />
@@ -24,5 +24,7 @@ export function FormsTable({ formData }: Props) {
                 <FormsTablePagination pagination={pagination} />
             </Flex>
         </Flex>
+    ) : (
+        'No forms found.'
     );
 }

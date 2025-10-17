@@ -1,18 +1,18 @@
 import { Button, Flex } from '@mantine/core';
-import { IconEdit } from '@tabler/icons-react';
+import { IconExternalLink } from '@tabler/icons-react';
 import Link from 'next/link';
 
 type Props = {
-    editHref: string;
+    url: string;
 };
 
-export function EditButton({ editHref }: Props) {
+export function OpenButton({ url }: Props) {
     return (
-        <Link href={editHref}>
+        <Link href={url}>
             <Button size='compact-sm' className='px-sm text-xs' variant='subtle'>
                 <Flex align='center' gap='xs'>
-                    <IconEdit size={18} stroke={1.5} />
-                    <span>Edit</span>
+                    <IconExternalLink size={18} stroke={1.5} />
+                    <span>Open</span>
                 </Flex>
             </Button>
         </Link>

@@ -10,6 +10,7 @@ import {
 import { verifyUser } from '@/auth';
 import { prisma } from '@packages/db';
 import { debug_wait } from '@/lib/debug';
+import { env } from '@packages/env';
 
 export type FormTableData = {
     id: string;
@@ -19,6 +20,7 @@ export type FormTableData = {
     status: 'active' | 'inactive';
     actions: {
         editHref: string;
+        shareHref: string;
         embedding: string;
     };
 };
@@ -50,10 +52,16 @@ export async function getFormsTableData(
             createdOn: dayjs().format('DD.MM.YYYY'),
             status: 'active' as const,
             actions: {
+                shareHref: env.BASE_URL + 'form/' + form.id,
                 editHref: '/',
                 embedding: 'embedding'
             }
         })),
         pagination: getPaginationMeta({ ...pagination, totalCount })
     };
+}
+
+export async function deleteForm(formId: string) {
+    await verifyUser();
+    await prisma.form.delete({ where: { id: formId } });
 }
