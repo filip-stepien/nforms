@@ -1,5 +1,11 @@
 import { prisma } from '@packages/db';
-import { FieldOption, FieldSettingsMap, FieldType, FormSchema } from '@packages/db/schemas/form';
+import {
+    FieldOption,
+    FieldSettingsMap,
+    FieldType,
+    FormSchema,
+    FormSettings
+} from '@packages/db/schemas/form';
 import { LanguageProcessing } from '@packages/db/schemas/nlp';
 import { enumValues, uniqueArray } from './utils';
 
@@ -19,7 +25,12 @@ export type ParsedField =
           options: Omit<FieldOption, 'order'>[];
       };
 
-export type ParsedForm = { title: string; fields: ParsedField[] };
+export type ParsedForm = {
+    title: string;
+    description: string | null;
+    settings: FormSettings;
+    fields: ParsedField[];
+};
 
 export async function getParsedForm(id: string): Promise<ParsedForm> {
     const form = await prisma.form.findFirstOrThrow({ where: { id } });
@@ -36,8 +47,8 @@ export async function getParsedForm(id: string): Promise<ParsedForm> {
     const { data } = parseResult;
 
     const fields = data.fields.map((field): ParsedField => {
-        const fieldSettings = data.settings.find(s => s.fieldId === field.id);
-        const fieldRules = data.controls.rules.rules.filter(r => r.targetFieldId === field.id);
+        const fieldSettings = data.fieldSettings.find(s => s.fieldId === field.id);
+        const fieldRules = data.fieldControls.rules.rules.filter(r => r.targetFieldId === field.id);
 
         if (!fieldSettings) {
             throw new Error(`Missing settings for field ${field.id}`);
@@ -62,7 +73,7 @@ export async function getParsedForm(id: string): Promise<ParsedForm> {
                     ...field,
                     type: FieldType.SELECTION,
                     settings: fieldSettings.settings as FieldSettingsMap[FieldType.SELECTION],
-                    options: data.controls.options
+                    options: data.fieldControls.options
                         .filter(o => o.fieldId === field.id)
                         .sort((a, b) => a.order - b.order)
                         .map(({ order: _, ...rest }) => rest)
@@ -76,6 +87,8 @@ export async function getParsedForm(id: string): Promise<ParsedForm> {
 
     return {
         title: data.title,
+        description: data.description,
+        settings: data.settings,
         fields
     };
 }

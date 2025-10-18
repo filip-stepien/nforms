@@ -65,12 +65,20 @@ export const FieldControlsSchema = z.object({
     options: z.array(FieldOptionSchema)
 });
 
+export const FormSettingsSchema = z.object({
+    active: z.boolean(),
+    anonymous: z.boolean(),
+    singleResponse: z.boolean()
+});
+
 export const FormSchema = z.object({
     id: z.string(),
     title: z.string(),
+    description: z.string().nullable(),
+    settings: FormSettingsSchema,
     fields: z.array(FieldSchema),
-    settings: z.array(FieldSettingsSchema),
-    controls: FieldControlsSchema,
+    fieldSettings: z.array(FieldSettingsSchema),
+    fieldControls: FieldControlsSchema,
     createdAt: z.date(),
     userId: z.string()
 });
@@ -95,5 +103,7 @@ export type FieldOption = z.infer<typeof FieldOptionSchema>;
 export type FieldRules = z.infer<typeof FieldRulesSchema>;
 
 export type FieldControls = z.infer<typeof FieldControlsSchema>;
+
+export type FormSettings = z.infer<typeof FormSettingsSchema>;
 
 export type Form = z.infer<typeof FormSchema>;

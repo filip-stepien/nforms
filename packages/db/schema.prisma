@@ -22,9 +22,11 @@ model User {
 model Form {
     id              String      @id @map("_id") @default(auto()) @db.ObjectId
     title           String
-    fields          Json
+    description     String?
     settings        Json
-    controls        Json
+    fields          Json
+    fieldSettings   Json
+    fieldControls   Json
     createdAt       DateTime    @default(now())
 
     userId          String      @db.ObjectId

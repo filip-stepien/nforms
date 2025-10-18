@@ -3,11 +3,12 @@ import { FormField } from './FormField';
 import { DragDropContext, Droppable, DropResult } from '@hello-pangea/dnd';
 import { useFormCreateAction } from '../../hooks/useFormCreateAction';
 import { useFormStatusEffect } from '../../hooks/useFormStatusEffect';
-import { FormTitle } from './FormTitle';
+import { FormHeader } from './FormHeader';
 import { FormActions } from './FormActions';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { reorderField, selectFields } from '../../state/slices/fields';
+import { FormSettings } from './FormSettings';
 
 export function FormCreator() {
     const { status, action, isLoading } = useFormCreateAction();
@@ -30,7 +31,10 @@ export function FormCreator() {
                             ref={provided.innerRef}
                             {...provided.droppableProps}
                         >
-                            <FormTitle />
+                            <Flex gap='sm'>
+                                <FormHeader />
+                                <FormSettings />
+                            </Flex>
                             {fields.map((field, index) => (
                                 <FormField key={field.id} index={index} fieldId={field.id} />
                             ))}

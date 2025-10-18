@@ -8,6 +8,7 @@
 @theme inline {
     --color-hover: #f8f9fa;
     --color-font-secondary: #495057;
+    --color-font-tertiary: rgb(134, 142, 150);
     --color-icon: #828282;
     --color-outline: #dee2e6;
     --color-border: rgb(206, 212, 218);
@@ -23,6 +24,7 @@
     --spacing-md: calc(1rem * var(--mantine-scale));
     --spacing-lg: calc(1.25rem * var(--mantine-scale));
     --spacing-xl: calc(2rem * var(--mantine-scale));
+    --spacing-2xl: calc(3rem * var(--mantine-scale));
 
     --font-sans: var(--font-roboto-sans);
 }

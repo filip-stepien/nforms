@@ -3,13 +3,18 @@ import 'server-only';
 import { verifyUser } from '@/auth';
 import { FormState } from '@/lib/store';
 import { prisma } from '@packages/db';
+import { Form } from '@packages/db/schemas/form';
 
-function serializeFormState(formState: FormState) {
+type SerializedForm = Omit<Form, 'id' | 'createdAt' | 'userId'>;
+
+function serializeFormState(formState: FormState): SerializedForm {
     return {
-        title: formState.formTitle.title,
+        title: formState.form.title,
+        description: formState.form.description || null,
+        settings: formState.form.settings,
         fields: Object.values(formState.formFields.entities),
-        settings: formState.fieldSettings,
-        controls: {
+        fieldSettings: formState.fieldSettings,
+        fieldControls: {
             rules: {
                 relations: formState.fieldRules.relations,
                 rules: Object.values(formState.fieldRules.rules.entities),

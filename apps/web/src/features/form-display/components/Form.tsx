@@ -4,6 +4,8 @@ import { Button, Flex, Stack } from '@mantine/core';
 import { ParsedForm } from '../lib/data';
 import { FormQuestion } from './FormQuestion';
 import { useDynamicFieldsForm } from '../hooks/useDynamicFieldsForm';
+import { useState } from 'react';
+import { SubmitCheck } from './SubmitCheck';
 
 type Props = {
     parsedForm: ParsedForm;
@@ -11,9 +13,12 @@ type Props = {
 
 export function Form({ parsedForm }: Props) {
     const { getInputProps, getKey, onSubmit } = useDynamicFieldsForm(parsedForm.fields);
+    const [submitted, setSubmitted] = useState(false);
 
-    return (
-        <form onSubmit={onSubmit(values => console.log(values))}>
+    return submitted ? (
+        <SubmitCheck />
+    ) : (
+        <form onSubmit={onSubmit(() => setSubmitted(true))}>
             <Flex
                 direction='column'
                 align='center'
@@ -23,7 +28,9 @@ export function Form({ parsedForm }: Props) {
                 <Stack className='sm:p-xl p-sm sm:gap-md gap-sm w-full sm:w-3/4 xl:w-1/2'>
                     <Stack className='bg-background shadow-card sm:p-xl p-lg sm:gap-lg h-fit w-full gap-1 rounded-md'>
                         <h1 className='text-xl font-medium sm:text-3xl'>{parsedForm.title}</h1>
-                        <p className='sm:text-md text-sm'>Ten formularz opisuje coś tam</p>
+                        {parsedForm.description && (
+                            <p className='sm:text-md text-sm'>{parsedForm.description}</p>
+                        )}
                     </Stack>
                     {parsedForm.fields.map((field, index) => (
                         <FormQuestion
