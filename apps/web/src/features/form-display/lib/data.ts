@@ -1,3 +1,4 @@
+import 'server-only';
 import { prisma } from '@packages/db';
 import {
     FieldOption,
@@ -7,7 +8,9 @@ import {
     FormSettings
 } from '@packages/db/schemas/form';
 import { LanguageProcessing } from '@packages/db/schemas/nlp';
+import { FormResponse } from '@packages/db/schemas/formResponse';
 import { enumValues, uniqueArray } from './utils';
+import { v4 as uuid } from 'uuid';
 
 export type ParsedField =
     | {
@@ -26,6 +29,7 @@ export type ParsedField =
       };
 
 export type ParsedForm = {
+    id: string;
     title: string;
     description: string | null;
     settings: FormSettings;
@@ -86,9 +90,27 @@ export async function getParsedForm(id: string): Promise<ParsedForm> {
     });
 
     return {
+        id: data.id,
         title: data.title,
         description: data.description,
         settings: data.settings,
         fields
     };
+}
+
+export async function saveFormResponse(
+    formId: string,
+    fieldResponses: Record<string, string>,
+    email?: string
+) {
+    const data: Omit<FormResponse, 'id'> = {
+        email: email ?? null,
+        responses: Object.entries(fieldResponses).map(([fieldId, response]) => ({
+            id: uuid(),
+            fieldId,
+            response
+        }))
+    };
+
+    await prisma.formResponse.create({ data: { ...data, formId } });
 }

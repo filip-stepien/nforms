@@ -9,26 +9,37 @@ datasource db {
 }
 
 model User {
-    id              String      @id @default(auto()) @map("_id") @db.ObjectId
+    id              String          @id @default(auto()) @map("_id") @db.ObjectId
     name            String
-    email           String      @unique
+    email           String          @unique
     providerName    String
     providerUserId  String
-    forms           Form[]      @relation("UserForms")
+    forms           Form[]          @relation("UserForms")
 
     @@unique([providerName, providerUserId])
 }
 
 model Form {
-    id              String      @id @map("_id") @default(auto()) @db.ObjectId
+    id              String          @id @map("_id") @default(auto()) @db.ObjectId
     title           String
     description     String?
     settings        Json
     fields          Json
     fieldSettings   Json
     fieldControls   Json
-    createdAt       DateTime    @default(now())
+    createdAt       DateTime        @default(now())
 
-    userId          String      @db.ObjectId
-    user            User        @relation("UserForms", fields: [userId], references: [id])
+    responses       FormResponse[]  @relation("FormResponses")
+
+    userId          String          @db.ObjectId
+    user            User            @relation("UserForms", fields: [userId], references: [id])
+}
+
+model FormResponse {
+    id              String          @id @map("_id") @default(auto()) @db.ObjectId
+    email           String?
+    responses       Json
+
+    formId          String          @db.ObjectId
+    form            Form            @relation("FormResponses", fields: [formId], references: [id])
 }

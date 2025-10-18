@@ -1,4 +1,4 @@
-import { useForm } from '@mantine/form';
+import { isEmail, useForm } from '@mantine/form';
 import { ParsedField } from '../lib/data';
 
 function requiredValidator(value: string | string[]) {
@@ -8,14 +8,19 @@ function requiredValidator(value: string | string[]) {
 export function useDynamicFieldsForm(fields: ParsedField[]) {
     const form = useForm({
         mode: 'uncontrolled',
-        validate: Object.fromEntries(
-            fields.filter(f => f.settings.required).map(f => [f.id, requiredValidator])
-        )
+        validate: {
+            email: isEmail('Invalid email.'),
+            ...Object.fromEntries(
+                fields.filter(f => f.settings.required).map(f => [f.id, requiredValidator])
+            )
+        }
     });
 
     return {
-        getKey: form.key,
+        getInputKey: form.key,
         getInputProps: form.getInputProps,
+        emailKey: form.key('email'),
+        emailProps: form.getInputProps('email'),
         onSubmit: form.onSubmit
     };
 }
