@@ -8,7 +8,7 @@ type Props = {
 
 export function OpenButton({ url }: Props) {
     return (
-        <Link href={url}>
+        <Link href={url} target='_blank'>
             <Button size='sm' className='px-sm text-xs' variant='light'>
                 <Flex align='center' gap='xs'>
                     <IconExternalLink size={18} stroke={1.5} />

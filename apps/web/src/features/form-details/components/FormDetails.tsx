@@ -15,9 +15,10 @@ import dayjs from 'dayjs';
 
 type Props = {
     form: Form;
+    baseUrl: string;
 };
 
-export function FormDetails({ form }: Props) {
+export function FormDetails({ form, baseUrl }: Props) {
     return (
         <Stack>
             <Flex>
@@ -43,9 +44,9 @@ export function FormDetails({ form }: Props) {
                 </Flex>
                 <Flex gap='xs' align='flex-end' justify='flex-end' className='w-full'>
                     <SaveButton />
-                    <OpenButton url='' />
-                    <ShareButton url='' />
-                    <EmbedButton embedding='' />
+                    <OpenButton url={`/form/${form.id}`} />
+                    <ShareButton url={`${baseUrl}form/${form.id}`} />
+                    <EmbedButton embedding='<div />' />
                     <DeleteButton formId={form.id} />
                 </Flex>
             </Flex>

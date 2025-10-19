@@ -60,8 +60,3 @@ export async function getFormsTableData(
         pagination: getPaginationMeta({ ...pagination, totalCount })
     };
 }
-
-export async function deleteForm(formId: string) {
-    await verifyUser();
-    await prisma.form.delete({ where: { id: formId } });
-}

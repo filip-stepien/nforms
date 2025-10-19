@@ -1,9 +1,8 @@
 import { Button, Flex } from '@mantine/core';
 import { IconTrash } from '@tabler/icons-react';
 import { useTransition } from 'react';
-import { deleteFormAction } from '../../../form-listing/lib/actions';
 import { debug_wait } from '@/lib/debug';
-import { useRouter } from 'next/navigation';
+import { deleteFormAction } from '@/features/form-listing/lib/actions';
 
 type Props = {
     formId: string;
@@ -11,13 +10,11 @@ type Props = {
 
 export function DeleteButton({ formId }: Props) {
     const [isPending, startTransition] = useTransition();
-    const router = useRouter();
 
     const handleClick = async () => {
         startTransition(async () => {
             await debug_wait();
             await deleteFormAction(formId);
-            router.refresh();
         });
     };
 

@@ -1,7 +1,9 @@
 'use server';
 
-import { deleteForm } from './data';
+import { deleteFormById } from '@/features/form-details/lib/data';
+import { redirect } from 'next/navigation';
 
 export async function deleteFormAction(formId: string) {
-    await deleteForm(formId);
+    await deleteFormById(formId);
+    redirect('/your-forms');
 }
