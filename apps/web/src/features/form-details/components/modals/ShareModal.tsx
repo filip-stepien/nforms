@@ -1,5 +1,5 @@
 import { Modal, Stack, Flex, Code, Text } from '@mantine/core';
-import { CopyButton } from './CopyButton';
+import { CopyButton } from '../../../form-listing/components/ui/CopyButton';
 
 type Props = {
     url: string;
@@ -7,7 +7,7 @@ type Props = {
     onClose: () => void;
 };
 
-export function CopyURLModal({ url, opened, onClose }: Props) {
+export function ShareModal({ url, opened, onClose }: Props) {
     return (
         <Modal
             opened={opened}

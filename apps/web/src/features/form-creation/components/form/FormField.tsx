@@ -11,6 +11,7 @@ import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { FieldControls } from './FieldControls';
 import { FieldType } from '@packages/db/schemas/form';
+import { Card } from './Card';
 
 type Props = {
     index: number;
@@ -44,13 +45,7 @@ export const FormField = memo(function FormField({ index, fieldId }: Props) {
     return (
         <Draggable draggableId={fieldId} index={index}>
             {provided => (
-                <Flex
-                    direction='column'
-                    gap='sm'
-                    className='p-lg pl-sm mt-sm rounded-md border-1 border-outline bg-neutral-100'
-                    ref={provided.innerRef}
-                    {...provided.draggableProps}
-                >
+                <Card ref={provided.innerRef} {...provided.draggableProps} className='mb-sm'>
                     <Flex align='end' gap='sm'>
                         <DragButton
                             dragHandleProps={provided.dragHandleProps}
@@ -59,7 +54,7 @@ export const FormField = memo(function FormField({ index, fieldId }: Props) {
                         <TextInput
                             variant='unstyled'
                             placeholder='Question title...'
-                            className='flex-1 border-b-1 border-outline font-semibold'
+                            className='border-outline flex-1 border-b-1 font-semibold'
                             size='sm'
                             value={fieldTitle}
                             onChange={handleTitleChange}
@@ -83,7 +78,7 @@ export const FormField = memo(function FormField({ index, fieldId }: Props) {
                         />
                         <FieldControls fieldId={fieldId} />
                     </Stack>
-                </Flex>
+                </Card>
             )}
         </Draggable>
     );

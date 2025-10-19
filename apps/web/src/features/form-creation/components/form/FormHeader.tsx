@@ -1,4 +1,4 @@
-import { Group, Stack, Textarea, TextInput } from '@mantine/core';
+import { Group, Textarea, TextInput } from '@mantine/core';
 import { ChangeEventHandler, FocusEventHandler, memo } from 'react';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
@@ -24,7 +24,7 @@ export const FormHeader = memo(function FormHeader() {
     };
 
     return (
-        <Stack className='border-outline p-lg flex-2 rounded-md border-1 bg-neutral-100' gap='lg'>
+        <>
             <TextInput
                 value={title}
                 onChange={onTitleChange}
@@ -48,6 +48,6 @@ export const FormHeader = memo(function FormHeader() {
                 placeholder='Describe your form...'
                 size='md'
             />
-        </Stack>
+        </>
     );
 });

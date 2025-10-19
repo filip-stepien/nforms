@@ -1,7 +1,7 @@
 import { Button, Flex } from '@mantine/core';
 import { IconTrash } from '@tabler/icons-react';
 import { useTransition } from 'react';
-import { deleteFormAction } from '../../lib/actions';
+import { deleteFormAction } from '../../../form-listing/lib/actions';
 import { debug_wait } from '@/lib/debug';
 import { useRouter } from 'next/navigation';
 
@@ -23,10 +23,10 @@ export function DeleteButton({ formId }: Props) {
 
     return (
         <Button
-            size='compact-sm'
+            size='sm'
             className='px-sm text-xs'
-            variant='subtle'
             color='red'
+            variant='light'
             onClick={handleClick}
             loading={isPending}
         >

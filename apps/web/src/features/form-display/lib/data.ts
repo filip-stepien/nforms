@@ -36,7 +36,7 @@ export type ParsedForm = {
     fields: ParsedField[];
 };
 
-export async function getParsedForm(id: string): Promise<ParsedForm> {
+export async function getParsedFormById(id: string): Promise<ParsedForm> {
     const form = await prisma.form.findFirstOrThrow({ where: { id } });
     const parseResult = FormSchema.safeParse(form);
 

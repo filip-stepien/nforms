@@ -7,7 +7,7 @@ type Props = {
 export function ResponsesCell({ responses }: Props) {
     return (
         <Table.Td>
-            <Badge color='blue' variant='light'>
+            <Badge color='blue' variant='light' className='cursor-pointer'>
                 {responses}
             </Badge>
         </Table.Td>

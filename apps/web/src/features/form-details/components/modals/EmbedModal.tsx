@@ -1,5 +1,5 @@
 import { Modal, Stack, Flex, Code, Text } from '@mantine/core';
-import { CopyButton } from './CopyButton';
+import { CopyButton } from '../../../form-listing/components/ui/CopyButton';
 
 type Props = {
     embedding: string;
@@ -19,7 +19,7 @@ export function EmbedModal({ embedding, opened, onClose }: Props) {
             <Stack>
                 <Text size='sm'>Paste this tag on your website:</Text>
                 <Flex align='center' gap='xs'>
-                    <Code className='whitespace-nowrap p-sm flex-1'>{embedding}</Code>
+                    <Code className='p-sm flex-1 whitespace-nowrap'>{embedding}</Code>
                     <CopyButton value={embedding} />
                 </Flex>
             </Stack>

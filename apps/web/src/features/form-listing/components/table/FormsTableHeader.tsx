@@ -29,10 +29,6 @@ const HEADINGS: FormTableHeading[] = [
     {
         icon: IconProgress,
         label: 'Status'
-    },
-    {
-        icon: IconSettings,
-        label: 'Actions'
     }
 ];
 

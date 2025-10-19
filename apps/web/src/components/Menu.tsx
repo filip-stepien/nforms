@@ -12,7 +12,7 @@ const MENU_ITEMS: MenuItemProps[] = [
     {
         icon: IconClipboardData,
         title: 'Your forms',
-        href: 'your-forms'
+        href: '/your-forms'
     }
 ];
 
@@ -34,7 +34,7 @@ type MenuProps = {
 function MenuItem({ icon: Icon, title, href }: MenuItemProps) {
     return (
         <Link href={href}>
-            <Group className='text-xs hover:bg-hover p-2 rounded-md'>
+            <Group className='hover:bg-hover rounded-md p-2 text-xs'>
                 <Icon size={20} stroke={1.5} className='text-icon' />
                 <div className='text-font-secondary'>{title}</div>
             </Group>
@@ -45,7 +45,7 @@ function MenuItem({ icon: Icon, title, href }: MenuItemProps) {
 function MenuFormItem({ title, href }: MenuFormItemProps) {
     return (
         <Link href={href}>
-            <Group className='text-xs hover:bg-hover p-2 rounded-md'>
+            <Group className='hover:bg-hover rounded-md p-2 text-xs'>
                 <div>{title}</div>
             </Group>
         </Link>
@@ -65,9 +65,9 @@ export function Menu({ menuFormItems = [] }: MenuProps) {
             <Divider className='mt-0' />
             <Flex direction='column' className='p-sm'>
                 <Flex justify='space-between' className='pb-1'>
-                    <span className='text-xs text-font-secondary pl-1'>Last forms</span>
+                    <span className='text-font-secondary pl-1 text-xs'>Last forms</span>
                     <Tooltip label='Create new form' withArrow position='right'>
-                        <Link href='create-form'>
+                        <Link href='/create-form'>
                             <ActionIcon variant='default' size={18}>
                                 <IconPlus size={12} stroke={1.5} />
                             </ActionIcon>
@@ -75,7 +75,7 @@ export function Menu({ menuFormItems = [] }: MenuProps) {
                     </Tooltip>
                 </Flex>
                 {menuFormItems.length === 0 ? (
-                    <span className='pl-1 pt-1 text-xs text-font-secondary'>
+                    <span className='text-font-secondary pt-1 pl-1 text-xs'>
                         You haven’t created any forms yet.
                     </span>
                 ) : (
