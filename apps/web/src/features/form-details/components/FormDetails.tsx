@@ -1,6 +1,15 @@
 'use client';
 
-import { Tabs, TabsTab, TabsPanel, TabsList, Stack, TextInput, Flex } from '@mantine/core';
+import {
+    Tabs,
+    TabsTab,
+    TabsPanel,
+    TabsList,
+    Stack,
+    TextInput,
+    Flex,
+    Textarea
+} from '@mantine/core';
 import { IconMessageCircle, IconSettings, IconLayoutList } from '@tabler/icons-react';
 import { ShareButton } from './buttons/CopyURLButton';
 import { AddFieldButton } from '@/features/form-creation/components/form/AddFieldButton';
@@ -13,6 +22,9 @@ import { SaveButton } from './buttons/SaveButton';
 import dayjs from 'dayjs';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useFormSaveAction } from '@/hooks/useFormSaveAction';
+import { ChangeEventHandler } from 'react';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { setFormDescription, setFormTitle } from '@/features/form-creation/state/form';
 
 type Props = {
     formId: string;
@@ -22,7 +34,16 @@ type Props = {
 
 export function FormDetails({ formId, createdAt, baseUrl }: Props) {
     const form = useAppSelector(state => state.form);
+    const dispatch = useAppDispatch();
     const { isLoading, action } = useFormSaveAction(formId);
+
+    const handleTitleChange: ChangeEventHandler<HTMLInputElement> = event => {
+        dispatch(setFormTitle(event.target.value));
+    };
+
+    const handleDescriptionChange: ChangeEventHandler<HTMLTextAreaElement> = event => {
+        dispatch(setFormDescription(event.target.value));
+    };
 
     return (
         <form action={action}>
@@ -35,17 +56,19 @@ export function FormDetails({ formId, createdAt, baseUrl }: Props) {
                         <TextInput
                             label='Title'
                             value={form.title}
-                            onChange={() => null}
+                            onChange={handleTitleChange}
                             variant='unstyled'
                             classNames={{ input: 'text-3xl' }}
                         />
-                        <TextInput
+                        <Textarea
                             label='Description'
                             placeholder={form.description ? undefined : 'No description provided.'}
                             value={form.description ?? ''}
-                            onChange={() => null}
+                            onChange={handleDescriptionChange}
                             variant='unstyled'
                             classNames={{ input: 'text-xl' }}
+                            rows={1}
+                            autosize
                         />
                     </Flex>
                     <Flex gap='xs' align='flex-end' justify='flex-end' className='w-full'>
