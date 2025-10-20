@@ -59,9 +59,9 @@ export async function saveForm(state: RootState, formId?: string) {
     const form = serializeState(state);
     const data = { ...form, userId: user.id };
 
-    await prisma.form.upsert({
-        create: data,
-        update: data,
-        where: { id: formId }
-    });
+    if (formId) {
+        await prisma.form.update({ data, where: { id: formId } });
+    } else {
+        await prisma.form.create({ data });
+    }
 }

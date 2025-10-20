@@ -3,8 +3,13 @@ import { FormFieldsContainer } from '@/features/form-creation/components/form/Fo
 import { FormSettings } from '@/features/form-creation/components/form/FormSettings';
 import { Tabs, Flex } from '@mantine/core';
 import { IconMessageCircle, IconLayoutList, IconSettings } from '@tabler/icons-react';
+import { FormResponses } from './FormResponses';
 
-export function FormDetailsTabs() {
+type Props = {
+    formId: string;
+};
+
+export function FormDetailsTabs({ formId }: Props) {
     return (
         <Tabs defaultValue='questions' classNames={{ panel: 'p-sm pt-lg' }}>
             <Tabs.List>
@@ -21,7 +26,9 @@ export function FormDetailsTabs() {
                     Settings
                 </Tabs.Tab>
             </Tabs.List>
-            <Tabs.Panel value='responses'>Responses</Tabs.Panel>
+            <Tabs.Panel value='responses'>
+                <FormResponses formId={formId} />
+            </Tabs.Panel>
             <Tabs.Panel value='questions'>
                 <FormFieldsContainer />
                 <Flex justify='center' className='pt-sm'>
