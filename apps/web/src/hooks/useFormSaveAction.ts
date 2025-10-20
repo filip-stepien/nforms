@@ -1,4 +1,4 @@
-import { saveFormAction } from '../lib/actions';
+import { saveFormAction } from '../features/form-creation/lib/actions';
 import { useActionState, useEffect } from 'react';
 import { useAppStore } from '@/hooks/useAppStore';
 import { useRouter } from 'next/navigation';
@@ -9,13 +9,13 @@ export type FormCreateActionStatus = {
     message: string;
 };
 
-export function useFormCreateAction(redirectHref = '/') {
+export function useFormSaveAction(formId?: string, redirectHref = '/') {
     const store = useAppStore();
     const router = useRouter();
     const [status, action, isLoading] = useActionState(
         async (): Promise<FormCreateActionStatus> => {
             try {
-                await saveFormAction(store.getState());
+                await saveFormAction(store.getState(), formId);
                 return { success: true, message: 'Form has been saved successfully.' };
             } catch {
                 return { success: false, message: 'Something went wrong.\nPlease try again.' };
@@ -32,7 +32,7 @@ export function useFormCreateAction(redirectHref = '/') {
         if (status.success) {
             toast.success(status.message);
             if (redirectHref) {
-                router.push(redirectHref);
+                router.replace(redirectHref);
             }
         } else {
             toast.error(status.message);

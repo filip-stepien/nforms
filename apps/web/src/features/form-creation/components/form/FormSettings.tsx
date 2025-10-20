@@ -2,7 +2,7 @@ import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { Stack, Switch } from '@mantine/core';
 import { ChangeEventHandler } from 'react';
-import { setFormSettings } from '../../state/slices/form';
+import { setFormSettings } from '../../state/form';
 import { FormSettings as FormSettingsType } from '@packages/db/schemas/form';
 
 export function FormSettings() {

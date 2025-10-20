@@ -1,8 +1,8 @@
 'use server';
 
-import { FormState } from '@/lib/store';
-import { saveForm } from './data';
+import { saveForm } from '@/lib/data';
+import { RootState } from '@/lib/store';
 
-export async function saveFormAction(formState: FormState) {
-    return await saveForm(formState);
+export async function saveFormAction(state: RootState, formId?: string) {
+    return await saveForm(state, formId);
 }

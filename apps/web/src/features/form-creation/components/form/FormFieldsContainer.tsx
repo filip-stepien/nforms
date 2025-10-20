@@ -1,5 +1,5 @@
 import { DragDropContext, Droppable, DropResult } from '@hello-pangea/dnd';
-import { reorderField, selectFields } from '../../state/slices/fields';
+import { reorderField, selectFields } from '../../state/fields';
 import { Flex } from '@mantine/core';
 import { FormField } from './FormField';
 import { useAppDispatch } from '@/hooks/useAppDispatch';

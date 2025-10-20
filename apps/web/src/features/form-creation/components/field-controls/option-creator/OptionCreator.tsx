@@ -8,7 +8,7 @@ import {
     addOption,
     reorderOption,
     selectOptionsByFieldId
-} from '@/features/form-creation/state/slices/options';
+} from '@/features/form-creation/state/options';
 
 type Props = {
     fieldId: string;
@@ -34,7 +34,7 @@ export function OptionCreator({ fieldId }: Props) {
 
     return (
         <div>
-            <span className='text-xs mb-xs text-font-secondary'>Enter options</span>
+            <span className='mb-xs text-font-secondary text-xs'>Enter options</span>
             <DragDropContext onDragEnd={handleDragEnd}>
                 <Droppable droppableId='option-creator'>
                     {provided => (

@@ -1,7 +1,7 @@
 import { RuleGroupRow } from './RuleGroupRow';
 import { RulesAccordion } from './RulesAccordion';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { selectRootGroupId } from '@/features/form-creation/state/slices/rules';
+import { selectRootGroupId } from '@/features/form-creation/state/rules';
 
 type Props = {
     fieldId: string;

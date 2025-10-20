@@ -7,7 +7,7 @@ import { IconButton } from '../../ui/IconButton';
 import { cn } from '@/lib/utils';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { selectFieldById } from '@/features/form-creation/state/slices/fields';
+import { selectFieldById } from '@/features/form-creation/state/fields';
 import { useRuleSelectValues } from '@/features/form-creation/hooks/useRuleSelectValues';
 import { RuleCombinator, ruleCombinators } from '@packages/db/schemas/form';
 import {
@@ -16,7 +16,7 @@ import {
     addGroup,
     deleteGroup,
     selectGroupById
-} from '@/features/form-creation/state/slices/rules';
+} from '@/features/form-creation/state/rules';
 
 type Props = {
     hasBackgroundColor: boolean;
@@ -83,7 +83,7 @@ export function RuleGroupRow({ hasBackgroundColor, isFirstGroup, groupId, fieldI
     return (
         <Stack
             className={cn(
-                !isFirstGroup && 'p-md border-1 border-border rounded-md',
+                !isFirstGroup && 'p-md border-border rounded-md border-1',
                 hasBackgroundColor ? 'bg-neutral-100' : 'bg-white'
             )}
         >

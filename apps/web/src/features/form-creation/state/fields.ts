@@ -1,15 +1,41 @@
-import { AppDispatch } from '@/lib/store';
-import { FieldPatch, _addField, _deleteField, _setField } from './slices/fields';
-import { addSettings, deleteSettings } from './slices/settings';
-import { v4 as uuid } from 'uuid';
-import { _deleteOption, deleteOptionsByField } from './slices/options';
+import { AppDispatch, RootState } from '@/lib/store';
 import { Field } from '@packages/db/schemas/form';
-import {
-    addGroup,
-    deleteRulesAndGroups,
-    deleteRulesByFieldId,
-    deleteRulesByValue
-} from './slices/rules';
+import { createSlice, createEntityAdapter, PayloadAction } from '@reduxjs/toolkit';
+import { v4 as uuid } from 'uuid';
+import { addGroup, deleteRulesAndGroups, deleteRulesByFieldId } from './rules';
+import { addSettings, deleteSettings } from './settings';
+import { deleteOptionsByField } from './options';
+
+export type FieldPatch = Partial<Omit<Field, 'id'>>;
+
+const fieldsAdapter = createEntityAdapter<Field>();
+
+const initialState = fieldsAdapter.getInitialState();
+
+const formFieldsSlice = createSlice({
+    name: 'formFields',
+    initialState,
+    reducers: {
+        _addField: fieldsAdapter.addOne,
+        _deleteField: (state, action: PayloadAction<{ fieldId: string }>) => {
+            fieldsAdapter.removeOne(state, action.payload.fieldId);
+        },
+        _setField: (state, action: PayloadAction<{ fieldId: string; field: FieldPatch }>) => {
+            const { fieldId, field } = action.payload;
+            fieldsAdapter.updateOne(state, {
+                id: fieldId,
+                changes: field
+            });
+        },
+        reorderField: (state, action: PayloadAction<{ from: number; to?: number }>) => {
+            const allIds = [...state.ids];
+            const { from, to } = action.payload;
+            const [moved] = allIds.splice(from, 1);
+            allIds.splice(to ?? from, 0, moved);
+            state.ids = allIds;
+        }
+    }
+});
 
 export const addField = (field: Field) => (dispatch: AppDispatch) => {
     dispatch(_addField(field));
@@ -67,9 +93,8 @@ export const setField =
         dispatch(_setField(payload));
     };
 
-export const deleteOption =
-    ({ optionId }: { optionId: string }) =>
-    (dispatch: AppDispatch) => {
-        dispatch(_deleteOption({ optionId }));
-        dispatch(deleteRulesByValue({ value: optionId }));
-    };
+export const formFieldsReducer = formFieldsSlice.reducer;
+export const { _addField, _deleteField, _setField, reorderField } = formFieldsSlice.actions;
+
+export const { selectAll: selectFields, selectById: selectFieldById } =
+    fieldsAdapter.getSelectors<RootState>(state => state.formFields);

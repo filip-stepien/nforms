@@ -1,5 +1,5 @@
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { selectOptionsByFieldId } from '../state/slices/options';
+import { selectOptionsByFieldId } from '../state/options';
 import { useCallback } from 'react';
 import { FieldType } from '@packages/db/schemas/form';
 

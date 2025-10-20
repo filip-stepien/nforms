@@ -1,6 +1,7 @@
-import { RootState } from '@/lib/store';
+import { AppDispatch, RootState } from '@/lib/store';
 import { FieldOption } from '@packages/db/schemas/form';
 import { createSlice, createEntityAdapter, createSelector, PayloadAction } from '@reduxjs/toolkit';
+import { deleteRulesByValue } from './rules';
 
 export type FieldOptionPatch = Partial<FieldOption>;
 
@@ -78,6 +79,13 @@ const fieldOptionsSlice = createSlice({
         }
     }
 });
+
+export const deleteOption =
+    ({ optionId }: { optionId: string }) =>
+    (dispatch: AppDispatch) => {
+        dispatch(_deleteOption({ optionId }));
+        dispatch(deleteRulesByValue({ value: optionId }));
+    };
 
 export const { addOption, _deleteOption, deleteOptionsByField, setOption, reorderOption } =
     fieldOptionsSlice.actions;

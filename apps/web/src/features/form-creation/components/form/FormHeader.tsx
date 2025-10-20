@@ -2,7 +2,7 @@ import { Group, Textarea, TextInput } from '@mantine/core';
 import { ChangeEventHandler, FocusEventHandler, memo } from 'react';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { setFormTitle, initialTitle, setFormDescription } from '../../state/slices/form';
+import { setFormTitle, initialTitle, setFormDescription } from '../../state/form';
 
 export const FormHeader = memo(function FormHeader() {
     const dispatch = useAppDispatch();

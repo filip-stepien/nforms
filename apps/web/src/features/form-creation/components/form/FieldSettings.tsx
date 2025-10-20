@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { selectFieldById } from '../../state/slices/fields';
+import { selectFieldById } from '../../state/fields';
 import { SelectionFieldSettings } from '../field-settings/SelectionFieldSettings';
 import { TextFieldSettings } from '../field-settings/TextFieldSettings';
 import { useAppSelector } from '@/hooks/useAppSelector';

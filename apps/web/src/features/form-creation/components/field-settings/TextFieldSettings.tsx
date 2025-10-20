@@ -3,7 +3,7 @@ import { ChangeEvent } from 'react';
 import { BaseFieldSettings } from './BaseFieldSettings';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { selectSettingsByFieldId, setSettings } from '../../state/slices/settings';
+import { selectSettingsByFieldId, setSettings } from '../../state/settings';
 import { FieldType, FieldSettingsMap } from '@packages/db/schemas/form';
 
 type Props = {

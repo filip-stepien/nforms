@@ -1,6 +1,6 @@
 import { Stack } from '@mantine/core';
 import { ReactNode } from 'react';
-import { selectFieldById } from '../../state/slices/fields';
+import { selectFieldById } from '../../state/fields';
 import { OptionCreator } from '../field-controls/option-creator/OptionCreator';
 import { RulesCreator } from '../field-controls/rules-creator/RulesCreator';
 import { useAppSelector } from '@/hooks/useAppSelector';

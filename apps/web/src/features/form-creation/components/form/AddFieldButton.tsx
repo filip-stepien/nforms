@@ -3,7 +3,7 @@ import { ActionButton } from '../ui/ActionButton';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { FieldType } from '@packages/db/schemas/form';
 import { v4 as uuid } from 'uuid';
-import { addField } from '../../state/thunks';
+import { addField } from '../../state/fields';
 
 export function AddFieldButton() {
     const dispatch = useAppDispatch();
