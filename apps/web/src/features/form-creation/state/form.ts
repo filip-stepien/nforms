@@ -1,4 +1,3 @@
-import { RootState } from '@/lib/store';
 import { FormSettings } from '@packages/db/schemas/form';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 

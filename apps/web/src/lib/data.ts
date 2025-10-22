@@ -15,6 +15,7 @@ export function serializeState(state: RootState): SerializedState {
         fieldSettings: state.fieldSettings,
         fieldControls: {
             rules: {
+                respondentCategories: Object.values(state.fieldRules.respondentCategories.entities),
                 categoryActions: Object.values(state.fieldRules.categoryActions.entities),
                 rules: Object.values(state.fieldRules.rules.entities),
                 groups: Object.values(state.fieldRules.groups.entities)
@@ -36,6 +37,12 @@ export function deserializeState(state: SerializedState): RootState {
             entities: Object.fromEntries(state.fields.map(f => [f.id, f]))
         },
         fieldRules: {
+            respondentCategories: {
+                ids: state.fieldControls.rules.respondentCategories.map(c => c.id),
+                entities: Object.fromEntries(
+                    state.fieldControls.rules.respondentCategories.map(c => [c.id, c])
+                )
+            },
             categoryActions: {
                 ids: state.fieldControls.rules.categoryActions.map(c => c.id),
                 entities: Object.fromEntries(

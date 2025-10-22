@@ -24,15 +24,15 @@ export const FieldSettingsSchema = z.object({
     settings: z.union([TextFieldSettingsSchema, SelectionFieldSettingsSchema])
 });
 
-export const categoryActions = ['ADD', 'DELETE', 'SET'] as const;
+export const categoryOperations = ['ADD', 'DELETE', 'SET'] as const;
 
 export const CategoryActionSchema = z.object({
     id: z.string(),
     fieldId: z.string(),
     rootGroupId: z.string(),
-    action: z.enum(categoryActions),
+    operation: z.enum(categoryOperations),
     points: z.number(),
-    targetCategoryId: z.string()
+    targetCategoryId: z.string().optional()
 });
 
 export const RuleSchema = z.object({
@@ -42,7 +42,7 @@ export const RuleSchema = z.object({
     targetFieldId: z.string(),
     condition: z.string(),
     operator: z.string(),
-    value: z.string()
+    value: z.string().optional()
 });
 
 export const ruleCombinators = ['AND', 'OR'] as const;
@@ -100,6 +100,8 @@ export type FieldSettingsMap = {
 };
 
 export type CategoryAction = z.infer<typeof CategoryActionSchema>;
+
+export type CategoryOperation = (typeof categoryOperations)[number];
 
 export type Rule = z.infer<typeof RuleSchema>;
 

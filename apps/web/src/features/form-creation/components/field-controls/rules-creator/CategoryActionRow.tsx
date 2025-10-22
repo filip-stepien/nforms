@@ -6,8 +6,12 @@ import { IconButton } from '../../ui/IconButton';
 import { RuleGroupRow } from './RuleGroupRow';
 import {
     deleteCategoryAction,
-    selectCategoryActionById
+    selectCategories,
+    selectCategoryActionById,
+    setCategoryAction
 } from '@/features/form-creation/state/rules';
+import { categoryOperations, CategoryOperation } from '@packages/db/schemas/form';
+import { DefaultValueSelect } from './DefaultValueSelect';
 
 type Props = {
     fieldId: string;
@@ -16,12 +20,40 @@ type Props = {
 
 export function CategoryActionRow({ fieldId, categoryActionId }: Props) {
     const dispatch = useAppDispatch();
-    const categoryActionRootGroupId = useAppSelector(
-        state => selectCategoryActionById(state, categoryActionId).rootGroupId
+
+    const categories = useAppSelector(selectCategories);
+
+    const categoryAction = useAppSelector(state =>
+        selectCategoryActionById(state, categoryActionId)
     );
 
     const handleCategoryActionDelete = (categoryActionId: string) => {
         dispatch(deleteCategoryAction({ categoryActionId }));
+    };
+
+    const handleOperationSelect = (value: string | null) => {
+        if (value) {
+            dispatch(
+                setCategoryAction({
+                    categoryActionId,
+                    categoryAction: { operation: value as CategoryOperation }
+                })
+            );
+        }
+    };
+
+    const handlePointsSelect = (value: string | number) => {
+        if (typeof value === 'number') {
+            dispatch(setCategoryAction({ categoryActionId, categoryAction: { points: value } }));
+        }
+    };
+
+    const handleCategoryChange = (value: string | null) => {
+        if (value) {
+            dispatch(
+                setCategoryAction({ categoryActionId, categoryAction: { targetCategoryId: value } })
+            );
+        }
     };
 
     return (
@@ -31,10 +63,19 @@ export function CategoryActionRow({ fieldId, categoryActionId }: Props) {
                 className='p-md bg-blue-light border-blue-filled flex-1 rounded-sm'
             >
                 <Group>
-                    <Select data={['ADD', 'SUBTRACT', 'SET']} value='ADD' />
-                    <NumberInput value={0} />
+                    <Select
+                        data={categoryOperations}
+                        value={categoryAction.operation}
+                        onChange={handleOperationSelect}
+                    />
+                    <NumberInput value={categoryAction.points} onChange={handlePointsSelect} />
                     <Badge size='lg'>FOR CATEGORY</Badge>
-                    <Select data={['Valid', 'Invalid']} value='Valid' />
+                    <DefaultValueSelect
+                        data={categories.map(c => ({ label: c.category, value: c.id }))}
+                        value={categoryAction.targetCategoryId}
+                        allowDeselect={false}
+                        onChange={handleCategoryChange}
+                    />
                     <Badge size='lg'>WHEN</Badge>
                 </Group>
                 <IconButton
@@ -48,7 +89,7 @@ export function CategoryActionRow({ fieldId, categoryActionId }: Props) {
                 <RuleGroupRow
                     hasBackgroundColor={false}
                     isFirstGroup={true}
-                    groupId={categoryActionRootGroupId}
+                    groupId={categoryAction.rootGroupId}
                     fieldId={fieldId}
                 />
             </div>
