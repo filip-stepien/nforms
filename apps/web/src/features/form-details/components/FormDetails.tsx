@@ -25,7 +25,7 @@ export function FormDetails({ formId, createdAt, baseUrl }: Props) {
                 </Stack>
                 <FormActions isSaveLoading={isLoading} baseUrl={baseUrl} formId={formId} />
             </Flex>
-            <FormDetailsTabs />
+            <FormDetailsTabs formId={formId} />
         </form>
     );
 }

@@ -24,7 +24,16 @@ export const FieldSettingsSchema = z.object({
     settings: z.union([TextFieldSettingsSchema, SelectionFieldSettingsSchema])
 });
 
-export const RuleRelationSchema = z.object({ fieldId: z.string(), rootGroupId: z.string() });
+export const categoryActions = ['ADD', 'DELETE', 'SET'] as const;
+
+export const CategoryActionSchema = z.object({
+    id: z.string(),
+    fieldId: z.string(),
+    rootGroupId: z.string(),
+    action: z.enum(categoryActions),
+    points: z.number(),
+    targetCategoryId: z.string()
+});
 
 export const RuleSchema = z.object({
     id: z.string(),
@@ -55,7 +64,7 @@ export const FieldOptionSchema = z.object({
 });
 
 export const FieldRulesSchema = z.object({
-    relations: z.array(RuleRelationSchema),
+    categoryActions: z.array(CategoryActionSchema),
     rules: z.array(RuleSchema),
     groups: z.array(RuleGroupSchema)
 });
@@ -74,7 +83,7 @@ export const FormSettingsSchema = z.object({
 export const FormSchema = z.object({
     id: z.string(),
     title: z.string(),
-    description: z.string().nullable(),
+    description: z.string(),
     settings: FormSettingsSchema,
     fields: z.array(FieldSchema),
     fieldSettings: z.array(FieldSettingsSchema),
@@ -90,7 +99,7 @@ export type FieldSettingsMap = {
     [FieldType.SELECTION]: z.infer<typeof SelectionFieldSettingsSchema>;
 };
 
-export type RuleRelation = z.infer<typeof RuleRelationSchema>;
+export type CategoryAction = z.infer<typeof CategoryActionSchema>;
 
 export type Rule = z.infer<typeof RuleSchema>;
 

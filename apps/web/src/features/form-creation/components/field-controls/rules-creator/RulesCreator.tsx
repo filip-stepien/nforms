@@ -1,26 +1,25 @@
-import { RuleGroupRow } from './RuleGroupRow';
 import { RulesAccordion } from './RulesAccordion';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { selectRootGroupId } from '@/features/form-creation/state/rules';
+import { selectCategoryActionByFieldId } from '@/features/form-creation/state/rules';
+import { CategoryActionRow } from './CategoryActionRow';
+import { AddCategoryActionButton } from './AddCategoryActionButton';
+import { Stack } from '@mantine/core';
 
 type Props = {
     fieldId: string;
 };
 
 export function RulesCreator({ fieldId }: Props) {
-    const rootGroupId = useAppSelector(state => selectRootGroupId(state, fieldId));
+    const categoryActions = useAppSelector(selectCategoryActionByFieldId(fieldId));
 
     return (
         <RulesAccordion>
-            <div className='flex flex-col'>
-                <RuleGroupRow
-                    key={rootGroupId}
-                    hasBackgroundColor={false}
-                    isFirstGroup={true}
-                    groupId={rootGroupId}
-                    fieldId={fieldId}
-                />
-            </div>
+            <Stack gap='md'>
+                {categoryActions.map(({ id }) => (
+                    <CategoryActionRow key={id} categoryActionId={id} fieldId={fieldId} />
+                ))}
+                <AddCategoryActionButton fieldId={fieldId} />
+            </Stack>
         </RulesAccordion>
     );
 }

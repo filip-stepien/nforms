@@ -1,8 +1,7 @@
 import { AppDispatch, RootState } from '@/lib/store';
 import { Field } from '@packages/db/schemas/form';
 import { createSlice, createEntityAdapter, PayloadAction } from '@reduxjs/toolkit';
-import { v4 as uuid } from 'uuid';
-import { addGroup, deleteRulesAndGroups, deleteRulesByFieldId } from './rules';
+import { deleteRulesState } from './rules';
 import { addSettings, deleteSettings } from './settings';
 import { deleteOptionsByField } from './options';
 
@@ -40,18 +39,6 @@ const formFieldsSlice = createSlice({
 export const addField = (field: Field) => (dispatch: AppDispatch) => {
     dispatch(_addField(field));
     dispatch(addSettings({ fieldId: field.id, fieldType: field.type }));
-    dispatch(
-        addGroup({
-            group: {
-                id: uuid(),
-                fieldId: field.id,
-                type: 'group',
-                combinator: 'OR',
-                childrenGroups: [],
-                childrenRules: []
-            }
-        })
-    );
 };
 
 export const deleteField =
@@ -59,9 +46,8 @@ export const deleteField =
     (dispatch: AppDispatch) => {
         dispatch(_deleteField({ fieldId }));
         dispatch(deleteSettings({ fieldId }));
-        dispatch(deleteRulesAndGroups({ fieldId }));
+        dispatch(deleteRulesState({ fieldId }));
         dispatch(deleteOptionsByField({ fieldId }));
-        dispatch(deleteRulesByFieldId({ fieldId }));
     };
 
 export const setField =
@@ -74,20 +60,7 @@ export const setField =
         if (typeChanged) {
             dispatch(addSettings({ fieldId, fieldType: newType }));
             dispatch(deleteOptionsByField({ fieldId }));
-            dispatch(deleteRulesAndGroups({ fieldId }));
-            dispatch(deleteRulesByFieldId({ fieldId }));
-            dispatch(
-                addGroup({
-                    group: {
-                        id: uuid(),
-                        fieldId,
-                        type: 'group',
-                        combinator: 'OR',
-                        childrenGroups: [],
-                        childrenRules: []
-                    }
-                })
-            );
+            dispatch(deleteRulesState({ fieldId }));
         }
 
         dispatch(_setField(payload));

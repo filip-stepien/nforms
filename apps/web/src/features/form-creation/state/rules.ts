@@ -1,23 +1,26 @@
-import { RootState } from '@/lib/store';
-import { Rule, RuleGroup, RuleRelation } from '@packages/db/schemas/form';
-import { createEntityAdapter, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { AppDispatch, RootState } from '@/lib/store';
+import { CategoryAction, Rule, RuleGroup } from '@packages/db/schemas/form';
+import { createEntityAdapter, createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { v4 as uuid } from 'uuid';
 
 export type RulePatch = Partial<Omit<Rule, 'id' | 'type'>>;
 
 export type RuleGroupPatch = Partial<Omit<RuleGroup, 'id' | 'type'>>;
 
 export type RulesState = {
-    relations: RuleRelation[];
+    categoryActions: ReturnType<typeof categoryActionsAdapter.getInitialState>;
     rules: ReturnType<typeof rulesAdapter.getInitialState>;
     groups: ReturnType<typeof groupsAdapter.getInitialState>;
 };
+
+const categoryActionsAdapter = createEntityAdapter<CategoryAction>();
 
 const rulesAdapter = createEntityAdapter<Rule>();
 
 const groupsAdapter = createEntityAdapter<RuleGroup>();
 
 const initialState: RulesState = {
-    relations: [],
+    categoryActions: categoryActionsAdapter.getInitialState(),
     rules: rulesAdapter.getInitialState(),
     groups: groupsAdapter.getInitialState()
 };
@@ -26,6 +29,10 @@ const fieldRulesSlice = createSlice({
     name: 'fieldRules',
     initialState,
     reducers: {
+        _addCategoryAction: (state, action: PayloadAction<CategoryAction>) => {
+            categoryActionsAdapter.addOne(state.categoryActions, action.payload);
+        },
+
         addRule: (state, action: PayloadAction<{ groupId: string; rule: Rule }>) => {
             const { groupId, rule } = action.payload;
 
@@ -41,11 +48,6 @@ const fieldRulesSlice = createSlice({
 
             groupsAdapter.addOne(state.groups, group);
 
-            const relation = state.relations.find(r => r.fieldId === group.fieldId);
-            if (!relation) {
-                state.relations.push({ fieldId: group.fieldId, rootGroupId: group.id });
-            }
-
             if (parentGroupId) {
                 const parent = state.groups.entities[parentGroupId];
 
@@ -53,6 +55,13 @@ const fieldRulesSlice = createSlice({
                     parent.childrenGroups.push(group.id);
                 }
             }
+        },
+
+        _deleteCategoryAction: (state, action: PayloadAction<{ categoryActionId: string }>) => {
+            categoryActionsAdapter.removeOne(
+                state.categoryActions,
+                action.payload.categoryActionId
+            );
         },
 
         deleteRule: (state, action: PayloadAction<{ groupId: string; ruleId: string }>) => {
@@ -64,18 +73,6 @@ const fieldRulesSlice = createSlice({
             if (group) {
                 group.childrenRules = group.childrenRules.filter(id => id !== ruleId);
             }
-        },
-
-        deleteRulesByFieldId: (state, action: PayloadAction<{ fieldId: string }>) => {
-            const ruleIds = Object.values(state.rules.entities)
-                .filter(r => r.targetFieldId === action.payload.fieldId)
-                .map(r => r.id);
-
-            rulesAdapter.removeMany(state.rules, ruleIds);
-
-            Object.values(state.groups.entities).forEach(g => {
-                g.childrenRules = g.childrenRules.filter(ruleId => !ruleIds.includes(ruleId));
-            });
         },
 
         deleteRulesByValue: (state, action: PayloadAction<{ value: string }>) => {
@@ -90,17 +87,11 @@ const fieldRulesSlice = createSlice({
             });
         },
 
-        deleteGroup: (state, action: PayloadAction<{ fieldId: string; groupId: string }>) => {
-            const { fieldId, groupId } = action.payload;
+        deleteGroup: (state, action: PayloadAction<{ groupId: string }>) => {
+            const { groupId } = action.payload;
 
             const group = state.groups.entities[groupId];
             if (!group) return;
-
-            const relationIndex = state.relations.findIndex(m => m.fieldId === fieldId);
-            const relation = state.relations[relationIndex];
-            if (relation && relation.rootGroupId === groupId) {
-                state.relations.splice(relationIndex, 1);
-            }
 
             rulesAdapter.removeMany(state.rules, group.childrenRules);
 
@@ -137,11 +128,8 @@ const fieldRulesSlice = createSlice({
             groupsAdapter.updateOne(state.groups, { id: groupId, changes: group });
         },
 
-        deleteRulesAndGroups: (state, action: PayloadAction<{ fieldId: string }>) => {
+        deleteRulesState: (state, action: PayloadAction<{ fieldId: string }>) => {
             const { fieldId } = action.payload;
-
-            const relationIndex = state.relations.findIndex(m => m.fieldId === fieldId);
-            if (relationIndex === -1) return;
 
             const allGroupsIds = Object.values(state.groups.entities)
                 .filter(g => g.fieldId === fieldId)
@@ -151,32 +139,61 @@ const fieldRulesSlice = createSlice({
                 .filter(r => r.fieldId === fieldId)
                 .map(r => r.id);
 
+            const allCategoryActionsIds = Object.values(state.categoryActions.entities)
+                .filter(r => r.fieldId === fieldId)
+                .map(r => r.id);
+
             groupsAdapter.removeMany(state.groups, allGroupsIds);
             rulesAdapter.removeMany(state.rules, allRulesIds);
-            state.relations.splice(relationIndex, 1);
+            categoryActionsAdapter.removeMany(state.categoryActions, allCategoryActionsIds);
         }
     }
 });
 
+export const addCategoryAction =
+    (categoryAction: Omit<CategoryAction, 'rootGroupId'>) => (dispatch: AppDispatch) => {
+        const rootGroupId = uuid();
+
+        dispatch(
+            addGroup({
+                group: {
+                    id: rootGroupId,
+                    fieldId: categoryAction.fieldId,
+                    childrenGroups: [],
+                    childrenRules: [],
+                    combinator: 'AND',
+                    type: 'group'
+                }
+            })
+        );
+
+        dispatch(_addCategoryAction({ ...categoryAction, rootGroupId }));
+    };
+
+export const deleteCategoryAction =
+    ({ categoryActionId }: { categoryActionId: string }) =>
+    (dispatch: AppDispatch, getState: () => RootState) => {
+        const categoryAction = selectCategoryActionById(getState(), categoryActionId);
+
+        dispatch(_deleteCategoryAction({ categoryActionId }));
+        dispatch(deleteGroup({ groupId: categoryAction.rootGroupId }));
+    };
+
 export const fieldRulesReducer = fieldRulesSlice.reducer;
 
 export const {
+    _addCategoryAction,
     addGroup,
     addRule,
     setGroup,
     setRule,
     setRules,
+    _deleteCategoryAction,
     deleteGroup,
     deleteRule,
-    deleteRulesByFieldId,
     deleteRulesByValue,
-    deleteRulesAndGroups
+    deleteRulesState
 } = fieldRulesSlice.actions;
-
-export function selectRootGroupId(state: RootState, fieldId: string) {
-    const relation = state.fieldRules.relations.find(f => f.fieldId === fieldId);
-    return relation!.rootGroupId!;
-}
 
 export const { selectById: selectRuleById, selectAll: selectRules } =
     rulesAdapter.getSelectors<RootState>(state => state.fieldRules.rules);
@@ -184,3 +201,11 @@ export const { selectById: selectRuleById, selectAll: selectRules } =
 export const { selectById: selectGroupById } = groupsAdapter.getSelectors<RootState>(
     state => state.fieldRules.groups
 );
+
+export const { selectAll: selectCategoryActions, selectById: selectCategoryActionById } =
+    categoryActionsAdapter.getSelectors<RootState>(state => state.fieldRules.categoryActions);
+
+export const selectCategoryActionByFieldId = (fieldId: string) =>
+    createSelector(selectCategoryActions, actions =>
+        actions.filter(actions => actions.fieldId === fieldId)
+    );

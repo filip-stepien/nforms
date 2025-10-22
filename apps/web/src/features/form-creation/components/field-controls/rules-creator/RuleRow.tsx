@@ -105,7 +105,7 @@ export function RuleRow({ ruleId, groupId }: Props) {
                 onChange={handleValueChange}
                 allowDeselect={false}
             />
-            <IconButton icon={IconX} variant='light' color='red' onClick={handleRuleDelete} />
+            <IconButton icon={IconX} variant='transparent' color='red' onClick={handleRuleDelete} />
         </Group>
     );
 }

@@ -9,13 +9,13 @@ export type SerializedState = Omit<Form, 'id' | 'createdAt' | 'userId'>;
 export function serializeState(state: RootState): SerializedState {
     return {
         title: state.form.title,
-        description: state.form.description || null,
+        description: state.form.description,
         settings: state.form.settings,
         fields: Object.values(state.formFields.entities),
         fieldSettings: state.fieldSettings,
         fieldControls: {
             rules: {
-                relations: state.fieldRules.relations,
+                categoryActions: Object.values(state.fieldRules.categoryActions.entities),
                 rules: Object.values(state.fieldRules.rules.entities),
                 groups: Object.values(state.fieldRules.groups.entities)
             },
@@ -36,7 +36,12 @@ export function deserializeState(state: SerializedState): RootState {
             entities: Object.fromEntries(state.fields.map(f => [f.id, f]))
         },
         fieldRules: {
-            relations: state.fieldControls.rules.relations,
+            categoryActions: {
+                ids: state.fieldControls.rules.categoryActions.map(c => c.id),
+                entities: Object.fromEntries(
+                    state.fieldControls.rules.categoryActions.map(c => [c.id, c])
+                )
+            },
             rules: {
                 ids: state.fieldControls.rules.rules.map(r => r.id),
                 entities: Object.fromEntries(state.fieldControls.rules.rules.map(r => [r.id, r]))
@@ -59,9 +64,9 @@ export async function saveForm(state: RootState, formId?: string) {
     const form = serializeState(state);
     const data = { ...form, userId: user.id };
 
-    await prisma.form.upsert({
-        create: data,
-        update: data,
-        where: { id: formId }
-    });
+    if (formId) {
+        await prisma.form.update({ data, where: { id: formId } });
+    } else {
+        await prisma.form.create({ data });
+    }
 }

@@ -21,7 +21,7 @@ export function RulesAccordion({ children }: Props) {
                 <Accordion.Control
                     icon={<IconTextGrammar stroke={1.5} size={20} className='text-icon w-fit' />}
                 >
-                    <span className='text-sm'>Consistency rules</span>
+                    <span className='text-sm'>Category scoring rules</span>
                 </Accordion.Control>
                 <Accordion.Panel>{children}</Accordion.Panel>
             </Accordion.Item>

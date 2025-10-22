@@ -11,6 +11,7 @@
     },
     "dependencies": {
         "@hello-pangea/dnd": "^18.0.1",
+        "@mantine/charts": "^8.3.5",
         "@mantine/core": "^8.2.1",
         "@mantine/hooks": "^8.2.1",
         "@reduxjs/toolkit": "^2.9.0",
@@ -28,6 +29,7 @@
         "react-dom": "19.1.0",
         "react-hot-toast": "^2.5.2",
         "react-redux": "^9.2.0",
+        "recharts": "^3.3.0",
         "server-only": "^0.0.1",
         "uuid": "^9.0.1"
     },

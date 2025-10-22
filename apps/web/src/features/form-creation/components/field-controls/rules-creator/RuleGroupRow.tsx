@@ -109,7 +109,7 @@ export function RuleGroupRow({ hasBackgroundColor, isFirstGroup, groupId, fieldI
                 {!isFirstGroup && (
                     <IconButton
                         icon={IconX}
-                        variant='light'
+                        variant='transparent'
                         color='red'
                         onClick={handleGroupDelete}
                     />
