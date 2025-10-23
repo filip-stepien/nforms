@@ -24,7 +24,7 @@ export const FieldSettingsSchema = z.object({
     settings: z.union([TextFieldSettingsSchema, SelectionFieldSettingsSchema])
 });
 
-export const categoryOperations = ['ADD', 'DELETE', 'SET'] as const;
+export const categoryOperations = ['ADD', 'SUBTRACT'] as const;
 
 export const CategoryActionSchema = z.object({
     id: z.string(),
@@ -33,6 +33,11 @@ export const CategoryActionSchema = z.object({
     operation: z.enum(categoryOperations),
     points: z.number(),
     targetCategoryId: z.string().optional()
+});
+
+export const RespondentCategorySchema = z.object({
+    id: z.string(),
+    category: z.string()
 });
 
 export const RuleSchema = z.object({
@@ -65,6 +70,7 @@ export const FieldOptionSchema = z.object({
 
 export const FieldRulesSchema = z.object({
     categoryActions: z.array(CategoryActionSchema),
+    respondentCategories: z.array(RespondentCategorySchema),
     rules: z.array(RuleSchema),
     groups: z.array(RuleGroupSchema)
 });
@@ -98,6 +104,8 @@ export type FieldSettingsMap = {
     [FieldType.TEXT]: z.infer<typeof TextFieldSettingsSchema>;
     [FieldType.SELECTION]: z.infer<typeof SelectionFieldSettingsSchema>;
 };
+
+export type RespondentCategory = z.infer<typeof RespondentCategorySchema>;
 
 export type CategoryAction = z.infer<typeof CategoryActionSchema>;
 

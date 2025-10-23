@@ -1,8 +1,8 @@
-import { formFieldsReducer } from '@/features/form-creation/state/fields';
-import { fieldOptionsReducer } from '@/features/form-creation/state/options';
-import { fieldRulesReducer } from '@/features/form-creation/state/rules';
-import { fieldSettingsReducer } from '@/features/form-creation/state/settings';
-import { formReducer } from '@/features/form-creation/state/form';
+import { formFieldsReducer } from '@/features/form-editor/state/fields';
+import { fieldOptionsReducer } from '@/features/form-editor/state/options';
+import { fieldRulesReducer } from '@/features/form-editor/state/rules';
+import { fieldSettingsReducer } from '@/features/form-editor/state/settings';
+import { formReducer } from '@/features/form-editor/state/form';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 
 const reducer = combineReducers({

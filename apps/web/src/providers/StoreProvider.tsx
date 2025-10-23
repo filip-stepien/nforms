@@ -1,12 +1,12 @@
 'use client';
 
-import { AppState, AppStore, makeStore } from '@/lib/store';
+import { AppStore, makeStore, RootState } from '@/lib/store';
 import { ReactNode, useRef } from 'react';
 import { Provider } from 'react-redux';
 
 type Props = {
     children: ReactNode;
-    preloadedState?: Partial<AppState>;
+    preloadedState?: Partial<RootState>;
 };
 
 export default function StoreProvider({ children, preloadedState }: Props) {
