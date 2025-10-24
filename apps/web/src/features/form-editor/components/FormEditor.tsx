@@ -35,7 +35,10 @@ export function FormEditor({ formId, baseUrl, createdAt }: Props) {
                     <DeleteButton formId={formId} />
                 </Flex>
             </Flex>
-            <FormTabs tabs={['responses', 'questions', 'settings']} defaultTab='responses' />
+            <FormTabs
+                tabs={['responses', 'questions', 'categories', 'settings']}
+                defaultTab='responses'
+            />
         </form>
     );
 }

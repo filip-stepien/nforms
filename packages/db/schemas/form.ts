@@ -37,7 +37,8 @@ export const CategoryActionSchema = z.object({
 
 export const RespondentCategorySchema = z.object({
     id: z.string(),
-    category: z.string()
+    category: z.string(),
+    color: z.string()
 });
 
 export const RuleSchema = z.object({

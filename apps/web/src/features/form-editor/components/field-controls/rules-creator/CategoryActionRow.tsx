@@ -5,13 +5,13 @@ import { IconX } from '@tabler/icons-react';
 import { RuleGroupRow } from './RuleGroupRow';
 import {
     deleteCategoryAction,
-    selectCategories,
     selectCategoryActionById,
     setCategoryAction
 } from '@/features/form-editor/state/rules';
 import { categoryOperations, CategoryOperation } from '@packages/db/schemas/form';
 import { DefaultValueSelect } from './DefaultValueSelect';
 import { IconButton } from '../../ui/IconButton';
+import { selectCategories } from '@/features/form-editor/state/categories';
 
 type Props = {
     fieldId: string;
@@ -20,9 +20,7 @@ type Props = {
 
 export function CategoryActionRow({ fieldId, categoryActionId }: Props) {
     const dispatch = useAppDispatch();
-
     const categories = useAppSelector(selectCategories);
-
     const categoryAction = useAppSelector(state =>
         selectCategoryActionById(state, categoryActionId)
     );
@@ -69,14 +67,18 @@ export function CategoryActionRow({ fieldId, categoryActionId }: Props) {
                         onChange={handleOperationSelect}
                     />
                     <NumberInput value={categoryAction.points} onChange={handlePointsSelect} />
-                    <Badge size='lg'>FOR CATEGORY</Badge>
+                    <Badge size='lg' variant='default' radius='sm'>
+                        for category
+                    </Badge>
                     <DefaultValueSelect
                         data={categories.map(c => ({ label: c.category, value: c.id }))}
                         value={categoryAction.targetCategoryId}
                         allowDeselect={false}
                         onChange={handleCategoryChange}
                     />
-                    <Badge size='lg'>WHEN</Badge>
+                    <Badge size='lg' variant='default' radius='sm'>
+                        when
+                    </Badge>
                 </Group>
                 <IconButton
                     icon={IconX}

@@ -1,11 +1,18 @@
 import { Tabs } from '@mantine/core';
-import { IconMessageCircle, IconSettings, Icon, ReactNode } from '@tabler/icons-react';
+import {
+    IconMessageCircle,
+    IconSettings,
+    Icon,
+    ReactNode,
+    IconCategory
+} from '@tabler/icons-react';
 import { FormResponsesTab } from '../tabs/FormResponsesTab';
 import { FormSettingsTab } from '../tabs/FormSettingsTab';
 import { capitalizeFirstLetter } from '../../lib/utils';
 import { FormQuestionsTab } from '../tabs/FormQuestionsTab';
+import { FormCategoriesTab } from '../tabs/FormCategoriesTab';
 
-type FormTab = 'questions' | 'settings' | 'responses';
+type FormTab = 'questions' | 'settings' | 'responses' | 'categories';
 
 type FormTabsMap = Record<
     FormTab,
@@ -26,6 +33,10 @@ export function FormTabs({ formId, tabs, defaultTab }: Props) {
         questions: {
             icon: IconMessageCircle,
             component: <FormQuestionsTab />
+        },
+        categories: {
+            icon: IconCategory,
+            component: <FormCategoriesTab />
         },
         settings: {
             icon: IconSettings,

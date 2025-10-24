@@ -13,7 +13,7 @@ export function FormCreator() {
                 <FormHeader />
                 <SaveButton isLoading={isLoading} />
             </Flex>
-            <FormTabs tabs={['questions', 'settings']} defaultTab='questions' />
+            <FormTabs tabs={['questions', 'categories', 'settings']} defaultTab='categories' />
         </form>
     );
 }

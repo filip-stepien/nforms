@@ -1,9 +1,7 @@
 import { AppDispatch, RootState } from '@/lib/store';
-import { CategoryAction, RespondentCategory, Rule, RuleGroup } from '@packages/db/schemas/form';
+import { CategoryAction, Rule, RuleGroup } from '@packages/db/schemas/form';
 import { createEntityAdapter, createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { v4 as uuid } from 'uuid';
-
-export type FormRespondentCategoryPatch = Pick<RespondentCategory, 'category'>;
 
 export type RulePatch = Partial<Omit<Rule, 'id' | 'type'>>;
 
@@ -12,13 +10,10 @@ export type RuleGroupPatch = Partial<Omit<RuleGroup, 'id' | 'type'>>;
 export type CategoryActionPatch = Partial<Omit<CategoryAction, 'id'>>;
 
 export type RulesState = {
-    respondentCategories: ReturnType<typeof categoriesAdapter.getInitialState>;
     categoryActions: ReturnType<typeof categoryActionsAdapter.getInitialState>;
     rules: ReturnType<typeof rulesAdapter.getInitialState>;
     groups: ReturnType<typeof groupsAdapter.getInitialState>;
 };
-
-const categoriesAdapter = createEntityAdapter<RespondentCategory>();
 
 const categoryActionsAdapter = createEntityAdapter<CategoryAction>();
 
@@ -27,7 +22,6 @@ const rulesAdapter = createEntityAdapter<Rule>();
 const groupsAdapter = createEntityAdapter<RuleGroup>();
 
 const initialState: RulesState = {
-    respondentCategories: categoriesAdapter.getInitialState(),
     categoryActions: categoryActionsAdapter.getInitialState(),
     rules: rulesAdapter.getInitialState(),
     groups: groupsAdapter.getInitialState()
@@ -37,10 +31,6 @@ const fieldRulesSlice = createSlice({
     name: 'fieldRules',
     initialState,
     reducers: {
-        addCategory: (state, action: PayloadAction<RespondentCategory>) => {
-            categoriesAdapter.addOne(state.respondentCategories, action.payload);
-        },
-
         _addCategoryAction: (state, action: PayloadAction<CategoryAction>) => {
             categoryActionsAdapter.addOne(state.categoryActions, action.payload);
         },
@@ -67,13 +57,6 @@ const fieldRulesSlice = createSlice({
                     parent.childrenGroups.push(group.id);
                 }
             }
-        },
-
-        _deleteCategory: (state, action: PayloadAction<{ categoryActionId: string }>) => {
-            categoriesAdapter.removeOne(
-                state.respondentCategories,
-                action.payload.categoryActionId
-            );
         },
 
         _deleteCategoryAction: (state, action: PayloadAction<{ categoryActionId: string }>) => {
@@ -134,20 +117,6 @@ const fieldRulesSlice = createSlice({
             categoryActionsAdapter.updateOne(state.categoryActions, {
                 id: categoryActionId,
                 changes: categoryAction
-            });
-        },
-
-        setCategory: (
-            state,
-            action: PayloadAction<{
-                categoryActionId: string;
-                category: FormRespondentCategoryPatch;
-            }>
-        ) => {
-            const { categoryActionId, category } = action.payload;
-            categoriesAdapter.setOne(state.respondentCategories, {
-                id: categoryActionId,
-                ...category
             });
         },
 
@@ -238,32 +207,17 @@ export const deleteCategoryAction =
         dispatch(deleteGroup({ groupId: categoryAction.rootGroupId }));
     };
 
-export const deleteCategory =
-    ({ categoryActionId }: { categoryActionId: string }) =>
-    (dispatch: AppDispatch) => {
-        dispatch(
-            setCategoryActionsByTargetCategoryId({
-                targetCategoryId: categoryActionId,
-                categoryAction: { targetCategoryId: undefined }
-            })
-        );
-        dispatch(_deleteCategory({ categoryActionId }));
-    };
-
 export const fieldRulesReducer = fieldRulesSlice.reducer;
 
 export const {
     _addCategoryAction,
-    addCategory,
     addGroup,
     addRule,
     setGroup,
     setRule,
     setRules,
-    setCategory,
     setCategoryAction,
     setCategoryActionsByTargetCategoryId,
-    _deleteCategory,
     _deleteCategoryAction,
     deleteGroup,
     deleteRule,
@@ -280,9 +234,6 @@ export const { selectById: selectGroupById } = groupsAdapter.getSelectors<RootSt
 
 export const { selectAll: selectCategoryActions, selectById: selectCategoryActionById } =
     categoryActionsAdapter.getSelectors<RootState>(state => state.fieldRules.categoryActions);
-
-export const { selectAll: selectCategories, selectById: selectCategoryById } =
-    categoriesAdapter.getSelectors<RootState>(state => state.fieldRules.respondentCategories);
 
 export const selectCategoryActionByFieldId = (fieldId: string) =>
     createSelector(selectCategoryActions, actions =>

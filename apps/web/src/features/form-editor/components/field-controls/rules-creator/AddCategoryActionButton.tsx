@@ -1,9 +1,10 @@
-import { addCategoryAction, selectCategories } from '@/features/form-editor/state/rules';
+import { addCategoryAction } from '@/features/form-editor/state/rules';
 import { IconPlus } from '@tabler/icons-react';
 import { v4 as uuid } from 'uuid';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { ActionButton } from '../../ui/ActionButton';
+import { selectCategories } from '@/features/form-editor/state/categories';
 
 type Props = {
     fieldId: string;
