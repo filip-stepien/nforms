@@ -7,7 +7,7 @@ import { ChangeEventHandler, useRef, useState } from 'react';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { v4 as uuid } from 'uuid';
-import { selectCategories, addCategory } from '../../state/categories';
+import { selectCategories, addCategory } from '../../state/respondent-categories';
 
 export function CategoryInput() {
     const colorRef = useRef<ColorRef>(null);

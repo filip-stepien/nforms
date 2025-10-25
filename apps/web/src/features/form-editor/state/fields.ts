@@ -1,9 +1,9 @@
 import { AppDispatch, RootState } from '@/lib/store';
-import { Field } from '@packages/db/schemas/form';
+import { Field } from '@packages/db/schemas/form/form-fields';
 import { createSlice, createEntityAdapter, PayloadAction } from '@reduxjs/toolkit';
-import { deleteRulesState } from './rules';
-import { addSettings, deleteSettings } from './settings';
-import { deleteOptionsByField } from './options';
+import { deleteRulesState } from './field-rules';
+import { addSettings, deleteSettings } from './field-settings';
+import { deleteOptionsByField } from './field-options';
 
 export type FieldPatch = Partial<Omit<Field, 'id'>>;
 

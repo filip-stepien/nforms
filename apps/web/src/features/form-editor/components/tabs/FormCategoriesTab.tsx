@@ -1,5 +1,5 @@
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { selectCategories } from '../../state/categories';
+import { selectCategories } from '../../state/respondent-categories';
 import { CategoryInput } from '../categories-editor/CategoryInput';
 import { Stack } from '@mantine/core';
 import { Category } from '../categories-editor/Category';

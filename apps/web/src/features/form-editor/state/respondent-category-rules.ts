@@ -1,39 +1,24 @@
 import { RootState } from '@/lib/store';
+import {
+    RespondentCategoryRule,
+    RespondentCategoryRuleGroup,
+    RespondentCategoryRuleRelation
+} from '@packages/db/schemas/form/respondent-category-rules';
 import { createEntityAdapter, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-type CategoryRuleRelation = {
-    categoryId: string;
-    rootGroupId: string;
-};
+type CategoryRulePatch = Omit<Partial<RespondentCategoryRule>, 'id'>;
 
-type CategoryRuleGroup = {
-    id: string;
-    categoryId: string;
-    combinator: string;
-    childrenRules: string[];
-    childrenGroups: string[];
-};
-
-type CategoryRule = {
-    id: string;
-    categoryId: string;
-    operator: string;
-    value: number;
-};
-
-type CategoryRulePatch = Omit<Partial<CategoryRule>, 'id'>;
-
-type CategoryRuleGroupPatch = Omit<Partial<CategoryRuleGroup>, 'id'>;
+type CategoryRuleGroupPatch = Omit<Partial<RespondentCategoryRuleGroup>, 'id'>;
 
 type CategoryRulesState = {
-    relations: CategoryRuleRelation[];
+    relations: RespondentCategoryRuleRelation[];
     rules: ReturnType<typeof categoryRulesAdapter.getInitialState>;
     groups: ReturnType<typeof categoryGroupsAdapter.getInitialState>;
 };
 
-const categoryRulesAdapter = createEntityAdapter<CategoryRule>();
+const categoryRulesAdapter = createEntityAdapter<RespondentCategoryRule>();
 
-const categoryGroupsAdapter = createEntityAdapter<CategoryRuleGroup>();
+const categoryGroupsAdapter = createEntityAdapter<RespondentCategoryRuleGroup>();
 
 const initialState: CategoryRulesState = {
     relations: [],
@@ -47,7 +32,7 @@ export const respondentCategoryRulesSlice = createSlice({
     reducers: {
         addCategoryRule: (
             state,
-            action: PayloadAction<{ categoryGroupId: string; categoryRule: CategoryRule }>
+            action: PayloadAction<{ categoryGroupId: string; categoryRule: RespondentCategoryRule }>
         ) => {
             const { categoryGroupId, categoryRule } = action.payload;
 
@@ -62,7 +47,7 @@ export const respondentCategoryRulesSlice = createSlice({
             state,
             action: PayloadAction<{
                 parentCategoryGroupId?: string;
-                categoryGroup: CategoryRuleGroup;
+                categoryGroup: RespondentCategoryRuleGroup;
             }>
         ) => {
             const { categoryGroup, parentCategoryGroupId } = action.payload;

@@ -3,7 +3,7 @@ import { IconX } from '@tabler/icons-react';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { selectFieldById, selectFields } from '@/features/form-editor/state/fields';
-import { deleteRule, selectRuleById, setRule } from '@/features/form-editor/state/rules';
+import { deleteRule, selectRuleById, setRule } from '@/features/form-editor/state/field-rules';
 import { useAppStore } from '@/hooks/useAppStore';
 import { DefaultValueSelect } from './DefaultValueSelect';
 import { useRuleSelectValues } from '@/features/form-editor/hooks/useRuleSelectValues';

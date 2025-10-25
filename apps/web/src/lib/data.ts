@@ -1,5 +1,5 @@
 import 'server-only';
-import { Form } from '@packages/db/schemas/form';
+import { Form } from '@packages/db/schemas/form/form';
 import { RootState } from './store';
 import { verifyUser } from '@/auth';
 import { prisma } from '@packages/db';
@@ -13,15 +13,25 @@ export function serializeState(state: RootState): SerializedState {
         settings: state.form.settings,
         fields: Object.values(state.formFields.entities),
         fieldSettings: state.fieldSettings,
-        fieldControls: {
-            rules: {
-                respondentCategories: Object.values(state.fieldRules.respondentCategories.entities),
-                categoryActions: Object.values(state.fieldRules.categoryActions.entities),
-                rules: Object.values(state.fieldRules.rules.entities),
-                groups: Object.values(state.fieldRules.groups.entities)
-            },
-            options: Object.values(state.fieldOptions.entities)
+        fieldRules: {
+            categoryActions: Object.values(state.fieldRules.categoryActions.entities),
+            rules: Object.values(state.fieldRules.rules.entities),
+            groups: Object.values(state.fieldRules.groups.entities)
+        },
+        fieldOptions: Object.values(state.fieldOptions.entities),
+        respondentCategories: Object.values(state.respondentCategories.entities),
+        respondentCategoryRules: {
+            relations: state.respondentCategoryRules.relations,
+            groups: Object.values(state.respondentCategoryRules.groups.entities),
+            rules: Object.values(state.respondentCategoryRules.rules.entities)
         }
+    };
+}
+
+function toEntityState<T extends { id: string }>(arr: T[]) {
+    return {
+        ids: arr.map(e => e.id),
+        entities: Object.fromEntries(arr.map(e => [e.id, e]))
     };
 }
 
@@ -29,40 +39,23 @@ export function deserializeState(state: SerializedState): RootState {
     return {
         form: {
             title: state.title,
-            description: state.description ?? '',
+            description: state.description,
             settings: state.settings
         },
-        formFields: {
-            ids: state.fields.map(f => f.id),
-            entities: Object.fromEntries(state.fields.map(f => [f.id, f]))
-        },
+        formFields: toEntityState(state.fields),
+        fieldSettings: state.fieldSettings,
         fieldRules: {
-            respondentCategories: {
-                ids: state.fieldControls.rules.respondentCategories.map(c => c.id),
-                entities: Object.fromEntries(
-                    state.fieldControls.rules.respondentCategories.map(c => [c.id, c])
-                )
-            },
-            categoryActions: {
-                ids: state.fieldControls.rules.categoryActions.map(c => c.id),
-                entities: Object.fromEntries(
-                    state.fieldControls.rules.categoryActions.map(c => [c.id, c])
-                )
-            },
-            rules: {
-                ids: state.fieldControls.rules.rules.map(r => r.id),
-                entities: Object.fromEntries(state.fieldControls.rules.rules.map(r => [r.id, r]))
-            },
-            groups: {
-                ids: state.fieldControls.rules.groups.map(g => g.id),
-                entities: Object.fromEntries(state.fieldControls.rules.groups.map(g => [g.id, g]))
-            }
+            categoryActions: toEntityState(state.fieldRules.categoryActions),
+            rules: toEntityState(state.fieldRules.rules),
+            groups: toEntityState(state.fieldRules.groups)
         },
-        fieldOptions: {
-            ids: state.fieldControls.options.map(o => o.id),
-            entities: Object.fromEntries(state.fieldControls.options.map(o => [o.id, o]))
-        },
-        fieldSettings: state.fieldSettings
+        fieldOptions: toEntityState(state.fieldOptions),
+        respondentCategories: toEntityState(state.respondentCategories),
+        respondentCategoryRules: {
+            relations: state.respondentCategoryRules.relations,
+            groups: toEntityState(state.respondentCategoryRules.groups),
+            rules: toEntityState(state.respondentCategoryRules.rules)
+        }
     };
 }
 

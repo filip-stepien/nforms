@@ -4,7 +4,7 @@ import { selectFieldById } from '../../state/fields';
 import { OptionCreator } from '../field-controls/option-creator/OptionCreator';
 import { RulesCreator } from '../field-controls/rules-creator/RulesCreator';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { FieldType } from '@packages/db/schemas/form';
+import { FieldType } from '@packages/db/schemas/form/form-fields';
 
 type Props = {
     fieldId: string;

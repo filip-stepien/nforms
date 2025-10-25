@@ -1,11 +1,11 @@
 import { formFieldsReducer } from '@/features/form-editor/state/fields';
-import { fieldOptionsReducer } from '@/features/form-editor/state/options';
-import { fieldRulesReducer } from '@/features/form-editor/state/rules';
-import { fieldSettingsReducer } from '@/features/form-editor/state/settings';
+import { fieldOptionsReducer } from '@/features/form-editor/state/field-options';
+import { fieldRulesReducer } from '@/features/form-editor/state/field-rules';
+import { fieldSettingsReducer } from '@/features/form-editor/state/field-settings';
 import { formReducer } from '@/features/form-editor/state/form';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import { respondentCategoriesReducer } from '@/features/form-editor/state/categories';
-import { respondentCategoryRulesReducer } from '@/features/form-editor/state/category-rules';
+import { respondentCategoriesReducer } from '@/features/form-editor/state/respondent-categories';
+import { respondentCategoryRulesReducer } from '@/features/form-editor/state/respondent-category-rules';
 
 const reducer = combineReducers({
     form: formReducer,

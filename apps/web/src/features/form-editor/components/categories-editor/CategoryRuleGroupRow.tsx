@@ -7,7 +7,7 @@ import {
     deleteCategoryRuleGroup,
     selectCategoryRuleGroupById,
     setCategoryRuleGroup
-} from '../../state/category-rules';
+} from '../../state/respondent-category-rules';
 import { CategoryRuleRow } from './CategoryRuleRow';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';

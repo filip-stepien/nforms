@@ -4,7 +4,11 @@ import { IconX } from '@tabler/icons-react';
 import { ChangeEventHandler, FocusEventHandler } from 'react';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { deleteOption, selectOptionById, setOption } from '@/features/form-editor/state/options';
+import {
+    deleteOption,
+    selectOptionById,
+    setOption
+} from '@/features/form-editor/state/field-options';
 import { DragButton } from '../../ui/DragButton';
 import { IconButton } from '../../ui/IconButton';
 

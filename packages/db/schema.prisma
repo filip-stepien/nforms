@@ -20,19 +20,22 @@ model User {
 }
 
 model Form {
-    id              String          @id @map("_id") @default(auto()) @db.ObjectId
-    title           String
-    description     String
-    settings        Json
-    fields          Json
-    fieldSettings   Json
-    fieldControls   Json
-    createdAt       DateTime        @default(now())
+    id                          String          @id @map("_id") @default(auto()) @db.ObjectId
+    title                       String
+    description                 String
+    settings                    Json
+    fields                      Json
+    fieldSettings               Json
+    fieldRules                  Json
+    fieldOptions                Json
+    respondentCategories        Json
+    respondentCategoryRules     Json
+    createdAt                   DateTime        @default(now())
 
-    responses       FormResponse[]  @relation("FormResponses")
+    responses                   FormResponse[]  @relation("FormResponses")
 
-    userId          String          @db.ObjectId
-    user            User            @relation("UserForms", fields: [userId], references: [id])
+    userId                      String          @db.ObjectId
+    user                        User            @relation("UserForms", fields: [userId], references: [id])
 }
 
 model FormResponse {

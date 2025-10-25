@@ -3,15 +3,18 @@ import { useAppSelector } from '@/hooks/useAppSelector';
 import { Stack, Group, Select, NumberInput, Badge } from '@mantine/core';
 import { IconX } from '@tabler/icons-react';
 import { RuleGroupRow } from './RuleGroupRow';
-import {
-    deleteCategoryAction,
-    selectCategoryActionById,
-    setCategoryAction
-} from '@/features/form-editor/state/rules';
-import { categoryOperations, CategoryOperation } from '@packages/db/schemas/form';
 import { DefaultValueSelect } from './DefaultValueSelect';
 import { IconButton } from '../../ui/IconButton';
-import { selectCategories } from '@/features/form-editor/state/categories';
+import { selectCategories } from '@/features/form-editor/state/respondent-categories';
+import {
+    FieldCategoryOperation,
+    fieldCategoryOperations
+} from '@packages/db/schemas/form/field-rules';
+import {
+    deleteFieldCategoryAction,
+    selectFieldCategoryActionById,
+    setFieldCategoryAction
+} from '@/features/form-editor/state/field-rules';
 
 type Props = {
     fieldId: string;
@@ -22,19 +25,19 @@ export function CategoryActionRow({ fieldId, categoryActionId }: Props) {
     const dispatch = useAppDispatch();
     const categories = useAppSelector(selectCategories);
     const categoryAction = useAppSelector(state =>
-        selectCategoryActionById(state, categoryActionId)
+        selectFieldCategoryActionById(state, categoryActionId)
     );
 
     const handleCategoryActionDelete = (categoryActionId: string) => {
-        dispatch(deleteCategoryAction({ categoryActionId }));
+        dispatch(deleteFieldCategoryAction({ categoryActionId }));
     };
 
     const handleOperationSelect = (value: string | null) => {
         if (value) {
             dispatch(
-                setCategoryAction({
+                setFieldCategoryAction({
                     categoryActionId,
-                    categoryAction: { operation: value as CategoryOperation }
+                    categoryAction: { operation: value as FieldCategoryOperation }
                 })
             );
         }
@@ -42,14 +45,19 @@ export function CategoryActionRow({ fieldId, categoryActionId }: Props) {
 
     const handlePointsSelect = (value: string | number) => {
         if (typeof value === 'number') {
-            dispatch(setCategoryAction({ categoryActionId, categoryAction: { points: value } }));
+            dispatch(
+                setFieldCategoryAction({ categoryActionId, categoryAction: { points: value } })
+            );
         }
     };
 
     const handleCategoryChange = (value: string | null) => {
         if (value) {
             dispatch(
-                setCategoryAction({ categoryActionId, categoryAction: { targetCategoryId: value } })
+                setFieldCategoryAction({
+                    categoryActionId,
+                    categoryAction: { targetCategoryId: value }
+                })
             );
         }
     };
@@ -62,7 +70,7 @@ export function CategoryActionRow({ fieldId, categoryActionId }: Props) {
             >
                 <Group>
                     <Select
-                        data={categoryOperations}
+                        data={fieldCategoryOperations}
                         value={categoryAction.operation}
                         onChange={handleOperationSelect}
                     />

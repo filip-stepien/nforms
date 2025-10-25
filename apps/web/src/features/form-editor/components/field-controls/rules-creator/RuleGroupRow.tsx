@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { selectFieldById } from '@/features/form-editor/state/fields';
-import { RuleCombinator, ruleCombinators } from '@packages/db/schemas/form';
+import { FieldRuleCombinator, fieldRuleCombinators } from '@packages/db/schemas/form/field-rules';
 import { useRuleSelectValues } from '@/features/form-editor/hooks/useRuleSelectValues';
 import {
     setGroup,
@@ -14,7 +14,7 @@ import {
     addGroup,
     deleteGroup,
     selectGroupById
-} from '@/features/form-editor/state/rules';
+} from '@/features/form-editor/state/field-rules';
 import { ActionButton } from '../../ui/ActionButton';
 import { IconButton } from '../../ui/IconButton';
 
@@ -75,7 +75,7 @@ export function RuleGroupRow({ hasBackgroundColor, isFirstGroup, groupId, fieldI
     const handleCombinatorChange = (value: string | null) => {
         if (value) {
             dispatch(
-                setGroup({ fieldId, groupId, group: { combinator: value as RuleCombinator } })
+                setGroup({ fieldId, groupId, group: { combinator: value as FieldRuleCombinator } })
             );
         }
     };
@@ -89,7 +89,7 @@ export function RuleGroupRow({ hasBackgroundColor, isFirstGroup, groupId, fieldI
         >
             <Group>
                 <Select
-                    data={ruleCombinators}
+                    data={fieldRuleCombinators}
                     value={combinator}
                     onChange={handleCombinatorChange}
                     allowDeselect={false}

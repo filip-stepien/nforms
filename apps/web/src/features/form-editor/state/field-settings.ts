@@ -1,7 +1,8 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { formatActionName, withPayloadType } from '@/lib/utils';
 import { RootState } from '@/lib/store';
-import { FieldSettingsMap, FieldType } from '@packages/db/schemas/form';
+import { FieldSettingsMap } from '@packages/db/schemas/form/field-settings';
+import { FieldType } from '@packages/db/schemas/form/form-fields';
 
 export type FieldSettingsState = { fieldId: string; settings: FieldSettingsMap[FieldType] }[];
 

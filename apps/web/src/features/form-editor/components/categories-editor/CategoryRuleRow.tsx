@@ -3,7 +3,7 @@ import {
     deleteCategoryRule,
     selectCategoryRuleById,
     setCategoryRule
-} from '../../state/category-rules';
+} from '../../state/respondent-category-rules';
 import { Group, NumberInput, Select } from '@mantine/core';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { IconX } from '@tabler/icons-react';

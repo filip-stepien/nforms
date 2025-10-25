@@ -9,7 +9,7 @@ import { deleteField, selectFieldById, setField } from '../../state/fields';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { FieldControls } from './FieldControls';
-import { FieldType } from '@packages/db/schemas/form';
+import { FieldType } from '@packages/db/schemas/form/form-fields';
 
 type Props = {
     index: number;

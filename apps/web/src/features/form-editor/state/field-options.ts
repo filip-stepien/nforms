@@ -1,7 +1,7 @@
 import { AppDispatch, RootState } from '@/lib/store';
-import { FieldOption } from '@packages/db/schemas/form';
+import { FieldOption } from '@packages/db/schemas/form/field-options';
 import { createSlice, createEntityAdapter, createSelector, PayloadAction } from '@reduxjs/toolkit';
-import { deleteRulesByValue } from './rules';
+import { deleteRulesByValue } from './field-rules';
 
 export type FieldOptionPatch = Partial<FieldOption>;
 

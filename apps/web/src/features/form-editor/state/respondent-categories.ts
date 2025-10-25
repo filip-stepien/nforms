@@ -1,8 +1,8 @@
 import { AppDispatch, RootState } from '@/lib/store';
-import { RespondentCategory } from '@packages/db/schemas/form';
+import { RespondentCategory } from '@packages/db/schemas/form/respondent-categories';
 import { createEntityAdapter, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { setCategoryActionsByTargetCategoryId } from './rules';
-import { addCategoryRuleGroup, deleteCategoryRulesState } from './category-rules';
+import { setFieldCategoryActionsByTargetCategoryId } from './field-rules';
+import { addCategoryRuleGroup, deleteCategoryRulesState } from './respondent-category-rules';
 import { v4 as uuid } from 'uuid';
 
 type FormRespondentCategoryPatch = Omit<RespondentCategory, 'id'>;
@@ -60,7 +60,7 @@ export const deleteCategory =
     ({ categoryId }: { categoryId: string }) =>
     (dispatch: AppDispatch) => {
         dispatch(
-            setCategoryActionsByTargetCategoryId({
+            setFieldCategoryActionsByTargetCategoryId({
                 targetCategoryId: categoryId,
                 categoryAction: { targetCategoryId: undefined }
             })

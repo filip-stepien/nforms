@@ -1,11 +1,11 @@
 import { Stack, Badge, Accordion, Flex } from '@mantine/core';
 import { CategoryRuleGroupRow } from './CategoryRuleGroupRow';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { deleteCategory, selectCategoryById } from '../../state/categories';
+import { deleteCategory, selectCategoryById } from '../../state/respondent-categories';
 import { IconTrash } from '@tabler/icons-react';
 import { IconButton } from '../ui/IconButton';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { selectCategoryRootGroupIdByCategoryId } from '../../state/category-rules';
+import { selectCategoryRootGroupIdByCategoryId } from '../../state/respondent-category-rules';
 
 type Props = {
     categoryId: string;

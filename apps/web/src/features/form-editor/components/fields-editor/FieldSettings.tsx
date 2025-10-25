@@ -6,7 +6,7 @@ import { useAppSelector } from '@/hooks/useAppSelector';
 import { Menu, Stack } from '@mantine/core';
 import { IconAdjustments } from '@tabler/icons-react';
 import { IconButton } from '../ui/IconButton';
-import { FieldType } from '@packages/db/schemas/form';
+import { FieldType } from '@packages/db/schemas/form/form-fields';
 
 type Props = {
     fieldId: string;

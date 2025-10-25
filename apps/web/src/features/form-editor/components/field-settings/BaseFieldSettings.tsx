@@ -2,7 +2,7 @@ import { Switch } from '@mantine/core';
 import { ChangeEventHandler } from 'react';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { selectSettingsByFieldId, setSettings } from '../../state/settings';
+import { selectSettingsByFieldId, setSettings } from '../../state/field-settings';
 
 type Props = {
     fieldId: string;

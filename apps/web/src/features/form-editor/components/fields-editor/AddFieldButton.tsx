@@ -1,7 +1,7 @@
 import { IconPlus } from '@tabler/icons-react';
 import { ActionButton } from '../ui/ActionButton';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { FieldType } from '@packages/db/schemas/form';
+import { FieldType } from '@packages/db/schemas/form/form-fields';
 import { v4 as uuid } from 'uuid';
 import { addField } from '../../state/fields';
 

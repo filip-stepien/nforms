@@ -1,4 +1,4 @@
-import { FieldType } from '@packages/db/schemas/form';
+import { FieldType } from '@packages/db/schemas/form/form-fields';
 import { ParsedField } from '../lib/data';
 import { SelectionInput } from './inputs/SelectionInput';
 import { TextInput } from './inputs/TextInput';

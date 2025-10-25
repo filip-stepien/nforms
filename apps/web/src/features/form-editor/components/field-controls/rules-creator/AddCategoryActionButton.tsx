@@ -1,10 +1,10 @@
-import { addCategoryAction } from '@/features/form-editor/state/rules';
+import { addFieldCategoryAction } from '@/features/form-editor/state/field-rules';
 import { IconPlus } from '@tabler/icons-react';
 import { v4 as uuid } from 'uuid';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { ActionButton } from '../../ui/ActionButton';
-import { selectCategories } from '@/features/form-editor/state/categories';
+import { selectCategories } from '@/features/form-editor/state/respondent-categories';
 
 type Props = {
     fieldId: string;
@@ -16,7 +16,7 @@ export function AddCategoryActionButton({ fieldId }: Props) {
 
     const handleCategoryActionAdd = () => {
         dispatch(
-            addCategoryAction({
+            addFieldCategoryAction({
                 id: uuid(),
                 operation: 'ADD',
                 targetCategoryId: categories.at(0)?.id,

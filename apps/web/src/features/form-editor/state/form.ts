@@ -1,4 +1,4 @@
-import { FormSettings } from '@packages/db/schemas/form';
+import { FormSettings } from '@packages/db/schemas/form/form';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export type FormState = {

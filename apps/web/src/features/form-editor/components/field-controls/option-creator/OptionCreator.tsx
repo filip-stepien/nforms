@@ -8,7 +8,7 @@ import {
     addOption,
     reorderOption,
     selectOptionsByFieldId
-} from '@/features/form-editor/state/options';
+} from '@/features/form-editor/state/field-options';
 
 type Props = {
     fieldId: string;

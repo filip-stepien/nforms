@@ -1,16 +1,13 @@
 import 'server-only';
 import { prisma } from '@packages/db';
-import {
-    FieldOption,
-    FieldSettingsMap,
-    FieldType,
-    FormSchema,
-    FormSettings
-} from '@packages/db/schemas/form';
 import { LanguageProcessing } from '@packages/db/schemas/nlp';
 import { FormResponse } from '@packages/db/schemas/formResponse';
 import { enumValues, uniqueArray } from './utils';
 import { v4 as uuid } from 'uuid';
+import { FieldOption } from '@packages/db/schemas/form/field-options';
+import { FieldSettingsMap } from '@packages/db/schemas/form/field-settings';
+import { FormSettings, FormSchema } from '@packages/db/schemas/form/form';
+import { FieldType } from '@packages/db/schemas/form/form-fields';
 
 export type ParsedField =
     | {
@@ -52,7 +49,7 @@ export async function getParsedFormById(id: string): Promise<ParsedForm> {
 
     const fields = data.fields.map((field): ParsedField => {
         const fieldSettings = data.fieldSettings.find(s => s.fieldId === field.id);
-        const fieldRules = data.fieldControls.rules.rules.filter(r => r.targetFieldId === field.id);
+        const fieldRules = data.fieldRules.rules.filter(r => r.targetFieldId === field.id);
 
         if (!fieldSettings) {
             throw new Error(`Missing settings for field ${field.id}`);
@@ -77,7 +74,7 @@ export async function getParsedFormById(id: string): Promise<ParsedForm> {
                     ...field,
                     type: FieldType.SELECTION,
                     settings: fieldSettings.settings as FieldSettingsMap[FieldType.SELECTION],
-                    options: data.fieldControls.options
+                    options: data.fieldOptions
                         .filter(o => o.fieldId === field.id)
                         .sort((a, b) => a.order - b.order)
                         .map(({ order: _, ...rest }) => rest)
