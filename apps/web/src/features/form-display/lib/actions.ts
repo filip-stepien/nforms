@@ -1,10 +1,10 @@
 'use server';
 
-import { saveFormResponse } from './data';
+import { RawFieldResponse, saveFormResponse } from './data';
 
 export async function saveFormResponseAction(
     formId: string,
-    fieldResponses: Record<string, string>,
+    fieldResponses: RawFieldResponse[],
     email?: string
 ) {
     return await saveFormResponse(formId, fieldResponses, email);

@@ -1,7 +1,7 @@
 'use client';
 
 import { Button, Flex, Stack } from '@mantine/core';
-import { ParsedForm } from '../lib/data';
+import { RawFieldResponse, ParsedForm } from '../lib/data';
 import { FormQuestion } from './FormQuestion';
 import { useDynamicFieldsForm } from '../hooks/useDynamicFieldsForm';
 import { useState, useTransition } from 'react';
@@ -22,7 +22,15 @@ export function Form({ parsedForm }: Props) {
         useDynamicFieldsForm(fields);
 
     const handleSubmit = onSubmit(async values => {
-        const { email, ...responses } = values;
+        const { email, ...restValues } = values;
+
+        const responses: RawFieldResponse[] = Object.entries(restValues).map(
+            ([fieldId, response]) => ({
+                fieldId,
+                fieldType: fields.find(f => f.id === fieldId)!.type,
+                response: response as string
+            })
+        );
 
         startTransition(async () => {
             try {

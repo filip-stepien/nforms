@@ -1,13 +1,12 @@
 import 'server-only';
 import { prisma } from '@packages/db';
 import { LanguageProcessing } from '@packages/db/schemas/nlp';
-import { FormResponse } from '@packages/db/schemas/formResponse';
 import { enumValues, uniqueArray } from './utils';
-import { v4 as uuid } from 'uuid';
 import { FieldOption } from '@packages/db/schemas/form/field-options';
 import { FieldSettingsMap } from '@packages/db/schemas/form/field-settings';
 import { FormSettings, FormSchema } from '@packages/db/schemas/form/form';
-import { FieldType } from '@packages/db/schemas/form/form-fields';
+import { Field, FieldType } from '@packages/db/schemas/form/form-fields';
+import { Form } from '@packages/db/schemas/form/form';
 
 export type ParsedField =
     | {
@@ -15,7 +14,6 @@ export type ParsedField =
           title: string;
           type: FieldType.TEXT;
           settings: FieldSettingsMap[FieldType.TEXT];
-          requiredProcessings: LanguageProcessing[];
       }
     | {
           id: string;
@@ -33,8 +31,33 @@ export type ParsedForm = {
     fields: ParsedField[];
 };
 
-export async function getParsedFormById(id: string): Promise<ParsedForm> {
-    const form = await prisma.form.findFirstOrThrow({ where: { id } });
+export type RawFieldResponse =
+    | {
+          fieldId: string;
+          fieldType: FieldType.TEXT;
+          response: string;
+      }
+    | {
+          fieldId: string;
+          fieldType: FieldType.SELECTION;
+          response: string | string[];
+      };
+
+export type ParsedFieldResponse =
+    | {
+          fieldId: string;
+          fieldType: FieldType.TEXT;
+          response: string;
+          requiredProcessings: LanguageProcessing[];
+      }
+    | {
+          fieldId: string;
+          fieldType: FieldType.SELECTION;
+          response: string | string[];
+      };
+
+async function findFirstFormById(formId: string): Promise<Form> {
+    const form = await prisma.form.findFirstOrThrow({ where: { id: formId } });
     const parseResult = FormSchema.safeParse(form);
 
     if (!parseResult.success) {
@@ -45,69 +68,113 @@ export async function getParsedFormById(id: string): Promise<ParsedForm> {
         throw new Error('Invalid form data');
     }
 
-    const { data } = parseResult;
+    return parseResult.data;
+}
 
-    const fields = data.fields.map((field): ParsedField => {
-        const fieldSettings = data.fieldSettings.find(s => s.fieldId === field.id);
-        const fieldRules = data.fieldRules.rules.filter(r => r.targetFieldId === field.id);
+export function parseFormField(form: Form, field: Field): ParsedField {
+    const fieldSettings = form.fieldSettings.find(s => s.fieldId === field.id);
 
-        if (!fieldSettings) {
-            throw new Error(`Missing settings for field ${field.id}`);
+    if (!fieldSettings) {
+        throw new Error(`Missing settings for field ${field.id}`);
+    }
+
+    switch (field.type) {
+        case FieldType.TEXT: {
+            return {
+                ...field,
+                type: FieldType.TEXT,
+                settings: fieldSettings.settings as FieldSettingsMap[FieldType.TEXT]
+            };
         }
 
-        switch (field.type) {
-            case FieldType.TEXT: {
-                return {
-                    ...field,
-                    type: FieldType.TEXT,
-                    settings: fieldSettings.settings as FieldSettingsMap[FieldType.TEXT],
-                    requiredProcessings: uniqueArray(
-                        fieldRules
-                            .filter(r => enumValues(LanguageProcessing).includes(r.condition))
-                            .map(r => r.condition as LanguageProcessing)
-                    )
-                };
-            }
-
-            case FieldType.SELECTION: {
-                return {
-                    ...field,
-                    type: FieldType.SELECTION,
-                    settings: fieldSettings.settings as FieldSettingsMap[FieldType.SELECTION],
-                    options: data.fieldOptions
-                        .filter(o => o.fieldId === field.id)
-                        .sort((a, b) => a.order - b.order)
-                        .map(({ order: _, ...rest }) => rest)
-                };
-            }
-
-            default:
-                throw new Error(`Unknown field type: ${field.type}`);
+        case FieldType.SELECTION: {
+            return {
+                ...field,
+                type: FieldType.SELECTION,
+                settings: fieldSettings.settings as FieldSettingsMap[FieldType.SELECTION],
+                options: form.fieldOptions
+                    .filter(o => o.fieldId === field.id)
+                    .sort((a, b) => a.order - b.order)
+                    .map(({ order: _, ...rest }) => rest)
+            };
         }
-    });
+
+        default:
+            throw new Error(`Unknown field type: ${field.type}`);
+    }
+}
+
+export async function getParsedFormById(formId: string): Promise<ParsedForm> {
+    const form = await findFirstFormById(formId);
+    const fields = form.fields.map(field => parseFormField(form, field));
 
     return {
-        id: data.id,
-        title: data.title,
-        description: data.description,
-        settings: data.settings,
+        id: form.id,
+        title: form.title,
+        description: form.description,
+        settings: form.settings,
         fields
     };
 }
 
+function parseFieldResponse(form: Form, rawResponse: RawFieldResponse): ParsedFieldResponse {
+    const { fieldType, fieldId, response } = rawResponse;
+
+    switch (fieldType) {
+        case FieldType.TEXT: {
+            return {
+                ...rawResponse,
+                requiredProcessings: uniqueArray(
+                    form.fieldRules.rules
+                        .filter(r => r.targetFieldId === fieldId)
+                        .filter(r => enumValues(LanguageProcessing).includes(r.condition))
+                        .map(r => r.condition as LanguageProcessing)
+                )
+            };
+        }
+
+        case FieldType.SELECTION: {
+            const getOptionContent = (optionId: string) => {
+                const option = form.fieldOptions.find(opt => opt.id === optionId);
+
+                if (!option) {
+                    throw new Error(`Option ${optionId} not found.`);
+                }
+
+                return option.content;
+            };
+
+            const parsedResponse = Array.isArray(response)
+                ? response.map(getOptionContent)
+                : getOptionContent(response);
+
+            return {
+                ...rawResponse,
+                response: parsedResponse
+            };
+        }
+
+        default:
+            throw new Error(`Unsupported field type: ${fieldType}`);
+    }
+}
+
 export async function saveFormResponse(
     formId: string,
-    fieldResponses: Record<string, string>,
+    fieldResponses: RawFieldResponse[],
     email?: string
 ) {
-    const data: Omit<FormResponse, 'id'> = {
-        email: email ?? null,
-        responses: Object.entries(fieldResponses).map(([fieldId, response]) => ({
-            id: uuid(),
-            fieldId,
-            response
-        }))
-    };
+    const form = await findFirstFormById(formId);
+    const responses = fieldResponses.map(raw => parseFieldResponse(form, raw));
 
-    await prisma.formResponse.create({ data: { ...data, formId } });
+    console.log(
+        JSON.stringify(
+            {
+                email: email ?? null,
+                responses
+            },
+            null,
+            2
+        )
+    );
 }

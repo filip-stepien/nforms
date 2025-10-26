@@ -13,7 +13,7 @@ export type RuleGroupPatch = Partial<Omit<FieldRuleGroup, 'id' | 'type'>>;
 
 export type FieldCategoryActionPatch = Partial<Omit<FieldCategoryAction, 'id'>>;
 
-export type RulesState = {
+export type FieldRulesState = {
     categoryActions: ReturnType<typeof categoryActionsAdapter.getInitialState>;
     rules: ReturnType<typeof rulesAdapter.getInitialState>;
     groups: ReturnType<typeof groupsAdapter.getInitialState>;
@@ -25,7 +25,7 @@ const rulesAdapter = createEntityAdapter<FieldRule>();
 
 const groupsAdapter = createEntityAdapter<FieldRuleGroup>();
 
-const initialState: RulesState = {
+const initialState: FieldRulesState = {
     categoryActions: categoryActionsAdapter.getInitialState(),
     rules: rulesAdapter.getInitialState(),
     groups: groupsAdapter.getInitialState()
