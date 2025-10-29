@@ -1,6 +1,6 @@
 import { pipeline } from '@xenova/transformers';
 
-export type Sentiment = 'positive' | 'negative';
+export type Sentiment = 'positive' | 'negative' | 'unknown';
 
 async function getSentimentLabels(text: string, topK = 2) {
     const pipe = await pipeline(
@@ -21,5 +21,16 @@ async function getSentimentLabels(text: string, topK = 2) {
 
 export async function getSentiment(text: string) {
     const [first, second] = await getSentimentLabels(text, 2);
-    return first.score > second.score ? first.label : second.label;
+    const threshold = 0.5;
+    const confidenceMargin = 0.2;
+
+    if (first.score < threshold) {
+        return 'unknown';
+    }
+
+    if (first.score - second.score < confidenceMargin) {
+        return 'unknown';
+    }
+
+    return first.label;
 }

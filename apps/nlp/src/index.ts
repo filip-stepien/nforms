@@ -1,13 +1,14 @@
 import { createWorker, WorkerHandler } from '@packages/queue';
-import { saveFieldResponseProcessing } from './lib/data';
+import { doFieldResponseProcessingJob } from './lib/data';
 
 const workerHandler: WorkerHandler = async ({ data }) => {
-    await saveFieldResponseProcessing(data);
+    const result = await doFieldResponseProcessingJob(data);
+    console.log(JSON.stringify(result, null, 2));
 };
 
 const worker = createWorker(workerHandler);
 
-worker.on('completed', job => console.log('Job completed:', job.id, job.data));
+worker.on('completed', job => console.log('Job completed:', job.id));
 
 worker.on('failed', (job, err) => console.log('Job failed:', job.id, err?.message));
 

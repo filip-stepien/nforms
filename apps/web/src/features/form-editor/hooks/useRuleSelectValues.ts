@@ -30,12 +30,12 @@ export function useRuleSelectValues(fieldId: string) {
             {
                 condition: 'sentiment',
                 operators: ['is', 'is not'],
-                values: ['POSITIVE', 'NEGATIVE']
+                values: ['positive', 'negative', 'unknown']
             },
             {
                 condition: 'emotion',
-                operators: ['is1', 'is not1'],
-                values: ['ANGER', 'HAPPINESS']
+                operators: ['is', 'is not'],
+                values: ['anger', 'happiness']
             }
         ],
         [FieldType.SELECTION]: [

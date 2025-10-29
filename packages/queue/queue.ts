@@ -1,14 +1,16 @@
 import { Queue } from 'bullmq';
-import { QueueJobData, QueueJobResult } from '.';
+import { FieldResponseQueueJobData, FieldResponseQueueJobResult } from '.';
 import { env } from '../env';
 
 const globalForQueue = globalThis as unknown as {
-    queue: Queue<QueueJobData, QueueJobResult> | undefined;
+    queue: Queue<FieldResponseQueueJobData, FieldResponseQueueJobResult> | undefined;
 };
 
 export const queueName = 'nlp';
 
-export const queue = globalForQueue.queue ?? new Queue<QueueJobData, QueueJobResult>(queueName);
+export const queue =
+    globalForQueue.queue ??
+    new Queue<FieldResponseQueueJobData, FieldResponseQueueJobResult>(queueName);
 
 if (env.NODE_ENV !== 'production') {
     globalForQueue.queue = queue;

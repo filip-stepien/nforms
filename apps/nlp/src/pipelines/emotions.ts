@@ -55,8 +55,7 @@ async function getEmotionLabels(text: string, topK = 100) {
     return labels as { label: Emotion; score: number }[];
 }
 
-export async function getEmotions(text: string) {
+export async function getEmotion(text: string) {
     const labels = await getEmotionLabels(text);
-    const confidenceThreshold = 0.8;
-    return labels.filter(({ score }) => score > confidenceThreshold).map(({ label }) => label);
+    return labels.map(({ label }) => label).at(0);
 }

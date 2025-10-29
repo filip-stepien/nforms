@@ -7,6 +7,7 @@ import { FieldSettingsMap } from '@packages/db/schemas/form/field-settings';
 import { FormSettings, FormSchema } from '@packages/db/schemas/form/form';
 import { Field, FieldType } from '@packages/db/schemas/form/form-fields';
 import { Form } from '@packages/db/schemas/form/form';
+import { createJob, FieldResponseData } from '@packages/queue';
 
 export type ParsedField =
     | {
@@ -117,7 +118,7 @@ export async function getParsedFormById(formId: string): Promise<ParsedForm> {
     };
 }
 
-function parseFieldResponse(form: Form, rawResponse: RawFieldResponse): ParsedFieldResponse {
+function parseFieldResponse(form: Form, rawResponse: RawFieldResponse): FieldResponseData {
     const { fieldType, fieldId, response } = rawResponse;
 
     switch (fieldType) {
@@ -150,7 +151,8 @@ function parseFieldResponse(form: Form, rawResponse: RawFieldResponse): ParsedFi
 
             return {
                 ...rawResponse,
-                response: parsedResponse
+                response: parsedResponse,
+                requiredProcessings: ['answer']
             };
         }
 
@@ -167,14 +169,11 @@ export async function saveFormResponse(
     const form = await findFirstFormById(formId);
     const responses = fieldResponses.map(raw => parseFieldResponse(form, raw));
 
-    console.log(
-        JSON.stringify(
-            {
-                email: email ?? null,
-                responses
-            },
-            null,
-            2
-        )
-    );
+    await createJob('response_processing', {
+        email: email ?? null,
+        formId,
+        responses,
+        categories: form.respondentCategories,
+        rules: form.fieldRules
+    });
 }
