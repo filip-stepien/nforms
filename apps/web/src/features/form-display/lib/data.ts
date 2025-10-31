@@ -1,13 +1,12 @@
 import 'server-only';
-import { prisma } from '@packages/db';
+import { createJob, FieldResponse } from '@packages/queue';
+import { Field, FieldType } from '@packages/db/schemas/form/form-fields';
+import { uniqueArray, enumValues } from './utils';
 import { LanguageProcessing } from '@packages/db/schemas/nlp';
-import { enumValues, uniqueArray } from './utils';
+import { Form, FormSchema, FormSettings } from '@packages/db/schemas/form/form';
+import { prisma } from '@packages/db';
 import { FieldOption } from '@packages/db/schemas/form/field-options';
 import { FieldSettingsMap } from '@packages/db/schemas/form/field-settings';
-import { FormSettings, FormSchema } from '@packages/db/schemas/form/form';
-import { Field, FieldType } from '@packages/db/schemas/form/form-fields';
-import { Form } from '@packages/db/schemas/form/form';
-import { createJob, FieldResponseData } from '@packages/queue';
 
 export type ParsedField =
     | {
@@ -44,20 +43,7 @@ export type RawFieldResponse =
           response: string | string[];
       };
 
-export type ParsedFieldResponse =
-    | {
-          fieldId: string;
-          fieldType: FieldType.TEXT;
-          response: string;
-          requiredProcessings: LanguageProcessing[];
-      }
-    | {
-          fieldId: string;
-          fieldType: FieldType.SELECTION;
-          response: string | string[];
-      };
-
-async function findFirstFormById(formId: string): Promise<Form> {
+export async function findFirstFormById(formId: string): Promise<Form> {
     const form = await prisma.form.findFirstOrThrow({ where: { id: formId } });
     const parseResult = FormSchema.safeParse(form);
 
@@ -105,8 +91,7 @@ export function parseFormField(form: Form, field: Field): ParsedField {
     }
 }
 
-export async function getParsedFormById(formId: string): Promise<ParsedForm> {
-    const form = await findFirstFormById(formId);
+export async function parseForm(form: Form): Promise<ParsedForm> {
     const fields = form.fields.map(field => parseFormField(form, field));
 
     return {
@@ -118,14 +103,14 @@ export async function getParsedFormById(formId: string): Promise<ParsedForm> {
     };
 }
 
-function parseFieldResponse(form: Form, rawResponse: RawFieldResponse): FieldResponseData {
-    const { fieldType, fieldId, response } = rawResponse;
+function parseFieldConditions(form: Form, raw: RawFieldResponse): FieldResponse {
+    const { fieldType, fieldId } = raw;
 
     switch (fieldType) {
         case FieldType.TEXT: {
             return {
-                ...rawResponse,
-                requiredProcessings: uniqueArray(
+                ...raw,
+                conditions: uniqueArray(
                     form.fieldRules.rules
                         .filter(r => r.targetFieldId === fieldId)
                         .filter(r => enumValues(LanguageProcessing).includes(r.condition))
@@ -135,24 +120,9 @@ function parseFieldResponse(form: Form, rawResponse: RawFieldResponse): FieldRes
         }
 
         case FieldType.SELECTION: {
-            const getOptionContent = (optionId: string) => {
-                const option = form.fieldOptions.find(opt => opt.id === optionId);
-
-                if (!option) {
-                    throw new Error(`Option ${optionId} not found.`);
-                }
-
-                return option.content;
-            };
-
-            const parsedResponse = Array.isArray(response)
-                ? response.map(getOptionContent)
-                : getOptionContent(response);
-
             return {
-                ...rawResponse,
-                response: parsedResponse,
-                requiredProcessings: ['answer']
+                ...raw,
+                conditions: ['answer']
             };
         }
 
@@ -163,17 +133,14 @@ function parseFieldResponse(form: Form, rawResponse: RawFieldResponse): FieldRes
 
 export async function saveFormResponse(
     formId: string,
-    fieldResponses: RawFieldResponse[],
+    responses: RawFieldResponse[],
     email?: string
 ) {
     const form = await findFirstFormById(formId);
-    const responses = fieldResponses.map(raw => parseFieldResponse(form, raw));
 
     await createJob('response_processing', {
         email: email ?? null,
-        formId,
-        responses,
-        categories: form.respondentCategories,
-        rules: form.fieldRules
+        form,
+        responses: responses.map(raw => parseFieldConditions(form, raw))
     });
 }

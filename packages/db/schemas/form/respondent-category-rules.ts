@@ -15,7 +15,7 @@ export const RespondentCategoryRuleGroupSchema = z.object({
     childrenGroups: z.array(z.string())
 });
 
-export const respondentCategoryRuleOperators = ['IS GREATER THAN', 'IS LESSER THAN', 'EQUALS'];
+export const respondentCategoryRuleOperators = ['is greater than', 'is less than', 'equals'];
 
 export const RespondentCategoryRuleSchema = z.object({
     id: z.string(),

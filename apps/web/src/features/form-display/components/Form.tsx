@@ -1,7 +1,7 @@
 'use client';
 
 import { Button, Flex, Stack } from '@mantine/core';
-import { RawFieldResponse, ParsedForm } from '../lib/data';
+import { ParsedForm, RawFieldResponse } from '../lib/data';
 import { FormQuestion } from './FormQuestion';
 import { useDynamicFieldsForm } from '../hooks/useDynamicFieldsForm';
 import { useState, useTransition } from 'react';
@@ -10,11 +10,11 @@ import { TextInput as MantineTextInput } from '@mantine/core';
 import { saveFormResponseAction } from '../lib/actions';
 
 type Props = {
-    parsedForm: ParsedForm;
+    form: ParsedForm;
 };
 
-export function Form({ parsedForm }: Props) {
-    const { id, fields, title, settings, description } = parsedForm;
+export function Form({ form }: Props) {
+    const { id, fields, title, settings, description } = form;
     const [submitted, setSubmitted] = useState(false);
     const [error, setError] = useState(false);
     const [isPending, startTransition] = useTransition();

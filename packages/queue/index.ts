@@ -1,33 +1,30 @@
 import { Processor, Worker } from 'bullmq';
 import { queue, queueName } from './queue';
 import { connection } from './connection';
-import { FieldType } from '../db/schemas/form/form-fields';
-import { FieldRules } from '@packages/db/schemas/form/field-rules';
-import { RespondentCategory } from '@packages/db/schemas/form/respondent-categories';
+import { FieldType } from '@packages/db/schemas/form/form-fields';
+import { Form } from '@packages/db/schemas/form/form';
 
-export type FieldResponseData =
+export type FieldResponse =
     | {
           fieldId: string;
           fieldType: FieldType.TEXT;
           response: string;
-          requiredProcessings: ('sentiment' | 'emotion')[];
+          conditions: ('sentiment' | 'emotion')[];
       }
     | {
           fieldId: string;
           fieldType: FieldType.SELECTION;
           response: string | string[];
-          requiredProcessings: 'answer'[];
+          conditions: 'answer'[];
       };
 
-export type FieldResponseQueueJobData = {
-    formId: string;
+export type FieldResponseQueueJob = {
+    form: Form;
     email: string | null;
-    rules: FieldRules;
-    categories: RespondentCategory[];
-    responses: FieldResponseData[];
+    responses: FieldResponse[];
 };
 
-export type RuleLog = {
+export type FieldRuleLog = {
     type: 'rule';
     targetFieldId: string;
     leftValue: string | string[];
@@ -36,30 +33,58 @@ export type RuleLog = {
     result: boolean;
 };
 
-export type GroupLog = {
+export type FieldRuleGroupLog = {
     type: 'group';
     combinator: string;
     result: boolean;
-    logs: (RuleLog | GroupLog)[];
+    score: number;
+    logs: (FieldRuleLog | FieldRuleGroupLog)[];
+};
+
+export type CategoryRuleLog = {
+    type: 'rule';
+    leftValue: number;
+    operator: string;
+    rightValue: number;
+    result: boolean;
+};
+
+export type CategoryRuleGroupLog = {
+    type: 'group';
+    combinator: string;
+    result: boolean;
+    logs: (CategoryRuleLog | CategoryRuleGroupLog)[];
+};
+
+export type CategoryScore = {
+    categoryId: string;
+    value: number;
+};
+
+export type FieldResponseResult = {
+    fieldId: string;
+    response: string | string[];
+    fieldRuleLogs: FieldRuleGroupLog[];
+    categoryRuleLogs: {
+        categoryId: string;
+        totalScore: number;
+        assigned: boolean;
+        logs: CategoryRuleGroupLog;
+    }[];
 };
 
 export type FieldResponseQueueJobResult = {
     formId: string;
     email: string;
-    responses: {
-        fieldId: string;
-        scores: { categoryId: string; score: number }[];
-        response: string | string[];
-        logs: (RuleLog | GroupLog)[];
-    }[];
+    responses: FieldResponseResult[];
 };
 
-export type WorkerHandler = Processor<FieldResponseQueueJobData, void, string>;
+export type WorkerHandler = Processor<FieldResponseQueueJob, void, string>;
 
-export async function createJob(name: string, data: FieldResponseQueueJobData) {
+export async function createJob(name: string, data: FieldResponseQueueJob) {
     await queue.add(name, data);
 }
 
 export function createWorker(handler?: WorkerHandler) {
-    return new Worker<FieldResponseQueueJobData>(queueName, handler, { connection });
+    return new Worker<FieldResponseQueueJob>(queueName, handler, { connection });
 }

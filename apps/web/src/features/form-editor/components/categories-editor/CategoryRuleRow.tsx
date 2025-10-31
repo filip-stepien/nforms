@@ -39,7 +39,7 @@ export function CategoryRuleRow({ categoryGroupId, categoryRuleId }: Props) {
     return (
         <Group>
             <Select
-                data={['IS GREATER THAN', 'EQUALS', 'IS LESS THAN']}
+                data={['is greater than', 'equals', 'is less than']}
                 value={operator}
                 onChange={handleOperatorChange}
             />

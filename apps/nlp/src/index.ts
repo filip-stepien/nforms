@@ -1,8 +1,8 @@
 import { createWorker, WorkerHandler } from '@packages/queue';
-import { doFieldResponseProcessingJob } from './lib/data';
+import { doResponseProcessingJob } from './lib/data';
 
 const workerHandler: WorkerHandler = async ({ data }) => {
-    const result = await doFieldResponseProcessingJob(data);
+    const result = await doResponseProcessingJob(data);
     console.log(JSON.stringify(result, null, 2));
 };
 
