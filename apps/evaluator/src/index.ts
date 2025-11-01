@@ -1,8 +1,15 @@
-import { createWorker, WorkerHandler } from '@packages/queue';
-import { doResponseProcessingJob } from './lib/data';
+import { createWorker, FieldResponseQueueJobResult, WorkerHandler } from '@packages/queue';
+import { getResponses } from './lib/responses';
 
 const workerHandler: WorkerHandler = async ({ data }) => {
-    const result = await doResponseProcessingJob(data);
+    const { email, form, responses } = data;
+
+    const result: FieldResponseQueueJobResult = {
+        email,
+        formId: form.id,
+        responses: await getResponses(responses, form)
+    };
+
     console.log(JSON.stringify(result, null, 2));
 };
 

@@ -1,5 +1,5 @@
 {
-    "name": "@nforms/nlp",
+    "name": "@nforms/evaluator",
     "version": "0.1.0",
     "private": true,
     "scripts": {
