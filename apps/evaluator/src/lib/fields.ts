@@ -2,7 +2,7 @@ import { Form } from '@packages/db/schemas/form/form';
 import { getEmotion } from 'src/pipelines/emotions';
 import { getSentiment } from 'src/pipelines/sentiment';
 import { CategoryContext } from './categories';
-import { FieldType } from '@packages/db/schemas/form/form-fields';
+import { Field, FieldType } from '@packages/db/schemas/form/form-fields';
 import { FieldResponse } from './responses';
 
 export type FieldContext =
@@ -22,7 +22,7 @@ export type FieldContextGroup = {
 
 export type FieldRuleLog = {
     type: 'rule';
-    targetFieldId: string;
+    targetFieldTitle: string;
     leftValue: string | string[];
     operator: string;
     rightValue: string;
@@ -51,6 +51,26 @@ export type FieldCategoryEvaluationGroup = {
     fieldId: string;
     categoryEvals: FieldCategoryEvaluation[];
 };
+
+export function findFieldById(fieldId: string, form: Form) {
+    const field = form.fields.find(f => f.id === fieldId);
+
+    if (!field) {
+        throw new Error(`Field ${fieldId} not found`);
+    }
+
+    return field;
+}
+
+function findFieldOptionById(optionId: string, form: Form) {
+    const option = form.fieldOptions.find(opt => opt.id === optionId);
+
+    if (!option) {
+        throw new Error(`Field option ${optionId} not found`);
+    }
+
+    return option;
+}
 
 function findFieldRuleById(ruleId: string, form: Form) {
     const rule = form.fieldRules.rules.find(r => r.id === ruleId);
@@ -115,17 +135,30 @@ function resolveFieldRuleOperator(
     }
 }
 
+export function resolveFieldValue(value: string, field: Field, form: Form) {
+    switch (field.type) {
+        case FieldType.TEXT:
+            return value;
+        case FieldType.SELECTION:
+            return findFieldOptionById(value, form).content;
+    }
+}
+
 function getFieldRuleEvaluator(ruleId: string, form: Form): FieldRuleEvalFunction {
     const rule = findFieldRuleById(ruleId, form);
 
     const evaluate: FieldRuleEvalFunction = context => {
+        const targetField = findFieldById(rule.targetFieldId, form);
         const fieldContext = findFieldContext(rule.targetFieldId, rule.condition, context);
-        const expectedValue = rule.value;
-        const actualValue = fieldContext.value;
+        const expectedValue = resolveFieldValue(rule.value, targetField, form);
+
+        const actualValue = Array.isArray(fieldContext.value)
+            ? fieldContext.value.map(val => resolveFieldValue(val, targetField, form))
+            : resolveFieldValue(fieldContext.value, targetField, form);
 
         return {
             type: 'rule',
-            targetFieldId: rule.targetFieldId,
+            targetFieldTitle: findFieldById(rule.targetFieldId, form).title,
             leftValue: actualValue,
             operator: rule.operator,
             rightValue: expectedValue,

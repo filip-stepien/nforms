@@ -24,6 +24,16 @@ export type CategoryRuleEvalFunction = (context: CategoryContext[]) => CategoryR
 
 export type CategoryRuleGroupEvalFunction = (context: CategoryContext[]) => CategoryRuleGroupLog;
 
+function findCategoryById(categoryId: string, form: Form) {
+    const category = form.respondentCategories.find(c => c.id === categoryId);
+
+    if (!category) {
+        throw new Error(`Category ${categoryId} not found`);
+    }
+
+    return category;
+}
+
 function findCategoryRuleById(ruleId: string, form: Form) {
     const rule = form.respondentCategoryRules.rules.find(r => r.id === ruleId);
 
@@ -150,7 +160,7 @@ export function evaluateCategories(context: CategoryContext[], form: Form) {
         const totalScore = findCategoryContext(categoryId, context).value ?? 0;
 
         return {
-            categoryId,
+            categoryName: findCategoryById(categoryId, form).category,
             totalScore,
             assigned: evaluationResult.result,
             logs: evaluationResult

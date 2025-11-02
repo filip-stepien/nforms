@@ -8,9 +8,11 @@ import {
 import {
     evaluateFields,
     FieldRuleGroupLog,
+    findFieldById,
     findFieldScoreEvaluatorGroupByFieldId,
     getFieldCategoryScoreEvaluators,
-    getFieldEvaluationContext
+    getFieldEvaluationContext,
+    resolveFieldValue
 } from './fields';
 
 export type FieldResponse =
@@ -28,11 +30,11 @@ export type FieldResponse =
       };
 
 export type FieldResponseResult = {
-    fieldId: string;
+    fieldTitle: string;
     response: string | string[];
     fieldRuleLogs: FieldRuleGroupLog[];
     categoryRuleLogs: {
-        categoryId: string;
+        categoryName: string;
         totalScore: number;
         assigned: boolean;
         logs: CategoryRuleGroupLog;
@@ -44,27 +46,26 @@ export async function getResponses(
     form: Form
 ): Promise<FieldResponseResult[]> {
     const categoryScoreEvals = getFieldCategoryScoreEvaluators(responses, form);
-    const fieldEvalCtx = await getFieldEvaluationContext(responses);
+    const fieldCtx = await getFieldEvaluationContext(responses);
+    const categoryCtx = getCategoryEvaluationContext(form);
 
-    return responses.map(response => {
-        const categoryCtx = getCategoryEvaluationContext(form);
+    return responses.map(({ fieldId, response }) => {
+        const field = findFieldById(fieldId, form);
         const { categoryEvals } = findFieldScoreEvaluatorGroupByFieldId(
-            response.fieldId,
+            fieldId,
             categoryScoreEvals
         );
 
-        const { scores, logs: fieldLogs } = evaluateFields(
-            categoryEvals,
-            fieldEvalCtx,
-            categoryCtx
-        );
+        const { scores, logs: fieldLogs } = evaluateFields(categoryEvals, fieldCtx, categoryCtx);
         const categoryLogs = evaluateCategories(scores, form);
 
         return {
-            fieldId: response.fieldId,
-            response: response.response,
+            fieldTitle: field.title,
+            categoryRuleLogs: categoryLogs,
             fieldRuleLogs: fieldLogs,
-            categoryRuleLogs: categoryLogs
+            response: Array.isArray(response)
+                ? response.map(res => resolveFieldValue(res, field, form))
+                : resolveFieldValue(response, field, form)
         };
     });
 }
