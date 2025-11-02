@@ -1,13 +1,8 @@
 import { Form } from '@packages/db/schemas/form/form';
-import { FieldType } from '@packages/db/schemas/form/form-fields';
-import {
-    CategoryRuleGroupLog,
-    evaluateCategories,
-    getCategoryEvaluationContext
-} from './categories';
+import { evaluateCategories, getCategoryEvaluationContext } from './categories';
+import { FieldRawResponse } from '@packages/queue';
 import {
     evaluateFields,
-    FieldRuleGroupLog,
     findFieldById,
     findFieldScoreEvaluatorGroupByFieldId,
     getFieldCategoryScoreEvaluators,
@@ -15,36 +10,12 @@ import {
     resolveFieldValue
 } from './fields';
 
-export type FieldResponse =
-    | {
-          fieldId: string;
-          fieldType: FieldType.TEXT;
-          response: string;
-          conditions: ('sentiment' | 'emotion')[];
-      }
-    | {
-          fieldId: string;
-          fieldType: FieldType.SELECTION;
-          response: string | string[];
-          conditions: 'answer'[];
-      };
-
-export type FieldResponseResult = {
-    fieldTitle: string;
-    response: string | string[];
-    fieldRuleLogs: FieldRuleGroupLog[];
-    categoryRuleLogs: {
-        categoryName: string;
-        totalScore: number;
-        assigned: boolean;
-        logs: CategoryRuleGroupLog;
-    }[];
-};
+import { FieldResponse } from '@packages/db/schemas/form-responses';
 
 export async function getResponses(
-    responses: FieldResponse[],
+    responses: FieldRawResponse[],
     form: Form
-): Promise<FieldResponseResult[]> {
+): Promise<FieldResponse[]> {
     const categoryScoreEvals = getFieldCategoryScoreEvaluators(responses, form);
     const fieldCtx = await getFieldEvaluationContext(responses);
     const categoryCtx = getCategoryEvaluationContext(form);

@@ -2,18 +2,26 @@ import { Processor, Worker } from 'bullmq';
 import { queue, queueName } from './queue';
 import { connection } from './connection';
 import { Form } from '@packages/db/schemas/form/form';
-import { FieldResponse, FieldResponseResult } from 'src/lib/responses';
+import { FieldType } from '@packages/db/schemas/form/form-fields';
+
+export type FieldRawResponse =
+    | {
+          fieldId: string;
+          fieldType: FieldType.TEXT;
+          response: string;
+          conditions: ('sentiment' | 'emotion')[];
+      }
+    | {
+          fieldId: string;
+          fieldType: FieldType.SELECTION;
+          response: string | string[];
+          conditions: 'answer'[];
+      };
 
 export type FieldResponseQueueJob = {
     form: Form;
     email: string | null;
-    responses: FieldResponse[];
-};
-
-export type FieldResponseQueueJobResult = {
-    formId: string;
-    email: string;
-    responses: FieldResponseResult[];
+    responses: FieldRawResponse[];
 };
 
 export type WorkerHandler = Processor<FieldResponseQueueJob, void, string>;
