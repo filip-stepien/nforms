@@ -22,7 +22,7 @@ export function FormEditor({ formId, baseUrl, createdAt }: Props) {
 
     return (
         <form action={action}>
-            <Flex gap={100} className='pb-xs'>
+            <Flex gap={100} className='pb-xs bg-white'>
                 <Stack flex={1}>
                     <FormTimestamp createdAt={createdAt} />
                     <FormHeader />
@@ -36,6 +36,7 @@ export function FormEditor({ formId, baseUrl, createdAt }: Props) {
                 </Flex>
             </Flex>
             <FormTabs
+                formId={formId}
                 tabs={['responses', 'questions', 'categories', 'settings']}
                 defaultTab='responses'
             />

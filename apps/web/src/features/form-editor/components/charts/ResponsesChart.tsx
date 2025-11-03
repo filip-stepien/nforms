@@ -1,49 +1,59 @@
-import { AreaChart } from '@mantine/charts';
-import { Flex } from '@mantine/core';
+import React from 'react';
+import { Line } from 'react-chartjs-2';
+import {
+    Chart as ChartJS,
+    LineElement,
+    PointElement,
+    LinearScale,
+    CategoryScale,
+    Tooltip,
+    Legend,
+    ChartOptions
+} from 'chart.js';
 
-const data = [
-    {
-        date: 'Mar 22',
-        Apples: 2890,
-        Oranges: 2338,
-        Tomatoes: 2452
+ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend);
+
+const data = {
+    labels: ['1', '2', '3', '4', '5', '6'],
+    datasets: [
+        {
+            label: 'Sprzedaż',
+            data: [10, 25, 18, 35, 28, 45],
+            borderColor: 'rgba(54, 162, 235, 1)',
+            tension: 0.3,
+            borderWidth: 2,
+            pointBackgroundColor: 'rgba(54, 162, 235, 1)'
+        }
+    ]
+};
+
+const options: ChartOptions<'line'> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+        legend: {
+            display: false
+        },
+        tooltip: {
+            enabled: true
+        }
     },
-    {
-        date: 'Mar 23',
-        Apples: 2756,
-        Oranges: 2103,
-        Tomatoes: 2402
-    },
-    {
-        date: 'Mar 24',
-        Apples: 3322,
-        Oranges: 986,
-        Tomatoes: 1821
-    },
-    {
-        date: 'Mar 25',
-        Apples: 3470,
-        Oranges: 2108,
-        Tomatoes: 2809
-    },
-    {
-        date: 'Mar 26',
-        Apples: 3129,
-        Oranges: 1726,
-        Tomatoes: 2290
+    scales: {
+        x: {
+            grid: {
+                display: false
+            }
+        },
+        y: {
+            beginAtZero: true
+        }
     }
-];
+};
 
 export function ResponsesChart() {
     return (
-        <Flex flex={1} className='w-1/2'>
-            <AreaChart
-                h={200}
-                data={data}
-                dataKey='date'
-                series={[{ name: 'Oranges', color: 'blue.6' }]}
-                curveType='linear'
-            />
-        </Flex>
+        <div className='h-[250px]'>
+            <Line data={data} options={options} />
+        </div>
     );
 }
