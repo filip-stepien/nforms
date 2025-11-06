@@ -1,74 +1,92 @@
+'use client';
+
 import { Tabs } from '@mantine/core';
-import {
-    IconMessageCircle,
-    IconSettings,
-    Icon,
-    ReactNode,
-    IconCategory
-} from '@tabler/icons-react';
+import { IconMessageCircle, IconSettings, IconCategory } from '@tabler/icons-react';
+import { ReactNode } from 'react';
 import { FormResponsesTab } from '../tabs/FormResponsesTab';
 import { FormSettingsTab } from '../tabs/FormSettingsTab';
-import { capitalizeFirstLetter } from '../../lib/utils';
 import { FormQuestionsTab } from '../tabs/FormQuestionsTab';
 import { FormCategoriesTab } from '../tabs/FormCategoriesTab';
 
 type FormTab = 'questions' | 'settings' | 'responses' | 'categories';
 
-type FormTabsMap = Record<
-    FormTab,
-    {
-        icon: Icon;
-        component: ReactNode;
-    }
->;
-
 type Props = {
-    formId?: string;
-    tabs: FormTab[];
     defaultTab: FormTab;
+    children: ReactNode | ReactNode[];
 };
 
-export function FormTabs({ formId, tabs, defaultTab }: Props) {
-    const tabsMap: FormTabsMap = {
-        questions: {
-            icon: IconMessageCircle,
-            component: <FormQuestionsTab />
-        },
-        categories: {
-            icon: IconCategory,
-            component: <FormCategoriesTab />
-        },
-        settings: {
-            icon: IconSettings,
-            component: <FormSettingsTab />
-        },
-        responses: {
-            icon: IconMessageCircle,
-            component: formId && <FormResponsesTab formId={formId} />
-        }
-    };
-
+export function FormTabs({ defaultTab, children }: Props) {
     return (
         <Tabs defaultValue={defaultTab} classNames={{ panel: 'p-sm pt-lg' }}>
-            <Tabs.List>
-                {tabs.map(tab => {
-                    const Icon = tabsMap[tab].icon;
-                    return (
-                        <Tabs.Tab
-                            key={tab}
-                            value={tab}
-                            leftSection={<Icon stroke={1.5} size={18} />}
-                        >
-                            {capitalizeFirstLetter(tab)}
-                        </Tabs.Tab>
-                    );
-                })}
-            </Tabs.List>
-            {tabs.map(tab => (
-                <Tabs.Panel value={tab} key={tab}>
-                    {tabsMap[tab].component}
-                </Tabs.Panel>
-            ))}
+            {children}
         </Tabs>
     );
 }
+
+FormTabs.Tabs = function FormTabs({ children }: { children: ReactNode | ReactNode[] }) {
+    return <Tabs.List>{children}</Tabs.List>;
+};
+
+FormTabs.QuestionsTab = function QuestionsTab() {
+    return (
+        <Tabs.Tab value='questions' leftSection={<IconMessageCircle stroke={1.5} size={18} />}>
+            Questions
+        </Tabs.Tab>
+    );
+};
+
+FormTabs.QuestionsPanel = function QuestionsPanel() {
+    return (
+        <Tabs.Panel value='questions'>
+            <FormQuestionsTab />
+        </Tabs.Panel>
+    );
+};
+
+FormTabs.SettingsTab = function SettingsTab() {
+    return (
+        <Tabs.Tab value='settings' leftSection={<IconSettings stroke={1.5} size={18} />}>
+            Settings
+        </Tabs.Tab>
+    );
+};
+
+FormTabs.SettingsPanel = function SettingsPanel() {
+    return (
+        <Tabs.Panel value='settings'>
+            <FormSettingsTab />
+        </Tabs.Panel>
+    );
+};
+
+FormTabs.CategoriesTab = function CategoriesTab() {
+    return (
+        <Tabs.Tab value='categories' leftSection={<IconCategory stroke={1.5} size={18} />}>
+            Categories
+        </Tabs.Tab>
+    );
+};
+
+FormTabs.CategoriesPanel = function CategoriesPanel() {
+    return (
+        <Tabs.Panel value='categories'>
+            <FormCategoriesTab />
+        </Tabs.Panel>
+    );
+};
+
+FormTabs.ResponsesTab = function ResponsesTab() {
+    return (
+        <Tabs.Tab value='responses' leftSection={<IconMessageCircle stroke={1.5} size={18} />}>
+            Responses
+        </Tabs.Tab>
+    );
+};
+
+FormTabs.ResponsesPanel = function ResponsesPanel({ formId }: { formId: string }) {
+    return (
+        <Tabs.Panel value='responses'>
+            <FormResponsesTab formId={formId} />
+        </Tabs.Panel>
+    );
+};
