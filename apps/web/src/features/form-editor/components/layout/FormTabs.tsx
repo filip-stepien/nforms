@@ -7,6 +7,8 @@ import { FormResponsesTab } from '../tabs/FormResponsesTab';
 import { FormSettingsTab } from '../tabs/FormSettingsTab';
 import { FormQuestionsTab } from '../tabs/FormQuestionsTab';
 import { FormCategoriesTab } from '../tabs/FormCategoriesTab';
+import { FormResponse } from '@packages/db/schemas/form-responses';
+import { Paginated } from '@/lib/pagination';
 
 type FormTab = 'questions' | 'settings' | 'responses' | 'categories';
 
@@ -83,10 +85,14 @@ FormTabs.ResponsesTab = function ResponsesTab() {
     );
 };
 
-FormTabs.ResponsesPanel = function ResponsesPanel({ formId }: { formId: string }) {
+FormTabs.ResponsesPanel = function ResponsesPanel(props: {
+    formId: string;
+    responses: Promise<Paginated<FormResponse[]>>;
+    suspenseKey: string;
+}) {
     return (
         <Tabs.Panel value='responses'>
-            <FormResponsesTab formId={formId} />
+            <FormResponsesTab {...props} />
         </Tabs.Panel>
     );
 };

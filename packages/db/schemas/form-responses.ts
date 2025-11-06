@@ -64,7 +64,8 @@ export const FieldResponseSchema = z.object({
 export const FormResponseSchema = z.object({
     id: z.string(),
     email: z.string().nullable(),
-    responses: z.array(FieldResponseSchema)
+    responses: z.array(FieldResponseSchema),
+    submission: z.date()
 });
 
 export type CategoryRuleLog = z.infer<typeof CategoryRuleLogSchema>;

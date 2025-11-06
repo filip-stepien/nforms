@@ -1,20 +1,24 @@
-import React, { useState } from 'react';
+'use client';
+
+import { use, useState } from 'react';
 import {
     useReactTable,
     getCoreRowModel,
     flexRender,
     ColumnDef,
     SortingState,
-    ColumnFiltersState,
-    PaginationState
+    ColumnFiltersState
 } from '@tanstack/react-table';
-import { Table, Group, Stack, Pagination, Badge, Select } from '@mantine/core';
+import { Table, Group, Stack, Pagination, Badge, Select, Button } from '@mantine/core';
 import { FilterButton } from './header-buttons/FilterButton';
 import { SortButton } from './header-buttons/SortButton';
 import dayjs, { Dayjs } from 'dayjs';
 import Link from 'next/link';
 import { IconExternalLink } from '@tabler/icons-react';
 import { ActionButton } from '../ui/ActionButton';
+import { Paginated, PaginationParamNames } from '@/lib/pagination';
+import { FormResponse } from '@packages/db/schemas/form-responses';
+import { usePaginationParamSetter } from '@/hooks/usePaginationParamSetter';
 
 export type CategoryRow = { name: string; color: string };
 
@@ -37,53 +41,22 @@ export type ResponseRowMeta = {
     filterType: ResponseRowFilterType;
 };
 
-const data: ResponseRow[] = [
-    {
-        email: 'a@a.com',
-        submission: 1762190488,
+type Props = {
+    responses: Promise<Paginated<FormResponse[]>>;
+};
+
+function getRowsFromData(data: FormResponse[]): ResponseRow[] {
+    return data.map(({ email, responses, submission }) => ({
+        email: email ?? 'Anonymous',
         actionHref: '/',
-        category: [
-            { name: 'angry', color: 'red' },
-            { name: 'not angry', color: 'green' }
-        ]
-    },
-    {
-        email: 'b@b.com',
-        submission: 1762190488,
-        actionHref: '/',
-        category: [{ name: 'angry', color: 'red' }]
-    },
-    {
-        email: 'c@c.com',
-        submission: 1762190488,
-        actionHref: '/',
-        category: [
-            { name: 'angry', color: 'red' },
-            { name: 'not angry', color: 'green' }
-        ]
-    },
-    {
-        email: 'a@a.com',
-        submission: 1762190488,
-        actionHref: '/',
-        category: [{ name: 'angry', color: 'red' }]
-    },
-    {
-        email: 'b@b.com',
-        submission: 1762190488,
-        actionHref: '/',
-        category: [{ name: 'angry', color: 'red' }]
-    },
-    {
-        email: 'c@c.com',
-        submission: 1762190488,
-        actionHref: '/',
-        category: [
-            { name: 'angry', color: 'red' },
-            { name: 'not angry', color: 'green' }
-        ]
-    }
-];
+        submission: dayjs(submission).unix(),
+        category: responses.flatMap(response =>
+            response.categoryRuleLogs
+                .filter(category => category.assigned)
+                .map(category => ({ name: category.categoryName, color: 'blue' }))
+        )
+    }));
+}
 
 const columns: ColumnDef<ResponseRow>[] = [
     {
@@ -151,23 +124,27 @@ const columns: ColumnDef<ResponseRow>[] = [
     }
 ];
 
-const pageCount = 10;
+export const paginationParamNames: PaginationParamNames = {
+    page: 'responsesPage',
+    pageSize: 'responsesPageSize'
+};
 
-export function ResponsesTable() {
+export function ResponsesTable({ responses }: Props) {
+    const { setPage, setPageSize } = usePaginationParamSetter(paginationParamNames);
+    const { data, pagination } = use(responses);
+
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-    const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 });
 
     const table = useReactTable({
-        data,
+        data: getRowsFromData(data),
         columns,
-        pageCount,
+        pageCount: pagination.totalPages,
         manualPagination: true,
         manualFiltering: true,
         manualSorting: true,
-        state: { sorting, columnFilters, pagination },
+        state: { sorting, columnFilters },
         onSortingChange: setSorting,
-        onPaginationChange: setPagination,
         onColumnFiltersChange: setColumnFilters,
         getCoreRowModel: getCoreRowModel()
     });
@@ -212,21 +189,22 @@ export function ResponsesTable() {
                 </Table.Tbody>
             </Table>
             <Group>
+                <Button onClick={() => setPage(2)}>Page</Button>
                 <Pagination
-                    total={table.getPageCount()}
-                    value={table.getState().pagination.pageIndex + 1}
-                    onChange={page => table.setPageIndex(page - 1)}
+                    total={pagination.totalCount}
+                    value={pagination.currentPage}
+                    onChange={setPage}
                 />
                 <Select
                     data={[
-                        { label: '5 / page', value: '5' },
+                        { label: '10 / page', value: '10' },
                         { label: '20 / page', value: '20' },
                         { label: '50 / page', value: '50' },
                         { label: '100 / page', value: '100' }
                     ]}
                     defaultValue='5'
                     value={String(pagination.pageSize)}
-                    onChange={v => table.setPageSize(Number(v))}
+                    onChange={v => setPageSize(Number(v))}
                     className='w-[120px]'
                     allowDeselect={false}
                 />

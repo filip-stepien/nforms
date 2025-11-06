@@ -2,12 +2,18 @@ import { Flex, Stack } from '@mantine/core';
 import { ResponsesChart } from '../charts/ResponsesChart';
 import { CategoriesChart } from '../charts/CategoriesChart';
 import { ResponsesTable } from '../responses-table/ResponsesTable';
+import { FormResponse } from '@packages/db/schemas/form-responses';
+import { Paginated } from '@/lib/pagination';
+import { Suspense } from 'react';
+import { Loading } from '@/components/Loading';
 
 type Props = {
     formId: string;
+    responses: Promise<Paginated<FormResponse[]>>;
+    suspenseKey: string;
 };
 
-export function FormResponsesTab({ formId }: Props) {
+export function FormResponsesTab({ formId, responses, suspenseKey }: Props) {
     return (
         <Stack gap={50}>
             <Stack gap='lg'>
@@ -34,7 +40,9 @@ export function FormResponsesTab({ formId }: Props) {
                     </div>
                 </Flex>
             </Stack>
-            <ResponsesTable />
+            <Suspense key={suspenseKey} fallback={<Loading />}>
+                <ResponsesTable responses={responses} />
+            </Suspense>
         </Stack>
     );
 }

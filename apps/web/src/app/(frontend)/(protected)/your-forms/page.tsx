@@ -1,5 +1,5 @@
 import { FormListing } from '@/features/form-listing/components/FormListing';
-import { getFormsTableData } from '@/features/form-listing/lib/data';
+import { getFormsTableDataPaginated } from '@/features/form-listing/lib/data';
 import { getPaginationSearchParams } from '@/lib/pagination';
 
 type Props = {
@@ -8,6 +8,6 @@ type Props = {
 
 export default async function YourFormsPage({ searchParams }: Props) {
     const { page, pageSize, suspenseKey } = getPaginationSearchParams(await searchParams);
-    const formData = getFormsTableData({ page, pageSize });
+    const formData = getFormsTableDataPaginated({ page, pageSize });
     return <FormListing suspenseKey={suspenseKey} formData={formData} />;
 }

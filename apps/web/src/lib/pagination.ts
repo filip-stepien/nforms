@@ -18,14 +18,30 @@ export type PaginationMeta = {
     hasPrevPage: boolean;
 };
 
+export type PaginationParamNames = {
+    page: string;
+    pageSize: string;
+};
+
+export type Paginated<T> = {
+    data: T;
+    pagination: PaginationMeta;
+};
+
 export const defaultPaginationParams: PaginationParams = {
     page: 1,
     pageSize: 10
 };
 
-function getSearchParamsSchema(
-    { page, pageSize }: { page: string; pageSize: string } = { page: 'page', pageSize: 'pageSize' }
-) {
+export const defaultPaginationParamNames: PaginationParamNames = {
+    page: 'page',
+    pageSize: 'pageSize'
+};
+
+function getSearchParamsSchema({
+    page,
+    pageSize
+}: PaginationParamNames = defaultPaginationParamNames) {
     return z.object({
         [page]: z
             .string()
@@ -42,14 +58,19 @@ function getSearchParamsSchema(
 
 export function getPaginationSearchParams(
     searchParams: unknown,
-    paramNames: { page: string; pageSize: string } = { page: 'page', pageSize: 'pageSize' }
+    paramNames?: Partial<PaginationParamNames>
 ): { page: number; pageSize: number; suspenseKey: string } {
-    const schema = getSearchParamsSchema(paramNames);
+    const {
+        page: pageParamName = defaultPaginationParamNames.page,
+        pageSize: pageSizeParamName = defaultPaginationParamNames.pageSize
+    } = paramNames ?? {};
+
+    const schema = getSearchParamsSchema({ page: pageParamName, pageSize: pageSizeParamName });
     const params = schema.safeParse(searchParams);
 
     if (params.success) {
-        const page = params.data[paramNames.page];
-        const pageSize = params.data[paramNames.pageSize];
+        const page = params.data[pageParamName];
+        const pageSize = params.data[pageSizeParamName];
 
         return {
             page,

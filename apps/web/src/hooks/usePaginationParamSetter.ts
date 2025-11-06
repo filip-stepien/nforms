@@ -1,6 +1,12 @@
+import { defaultPaginationParamNames, PaginationParamNames } from '@/lib/pagination';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-export function usePaginationParamSetter() {
+export function usePaginationParamSetter(paramNames?: Partial<PaginationParamNames>) {
+    const {
+        page: pageParamName = defaultPaginationParamNames.page,
+        pageSize: pageSizeParamName = defaultPaginationParamNames.pageSize
+    } = paramNames ?? {};
+
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -11,11 +17,11 @@ export function usePaginationParamSetter() {
     };
 
     const setPage = (page: number) => {
-        setPaginationParam('page', page);
+        setPaginationParam(pageParamName, page);
     };
 
     const setPageSize = (pageSize: number) => {
-        setPaginationParam('pageSize', pageSize);
+        setPaginationParam(pageSizeParamName, pageSize);
     };
 
     return {

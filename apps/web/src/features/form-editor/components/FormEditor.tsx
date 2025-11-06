@@ -10,14 +10,18 @@ import { OpenButton } from './action-buttons/OpenButton';
 import { SaveButton } from './action-buttons/SaveButton';
 import { useFormSaveAction } from '../hooks/useFormSaveAction';
 import { FormTabs } from './layout/FormTabs';
+import { FormResponse } from '@packages/db/schemas/form-responses';
+import { Paginated } from '@/lib/pagination';
 
 type Props = {
     formId: string;
     baseUrl: string;
     createdAt: Date;
+    responses: Promise<Paginated<FormResponse[]>>;
+    suspenseKey: string;
 };
 
-export function FormEditor({ formId, baseUrl, createdAt }: Props) {
+export function FormEditor({ formId, baseUrl, createdAt, responses, suspenseKey }: Props) {
     const { isLoading, action } = useFormSaveAction(formId);
 
     return (
@@ -42,7 +46,11 @@ export function FormEditor({ formId, baseUrl, createdAt }: Props) {
                     <FormTabs.CategoriesTab />
                     <FormTabs.SettingsTab />
                 </FormTabs.Tabs>
-                <FormTabs.ResponsesPanel formId={formId} />
+                <FormTabs.ResponsesPanel
+                    formId={formId}
+                    responses={responses}
+                    suspenseKey={suspenseKey}
+                />
                 <FormTabs.QuestionsPanel />
                 <FormTabs.CategoriesPanel />
                 <FormTabs.SettingsPanel />

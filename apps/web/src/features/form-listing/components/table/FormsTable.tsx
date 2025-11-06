@@ -3,12 +3,13 @@
 import { use } from 'react';
 import { FormsTablePagination } from './FormsTablePagination';
 import { Flex, Table } from '@mantine/core';
-import { PaginatedFormsTableData } from '../../lib/data';
+import { FormTableData } from '../../lib/data';
 import { FormsTableBody } from './FormsTableBody';
 import { FormsTableHeader } from './FormsTableHeader';
+import { Paginated } from '@/lib/pagination';
 
 type Props = {
-    formData: Promise<PaginatedFormsTableData>;
+    formData: Promise<Paginated<FormTableData[]>>;
 };
 
 export function FormsTable({ formData }: Props) {

@@ -42,6 +42,7 @@ model FormResponse {
     id              String          @id @map("_id") @default(auto()) @db.ObjectId
     email           String?
     responses       Json
+    submission      DateTime        @default(now())
 
     formId          String          @db.ObjectId
     form            Form            @relation("FormResponses", fields: [formId], references: [id])

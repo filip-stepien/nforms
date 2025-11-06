@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 import {
     getPaginationMeta,
     getPaginationQueryParams,
-    PaginationMeta,
+    Paginated,
     PaginationParams
 } from '../../../lib/pagination';
 import { verifyUser } from '@/auth';
@@ -25,14 +25,9 @@ export type FormTableData = {
     };
 };
 
-export type PaginatedFormsTableData = {
-    data: FormTableData[];
-    pagination: PaginationMeta;
-};
-
-export async function getFormsTableData(
+export async function getFormsTableDataPaginated(
     pagination: PaginationParams
-): Promise<PaginatedFormsTableData> {
+): Promise<Paginated<FormTableData[]>> {
     const user = await verifyUser();
     const totalCount = await prisma.form.count();
     const forms = await prisma.form.findMany({
