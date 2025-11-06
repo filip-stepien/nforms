@@ -1,6 +1,6 @@
 import { Pagination } from '@mantine/core';
 import { usePaginationParamSetter } from '../../hooks/usePaginationParamSetter';
-import { PaginationMeta } from '../../lib/pagination';
+import { PaginationMeta } from '../../../../lib/pagination';
 
 type Props = {
     pagination: PaginationMeta;

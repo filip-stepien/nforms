@@ -6,7 +6,7 @@ import {
     getPaginationQueryParams,
     PaginationMeta,
     PaginationParams
-} from './pagination';
+} from '../../../lib/pagination';
 import { verifyUser } from '@/auth';
 import { prisma } from '@packages/db';
 import { debug_wait } from '@/lib/debug';

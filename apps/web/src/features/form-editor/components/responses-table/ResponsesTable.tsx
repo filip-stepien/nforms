@@ -2,14 +2,13 @@ import React, { useState } from 'react';
 import {
     useReactTable,
     getCoreRowModel,
-    getSortedRowModel,
-    getFilteredRowModel,
     flexRender,
     ColumnDef,
     SortingState,
-    ColumnFiltersState
+    ColumnFiltersState,
+    PaginationState
 } from '@tanstack/react-table';
-import { Table, Group, Stack, Pagination, Badge } from '@mantine/core';
+import { Table, Group, Stack, Pagination, Badge, Select } from '@mantine/core';
 import { FilterButton } from './header-buttons/FilterButton';
 import { SortButton } from './header-buttons/SortButton';
 import dayjs, { Dayjs } from 'dayjs';
@@ -152,19 +151,25 @@ const columns: ColumnDef<ResponseRow>[] = [
     }
 ];
 
+const pageCount = 10;
+
 export function ResponsesTable() {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+    const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 });
 
     const table = useReactTable({
         data,
         columns,
-        state: { sorting, columnFilters },
+        pageCount,
+        manualPagination: true,
+        manualFiltering: true,
+        manualSorting: true,
+        state: { sorting, columnFilters, pagination },
         onSortingChange: setSorting,
+        onPaginationChange: setPagination,
         onColumnFiltersChange: setColumnFilters,
-        getCoreRowModel: getCoreRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-        getFilteredRowModel: getFilteredRowModel()
+        getCoreRowModel: getCoreRowModel()
     });
 
     return (
@@ -206,7 +211,26 @@ export function ResponsesTable() {
                     ))}
                 </Table.Tbody>
             </Table>
-            <Pagination total={100} />
+            <Group>
+                <Pagination
+                    total={table.getPageCount()}
+                    value={table.getState().pagination.pageIndex + 1}
+                    onChange={page => table.setPageIndex(page - 1)}
+                />
+                <Select
+                    data={[
+                        { label: '5 / page', value: '5' },
+                        { label: '20 / page', value: '20' },
+                        { label: '50 / page', value: '50' },
+                        { label: '100 / page', value: '100' }
+                    ]}
+                    defaultValue='5'
+                    value={String(pagination.pageSize)}
+                    onChange={v => table.setPageSize(Number(v))}
+                    className='w-[120px]'
+                    allowDeselect={false}
+                />
+            </Group>
         </Stack>
     );
 }
