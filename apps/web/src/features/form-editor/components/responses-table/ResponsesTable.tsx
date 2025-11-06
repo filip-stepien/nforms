@@ -13,6 +13,9 @@ import { Table, Group, Stack, Pagination, Badge } from '@mantine/core';
 import { FilterButton } from './header-buttons/FilterButton';
 import { SortButton } from './header-buttons/SortButton';
 import dayjs, { Dayjs } from 'dayjs';
+import Link from 'next/link';
+import { IconExternalLink } from '@tabler/icons-react';
+import { ActionButton } from '../ui/ActionButton';
 
 export type CategoryRow = { name: string; color: string };
 
@@ -20,6 +23,7 @@ export type ResponseRow = {
     email: string;
     submission: number;
     category: CategoryRow[];
+    actionHref: string;
 };
 
 export type ResponseColumnFilterValues = {
@@ -38,6 +42,7 @@ const data: ResponseRow[] = [
     {
         email: 'a@a.com',
         submission: 1762190488,
+        actionHref: '/',
         category: [
             { name: 'angry', color: 'red' },
             { name: 'not angry', color: 'green' }
@@ -46,11 +51,13 @@ const data: ResponseRow[] = [
     {
         email: 'b@b.com',
         submission: 1762190488,
+        actionHref: '/',
         category: [{ name: 'angry', color: 'red' }]
     },
     {
         email: 'c@c.com',
         submission: 1762190488,
+        actionHref: '/',
         category: [
             { name: 'angry', color: 'red' },
             { name: 'not angry', color: 'green' }
@@ -59,16 +66,19 @@ const data: ResponseRow[] = [
     {
         email: 'a@a.com',
         submission: 1762190488,
+        actionHref: '/',
         category: [{ name: 'angry', color: 'red' }]
     },
     {
         email: 'b@b.com',
         submission: 1762190488,
+        actionHref: '/',
         category: [{ name: 'angry', color: 'red' }]
     },
     {
         email: 'c@c.com',
         submission: 1762190488,
+        actionHref: '/',
         category: [
             { name: 'angry', color: 'red' },
             { name: 'not angry', color: 'green' }
@@ -121,6 +131,24 @@ const columns: ColumnDef<ResponseRow>[] = [
                 ))}
             </Group>
         )
+    },
+    {
+        accessorKey: 'actionHref',
+        header: 'Actions',
+        enableColumnFilter: false,
+        enableSorting: false,
+        cell: ctx => (
+            <Link href={ctx.getValue<string>()}>
+                <ActionButton
+                    label='Open'
+                    icon={IconExternalLink}
+                    iconSize={18}
+                    variant='transparent'
+                    size='xs'
+                    className='px-0'
+                />
+            </Link>
+        )
     }
 ];
 
@@ -153,8 +181,12 @@ export function ResponsesTable() {
                                             header.getContext()
                                         )}
                                         <Group gap={0}>
-                                            <FilterButton header={header} />
-                                            <SortButton header={header} />
+                                            {header.column.getCanFilter() && (
+                                                <FilterButton header={header} />
+                                            )}
+                                            {header.column.getCanSort() && (
+                                                <SortButton header={header} />
+                                            )}
                                         </Group>
                                     </Group>
                                 </Table.Th>
