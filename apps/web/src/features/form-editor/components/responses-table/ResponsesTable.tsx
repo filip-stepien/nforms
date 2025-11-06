@@ -14,19 +14,21 @@ import { FilterButton } from './header-buttons/FilterButton';
 import { SortButton } from './header-buttons/SortButton';
 import dayjs, { Dayjs } from 'dayjs';
 
+export type CategoryRow = { name: string; color: string };
+
 export type ResponseRow = {
     email: string;
     submission: number;
-    category: string[];
+    category: CategoryRow[];
 };
-
-export type ResponseRowFilterType = 'text' | 'dateRange' | 'select';
 
 export type ResponseColumnFilterValues = {
-    text: string;
-    select: string[];
+    email: string;
+    category: string[];
     dateRange: { from: Dayjs | null; to: Dayjs | null };
 };
+
+export type ResponseRowFilterType = keyof ResponseColumnFilterValues;
 
 export type ResponseRowMeta = {
     filterType: ResponseRowFilterType;
@@ -36,17 +38,42 @@ const data: ResponseRow[] = [
     {
         email: 'a@a.com',
         submission: 1762190488,
-        category: ['angry', 'not angry']
+        category: [
+            { name: 'angry', color: 'red' },
+            { name: 'not angry', color: 'green' }
+        ]
     },
-    { email: 'b@b.com', submission: 1762190488, category: ['not angry'] },
-    { email: 'c@c.com', submission: 1762190488, category: ['neutral'] },
-    { email: 'a@a.com', submission: 1762190488, category: ['angry'] },
-    { email: 'b@b.com', submission: 1762190488, category: ['not angry'] },
-    { email: 'c@c.com', submission: 1762190488, category: ['neutral'] },
-    { email: 'a@a.com', submission: 1762190488, category: ['angry'] },
-    { email: 'b@b.com', submission: 1762190488, category: ['not angry'] },
-    { email: 'c@c.com', submission: 1762190488, category: ['neutral'] },
-    { email: 'c@c.com', submission: 1762190488, category: ['neutral'] }
+    {
+        email: 'b@b.com',
+        submission: 1762190488,
+        category: [{ name: 'angry', color: 'red' }]
+    },
+    {
+        email: 'c@c.com',
+        submission: 1762190488,
+        category: [
+            { name: 'angry', color: 'red' },
+            { name: 'not angry', color: 'green' }
+        ]
+    },
+    {
+        email: 'a@a.com',
+        submission: 1762190488,
+        category: [{ name: 'angry', color: 'red' }]
+    },
+    {
+        email: 'b@b.com',
+        submission: 1762190488,
+        category: [{ name: 'angry', color: 'red' }]
+    },
+    {
+        email: 'c@c.com',
+        submission: 1762190488,
+        category: [
+            { name: 'angry', color: 'red' },
+            { name: 'not angry', color: 'green' }
+        ]
+    }
 ];
 
 const columns: ColumnDef<ResponseRow>[] = [
@@ -54,7 +81,7 @@ const columns: ColumnDef<ResponseRow>[] = [
         accessorKey: 'email',
         header: 'Email',
         filterFn: 'includesString',
-        meta: { filterType: 'text' }
+        meta: { filterType: 'email' }
     },
     {
         accessorKey: 'submission',
@@ -78,12 +105,19 @@ const columns: ColumnDef<ResponseRow>[] = [
     {
         accessorKey: 'category',
         header: 'Category',
-        filterFn: 'arrIncludesAll',
-        meta: { filterType: 'select' },
+        meta: { filterType: 'category' },
+        filterFn: (row, columnId, filterValue: string[]) => {
+            if (!filterValue?.length) return true;
+            const categories = row.getValue<CategoryRow[]>(columnId);
+            const categoryNames = categories.map(c => c.name);
+            return filterValue.every(f => categoryNames.includes(f));
+        },
         cell: ctx => (
             <Group>
-                {ctx.getValue<string[]>().map((v, i) => (
-                    <Badge key={i}>{v}</Badge>
+                {ctx.getValue<CategoryRow[]>().map((v, i) => (
+                    <Badge key={i} color={v.color}>
+                        {v.name}
+                    </Badge>
                 ))}
             </Group>
         )

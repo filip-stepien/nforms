@@ -1,7 +1,7 @@
 import { Stack, TextInput } from '@mantine/core';
 import { DropdownControls } from './DropdownControls';
 import { Header } from '@tanstack/react-table';
-import { ResponseRow } from '../ResponsesTable';
+import { ResponseColumnFilterValues, ResponseRow } from '../ResponsesTable';
 import { useInputState } from '@mantine/hooks';
 
 type Props = {
@@ -9,8 +9,12 @@ type Props = {
     closeDropdown: () => void;
 };
 
-export function TextFilterDropdown({ header, closeDropdown }: Props) {
-    const initialText = (header.column.getFilterValue() ?? '') as string;
+export function EmailFilterDropdown({ header, closeDropdown }: Props) {
+    const filterValue = header.column.getFilterValue() as
+        | ResponseColumnFilterValues['email']
+        | undefined;
+
+    const initialText = filterValue ?? '';
     const [text, setText] = useInputState(initialText);
 
     const handleClear = () => {

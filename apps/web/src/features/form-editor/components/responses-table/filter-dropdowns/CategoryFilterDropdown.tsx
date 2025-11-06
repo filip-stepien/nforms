@@ -1,7 +1,7 @@
 import { MultiSelect, Stack } from '@mantine/core';
 import { DropdownControls } from './DropdownControls';
 import { Header } from '@tanstack/react-table';
-import { ResponseRow } from '../ResponsesTable';
+import { ResponseColumnFilterValues, ResponseRow } from '../ResponsesTable';
 import { useDisclosure } from '@mantine/hooks';
 import { useState } from 'react';
 
@@ -10,8 +10,12 @@ type Props = {
     closeDropdown: () => void;
 };
 
-export function SelectFilterDropdown({ header, closeDropdown }: Props) {
-    const initialSelected = (header.column.getFilterValue() ?? []) as string[];
+export function CategoryFilterDropdown({ header, closeDropdown }: Props) {
+    const filterValue = header.column.getFilterValue() as
+        | ResponseColumnFilterValues['category']
+        | undefined;
+
+    const initialSelected = filterValue ?? [];
     const [selected, setSelected] = useState<string[]>(initialSelected);
     const [opened, { toggle, close }] = useDisclosure(false);
 
@@ -37,9 +41,8 @@ export function SelectFilterDropdown({ header, closeDropdown }: Props) {
                 data={['angry', 'not angry']}
                 value={selected}
                 onChange={handleSelectedChange}
-                placeholder='Click or type to select...'
+                placeholder='Click to select...'
                 comboboxProps={{ withinPortal: false }}
-                hidePickedOptions
                 dropdownOpened={opened}
                 onClick={toggle}
                 searchable

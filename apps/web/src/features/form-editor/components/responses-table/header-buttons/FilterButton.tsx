@@ -1,11 +1,9 @@
 import { Popover, ActionIcon } from '@mantine/core';
-import { IconFilter, ReactNode } from '@tabler/icons-react';
+import { IconFilter } from '@tabler/icons-react';
 import { Header } from '@tanstack/react-table';
-import { ResponseRow, ResponseRowFilterType, ResponseRowMeta } from '../ResponsesTable';
-import { TextFilterDropdown } from '../filter-dropdowns/TextFilterDropdown';
-import { DateTimeRangeFilterDropdown } from '../filter-dropdowns/DateTimeRangeFilterDropdown';
-import { SelectFilterDropdown } from '../filter-dropdowns/SelectFilterDropdown';
+import { ResponseRow } from '../ResponsesTable';
 import { useDisclosure } from '@mantine/hooks';
+import { FilterDropdown } from '../filter-dropdowns/FilterDropdown';
 
 type Props = {
     header: Header<ResponseRow, unknown>;
@@ -13,13 +11,6 @@ type Props = {
 
 export function FilterButton({ header }: Props) {
     const [opened, { toggle, close }] = useDisclosure(false);
-
-    const columnMeta = header.column.columnDef.meta as ResponseRowMeta;
-    const dropdowns: Record<ResponseRowFilterType, ReactNode> = {
-        text: <TextFilterDropdown header={header} closeDropdown={close} />,
-        select: <SelectFilterDropdown header={header} closeDropdown={close} />,
-        dateRange: <DateTimeRangeFilterDropdown header={header} closeDropdown={close} />
-    };
 
     return (
         <Popover
@@ -40,7 +31,9 @@ export function FilterButton({ header }: Props) {
                     <IconFilter size={16} />
                 </ActionIcon>
             </Popover.Target>
-            <Popover.Dropdown>{dropdowns[columnMeta.filterType]}</Popover.Dropdown>
+            <Popover.Dropdown>
+                <FilterDropdown header={header} closeDropdown={close} />
+            </Popover.Dropdown>
         </Popover>
     );
 }
