@@ -1,5 +1,4 @@
 import { FormEditor } from '@/features/form-editor/components/FormEditor';
-import { paginationParamNames } from '@/features/form-editor/components/responses-table/ResponsesTable';
 import { getFormById, getResponsesByFormIdPaginated } from '@/features/form-editor/lib/data';
 import { deserializeState } from '@/lib/data';
 import { getPaginationSearchParams } from '@/lib/pagination';
@@ -13,10 +12,10 @@ type Props = {
 
 export default async function FormDetailsPage({ params, searchParams }: Props) {
     const { id } = await params;
-    const pagination = getPaginationSearchParams(await searchParams, paginationParamNames);
+    const pagination = getPaginationSearchParams(await searchParams);
 
     const form = await getFormById(id);
-    const responses = getResponsesByFormIdPaginated(id, pagination);
+    const responses = getResponsesByFormIdPaginated(id);
     const preloadedState = deserializeState(form);
 
     return (

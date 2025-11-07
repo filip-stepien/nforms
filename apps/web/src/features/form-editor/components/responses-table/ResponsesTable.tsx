@@ -9,14 +9,14 @@ import {
     SortingState,
     ColumnFiltersState
 } from '@tanstack/react-table';
-import { Table, Group, Stack, Pagination, Badge, Select, Button } from '@mantine/core';
+import { Table, Group, Stack, Pagination, Badge, Select } from '@mantine/core';
 import { FilterButton } from './header-buttons/FilterButton';
 import { SortButton } from './header-buttons/SortButton';
 import dayjs, { Dayjs } from 'dayjs';
 import Link from 'next/link';
 import { IconExternalLink } from '@tabler/icons-react';
 import { ActionButton } from '../ui/ActionButton';
-import { Paginated, PaginationParamNames } from '@/lib/pagination';
+import { Paginated } from '@/lib/pagination';
 import { FormResponse } from '@packages/db/schemas/form-responses';
 import { usePaginationParamSetter } from '@/hooks/usePaginationParamSetter';
 
@@ -124,13 +124,8 @@ const columns: ColumnDef<ResponseRow>[] = [
     }
 ];
 
-export const paginationParamNames: PaginationParamNames = {
-    page: 'responsesPage',
-    pageSize: 'responsesPageSize'
-};
-
 export function ResponsesTable({ responses }: Props) {
-    const { setPage, setPageSize } = usePaginationParamSetter(paginationParamNames);
+    const { setPage, setPageSize } = usePaginationParamSetter();
     const { data, pagination } = use(responses);
 
     const [sorting, setSorting] = useState<SortingState>([]);
@@ -189,9 +184,8 @@ export function ResponsesTable({ responses }: Props) {
                 </Table.Tbody>
             </Table>
             <Group>
-                <Button onClick={() => setPage(2)}>Page</Button>
                 <Pagination
-                    total={pagination.totalCount}
+                    total={pagination.totalPages}
                     value={pagination.currentPage}
                     onChange={setPage}
                 />
@@ -202,7 +196,7 @@ export function ResponsesTable({ responses }: Props) {
                         { label: '50 / page', value: '50' },
                         { label: '100 / page', value: '100' }
                     ]}
-                    defaultValue='5'
+                    defaultValue='10'
                     value={String(pagination.pageSize)}
                     onChange={v => setPageSize(Number(v))}
                     className='w-[120px]'
