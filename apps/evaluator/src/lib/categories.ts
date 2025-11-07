@@ -1,4 +1,10 @@
 import { Form } from '@packages/db/schemas/form/form';
+import {
+    findFirstCategoryRuleGroupById,
+    findFirstCategoryRuleById,
+    findFirstCategoryRuleRelationByCategoryId
+} from './query';
+import { EvaluatedCategory, EvaluatedField } from '@packages/db/schemas/form-responses';
 
 export type CategoryContext = {
     categoryId: string;
@@ -7,9 +13,9 @@ export type CategoryContext = {
 
 export type CategoryRuleLog = {
     type: 'rule';
-    leftValue: number;
     operator: string;
-    rightValue: number;
+    ruleValue: number;
+    actualValue: number;
     result: boolean;
 };
 
@@ -20,157 +26,112 @@ export type CategoryRuleGroupLog = {
     logs: (CategoryRuleLog | CategoryRuleGroupLog)[];
 };
 
-export type CategoryRuleEvalFunction = (context: CategoryContext[]) => CategoryRuleLog;
-
-export type CategoryRuleGroupEvalFunction = (context: CategoryContext[]) => CategoryRuleGroupLog;
-
-function findCategoryById(categoryId: string, form: Form) {
-    const category = form.respondentCategories.find(c => c.id === categoryId);
-
-    if (!category) {
-        throw new Error(`Category ${categoryId} not found`);
-    }
-
-    return category;
-}
-
-function findCategoryRuleById(ruleId: string, form: Form) {
-    const rule = form.respondentCategoryRules.rules.find(r => r.id === ruleId);
-
-    if (!rule) {
-        throw new Error(`Category rule ${ruleId} not found`);
-    }
-
-    return rule;
-}
-
-function findCategoryRuleGroupById(groupId: string, form: Form) {
-    const group = form.respondentCategoryRules.groups.find(g => g.id === groupId);
-
-    if (!group) {
-        throw new Error(`Category rule group ${groupId} not found`);
-    }
-
-    return group;
-}
-
-function findCategoryContext(categoryId: string, context: CategoryContext[]) {
-    const categroyContext = context.find(ctx => ctx.categoryId === categoryId);
-
-    if (!categroyContext) {
-        throw new Error(`Cannot resolve context for category ${categoryId}`);
-    }
-
-    return categroyContext;
-}
-
-function resolveCategoryRuleOperator(operator: string, expectedValue: number, actualValue: number) {
+function resolveCategoryRuleOperator(operator: string, ruleValue: number, actualValue: number) {
     switch (operator) {
         case 'is greater than':
-            return actualValue > expectedValue;
+            return actualValue > ruleValue;
         case 'is less than':
-            return actualValue < expectedValue;
+            return actualValue < ruleValue;
         case 'equals':
-            return actualValue === expectedValue;
+            return actualValue === ruleValue;
         default:
             throw new Error(`Unknown category rule operator: ${operator}`);
     }
 }
 
-function getCategoryRuleEvaluator(ruleId: string, form: Form): CategoryRuleEvalFunction {
-    const rule = findCategoryRuleById(ruleId, form);
-
-    const evaluate: CategoryRuleEvalFunction = context => {
-        const categoryContext = findCategoryContext(rule.categoryId, context);
-        const expectedValue = rule.value;
-        const actualValue = categoryContext.value;
-
-        return {
-            type: 'rule',
-            leftValue: actualValue,
-            operator: rule.operator,
-            rightValue: expectedValue,
-            result: resolveCategoryRuleOperator(rule.operator, expectedValue, actualValue)
-        };
+function evaluateCategoryRule(ruleId: string, form: Form, actualValue: number): CategoryRuleLog {
+    const rule = findFirstCategoryRuleById(ruleId, form);
+    return {
+        type: 'rule',
+        operator: rule.operator,
+        ruleValue: rule.value,
+        actualValue,
+        result: resolveCategoryRuleOperator(rule.operator, rule.value, actualValue)
     };
-
-    return evaluate;
 }
 
 function resolveCategoryRuleGroupOperator(
-    children: (CategoryRuleEvalFunction | CategoryRuleGroupEvalFunction)[],
-    combinator: string,
-    context: CategoryContext[]
+    children: (CategoryRuleLog | CategoryRuleGroupLog)[],
+    combinator: string
 ) {
-    const logs: (CategoryRuleLog | CategoryRuleGroupLog)[] = [];
-    let result = false;
-
-    const evaluateChildren = (fn: CategoryRuleEvalFunction | CategoryRuleGroupEvalFunction) => {
-        const log = fn(context);
-        logs.push(log);
-        return log.result;
-    };
-
     switch (combinator) {
         case 'AND':
-            result = children.every(evaluateChildren);
-            break;
+            return children.every(c => c.result);
         case 'OR':
-            result = children.some(evaluateChildren);
-            break;
+            return children.some(c => c.result);
         default:
-            throw new Error(`Unknown field rule group combinator ${combinator}`);
+            throw new Error(`Unknown category rule group combinator ${combinator}`);
     }
-
-    return { result, logs };
 }
 
-export function getCategoryRuleGroupEvaluator(
+export function evaluateCategoryRuleGroup(
     groupId: string,
+    form: Form,
+    actualValue: number
+): CategoryRuleGroupLog {
+    const group = findFirstCategoryRuleGroupById(groupId, form);
+
+    const childGroupRuleLogs = group.childrenGroups.map(id =>
+        evaluateCategoryRuleGroup(id, form, actualValue)
+    );
+    const childRuleLogs = group.childrenRules.map(id =>
+        evaluateCategoryRule(id, form, actualValue)
+    );
+
+    const childrenLogs = [...childGroupRuleLogs, ...childRuleLogs];
+
+    return {
+        type: 'group',
+        result: resolveCategoryRuleGroupOperator(childrenLogs, group.combinator),
+        combinator: group.combinator,
+        logs: childrenLogs
+    };
+}
+
+export function evaluateCategories(
+    evaluatedFields: EvaluatedField[],
     form: Form
-): CategoryRuleGroupEvalFunction {
-    const group = findCategoryRuleGroupById(groupId, form);
+): EvaluatedCategory[] {
+    const categoriesMap = new Map(
+        form.respondentCategories.map(category => [
+            category.category,
+            {
+                categoryId: category.id,
+                categoryName: category.category,
+                categoryColor: category.color,
+                points: 0,
+                assigned: false,
+                logs: []
+            }
+        ])
+    );
 
-    const childGroups = group.childrenGroups.map(id => getCategoryRuleGroupEvaluator(id, form));
-    const childRules = group.childrenRules.map(id => getCategoryRuleEvaluator(id, form));
-    const children = [...childGroups, ...childRules];
+    for (const evaluatedField of evaluatedFields) {
+        const categoryName = evaluatedField.score.category.name;
+        const categoryEntry = categoriesMap.get(categoryName);
+        if (evaluatedField.score.result) {
+            categoryEntry.points += evaluatedField.score.points;
+        }
+    }
 
-    const evaluate: CategoryRuleGroupEvalFunction = context => {
-        const { result, logs } = resolveCategoryRuleGroupOperator(
-            children,
-            group.combinator,
-            context
+    const scoredCategories = Array.from(categoriesMap.values());
+
+    return scoredCategories.map(scoredCategory => {
+        const relation = findFirstCategoryRuleRelationByCategoryId(scoredCategory.categoryId, form);
+        const rootGroupLog = evaluateCategoryRuleGroup(
+            relation.rootGroupId,
+            form,
+            scoredCategory.points
         );
 
         return {
-            type: 'group',
-            result,
-            combinator: group.combinator,
-            logs
-        };
-    };
-
-    return evaluate;
-}
-
-export function evaluateCategories(context: CategoryContext[], form: Form) {
-    return form.respondentCategoryRules.relations.map(({ categoryId, rootGroupId }) => {
-        const evaluate = getCategoryRuleGroupEvaluator(rootGroupId, form);
-        const evaluationResult = evaluate(context);
-        const totalScore = findCategoryContext(categoryId, context).value ?? 0;
-
-        return {
-            categoryName: findCategoryById(categoryId, form).category,
-            totalScore,
-            assigned: evaluationResult.result,
-            logs: evaluationResult
+            category: {
+                name: scoredCategory.categoryName,
+                color: scoredCategory.categoryColor
+            },
+            points: scoredCategory.points,
+            assigned: rootGroupLog.result,
+            logs: [rootGroupLog]
         };
     });
-}
-
-export function getCategoryEvaluationContext(form: Form): CategoryContext[] {
-    return form.respondentCategories.map(({ id }) => ({
-        categoryId: id,
-        value: 0
-    }));
 }

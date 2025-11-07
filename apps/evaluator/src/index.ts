@@ -1,13 +1,10 @@
 import { createWorker, WorkerHandler } from '@packages/queue';
-import { getResponses } from './lib/responses';
-import { saveFormResponse } from './lib/data';
+import { evaluateResponses, saveFormResponse } from './lib/responses';
 
 const workerHandler: WorkerHandler = async ({ data }) => {
     const { email, form, responses } = data;
-    await saveFormResponse(form.id, {
-        email,
-        responses: await getResponses(responses, form)
-    });
+    const evaluatedResponses = await evaluateResponses(responses, form);
+    await saveFormResponse(form.id, { email, ...evaluatedResponses });
 };
 
 const worker = createWorker(workerHandler);

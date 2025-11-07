@@ -46,15 +46,13 @@ type Props = {
 };
 
 function getRowsFromData(data: FormResponse[]): ResponseRow[] {
-    return data.map(({ email, responses, submission }) => ({
-        email: email ?? 'Anonymous',
+    return data.map(entry => ({
+        email: entry.email ?? 'Anonymous',
         actionHref: '/',
-        submission: dayjs(submission).unix(),
-        category: responses.flatMap(response =>
-            response.categoryRuleLogs
-                .filter(category => category.assigned)
-                .map(category => ({ name: category.categoryName, color: 'blue' }))
-        )
+        submission: dayjs(entry.submission).unix(),
+        category: entry.categoryRules
+            .filter(category => category.assigned)
+            .map(({ category }) => category)
     }));
 }
 

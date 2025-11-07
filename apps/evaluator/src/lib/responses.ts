@@ -1,42 +1,38 @@
-import { Form } from '@packages/db/schemas/form/form';
-import { evaluateCategories, getCategoryEvaluationContext } from './categories';
 import { FieldRawResponse } from '@packages/queue';
+import { Form } from '@packages/db/schemas/form/form';
+import { findFirstFieldById } from './query';
+import { evaluateFields } from './fields';
+import { evaluateCategories } from './categories';
 import {
-    evaluateFields,
-    findFieldById,
-    findFieldScoreEvaluatorGroupByFieldId,
-    getFieldCategoryScoreEvaluators,
-    getFieldEvaluationContext,
-    resolveFieldValue
-} from './fields';
+    EvaluatedCategory,
+    EvaluatedResponse,
+    FormResponse
+} from '@packages/db/schemas/form-responses';
+import { prisma } from '@packages/db';
 
-import { FieldResponse } from '@packages/db/schemas/form-responses';
-
-export async function getResponses(
-    responses: FieldRawResponse[],
+export async function evaluateResponses(
+    rawResponses: FieldRawResponse[],
     form: Form
-): Promise<FieldResponse[]> {
-    const categoryScoreEvals = getFieldCategoryScoreEvaluators(responses, form);
-    const fieldCtx = await getFieldEvaluationContext(responses);
-    const categoryCtx = getCategoryEvaluationContext(form);
+): Promise<{ responses: EvaluatedResponse[]; categoryRules: EvaluatedCategory[] }> {
+    const responses = await Promise.all(
+        rawResponses.map(async response => ({
+            fieldTitle: findFirstFieldById(response.fieldId, form).title,
+            response: response.response,
+            fieldRules: await evaluateFields(response, form)
+        }))
+    );
 
-    return responses.map(({ fieldId, response }) => {
-        const field = findFieldById(fieldId, form);
-        const { categoryEvals } = findFieldScoreEvaluatorGroupByFieldId(
-            fieldId,
-            categoryScoreEvals
-        );
+    const categoryRules = evaluateCategories(
+        responses.flatMap(r => r.fieldRules),
+        form
+    );
 
-        const { scores, logs: fieldLogs } = evaluateFields(categoryEvals, fieldCtx, categoryCtx);
-        const categoryLogs = evaluateCategories(scores, form);
+    return { responses, categoryRules };
+}
 
-        return {
-            fieldTitle: field.title,
-            categoryRuleLogs: categoryLogs,
-            fieldRuleLogs: fieldLogs,
-            response: Array.isArray(response)
-                ? response.map(res => resolveFieldValue(res, field, form))
-                : resolveFieldValue(response, field, form)
-        };
-    });
+export async function saveFormResponse(
+    formId: string,
+    formResponse: Omit<FormResponse, 'id' | 'submission'>
+) {
+    await prisma.formResponse.create({ data: { formId, ...formResponse } });
 }
