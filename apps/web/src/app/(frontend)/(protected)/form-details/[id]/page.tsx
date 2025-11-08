@@ -1,9 +1,10 @@
 import { FormEditor } from '@/features/form-editor/components/FormEditor';
-import { getFormById, getResponsesByFormIdPaginated } from '@/features/form-editor/lib/data';
-import { deserializeState } from '@/lib/data';
+import { findAllResponsesByFormIdPaginated } from '@/features/form-editor/lib/data';
+import { deserializeState, findFirstFormById } from '@/lib/data';
 import { getPaginationSearchParams } from '@/lib/pagination';
 import StoreProvider from '@/providers/StoreProvider';
 import { env } from '@packages/env';
+import { notFound } from 'next/navigation';
 
 type Props = {
     params: Promise<{ id: string }>;
@@ -14,19 +15,23 @@ export default async function FormDetailsPage({ params, searchParams }: Props) {
     const { id } = await params;
     const pagination = getPaginationSearchParams(await searchParams);
 
-    const form = await getFormById(id);
-    const responses = getResponsesByFormIdPaginated(id);
-    const preloadedState = deserializeState(form);
+    try {
+        const form = await findFirstFormById(id);
+        const responses = findAllResponsesByFormIdPaginated(id);
+        const preloadedState = deserializeState(form);
 
-    return (
-        <StoreProvider preloadedState={preloadedState}>
-            <FormEditor
-                formId={id}
-                createdAt={form.createdAt}
-                baseUrl={env.BASE_URL}
-                responses={responses}
-                suspenseKey={pagination.suspenseKey}
-            />
-        </StoreProvider>
-    );
+        return (
+            <StoreProvider preloadedState={preloadedState}>
+                <FormEditor
+                    formId={id}
+                    createdAt={form.createdAt}
+                    baseUrl={env.BASE_URL}
+                    responses={responses}
+                    suspenseKey={pagination.suspenseKey}
+                />
+            </StoreProvider>
+        );
+    } catch {
+        notFound();
+    }
 }

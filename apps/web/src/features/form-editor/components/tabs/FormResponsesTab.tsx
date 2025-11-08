@@ -8,12 +8,11 @@ import { Suspense } from 'react';
 import { Loading } from '@/components/Loading';
 
 type Props = {
-    formId: string;
     responses: Promise<Paginated<FormResponse[]>>;
     suspenseKey: string;
 };
 
-export function FormResponsesTab({ formId, responses, suspenseKey }: Props) {
+export function FormResponsesTab({ responses, suspenseKey }: Props) {
     return (
         <Stack gap={50}>
             <Stack gap='lg'>

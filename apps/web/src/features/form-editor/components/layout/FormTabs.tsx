@@ -86,7 +86,6 @@ FormTabs.ResponsesTab = function ResponsesTab() {
 };
 
 FormTabs.ResponsesPanel = function ResponsesPanel(props: {
-    formId: string;
     responses: Promise<Paginated<FormResponse[]>>;
     suspenseKey: string;
 }) {

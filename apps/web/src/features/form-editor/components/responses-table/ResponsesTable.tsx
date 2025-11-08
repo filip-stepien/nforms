@@ -48,7 +48,7 @@ type Props = {
 function getRowsFromData(data: FormResponse[]): ResponseRow[] {
     return data.map(entry => ({
         email: entry.email ?? 'Anonymous',
-        actionHref: '/',
+        actionHref: '/response-details/' + entry.id,
         submission: dayjs(entry.submission).unix(),
         category: entry.categoryRules
             .filter(category => category.assigned)

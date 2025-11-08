@@ -46,11 +46,7 @@ export function FormEditor({ formId, baseUrl, createdAt, responses, suspenseKey 
                     <FormTabs.CategoriesTab />
                     <FormTabs.SettingsTab />
                 </FormTabs.Tabs>
-                <FormTabs.ResponsesPanel
-                    formId={formId}
-                    responses={responses}
-                    suspenseKey={suspenseKey}
-                />
+                <FormTabs.ResponsesPanel responses={responses} suspenseKey={suspenseKey} />
                 <FormTabs.QuestionsPanel />
                 <FormTabs.CategoriesPanel />
                 <FormTabs.SettingsPanel />

@@ -1,7 +1,7 @@
 import { FieldRawResponse } from '@packages/queue';
 import { Form } from '@packages/db/schemas/form/form';
 import { findFirstFieldById } from './query';
-import { evaluateFields } from './fields';
+import { evaluateFields, resolveFieldValue } from './fields';
 import { evaluateCategories } from './categories';
 import {
     EvaluatedCategory,
@@ -15,11 +15,17 @@ export async function evaluateResponses(
     form: Form
 ): Promise<{ responses: EvaluatedResponse[]; categoryRules: EvaluatedCategory[] }> {
     const responses = await Promise.all(
-        rawResponses.map(async response => ({
-            fieldTitle: findFirstFieldById(response.fieldId, form).title,
-            response: response.response,
-            fieldRules: await evaluateFields(response, form)
-        }))
+        rawResponses.map(async response => {
+            const field = findFirstFieldById(response.fieldId, form);
+
+            return {
+                fieldTitle: findFirstFieldById(response.fieldId, form).title,
+                response: Array.isArray(response.response)
+                    ? response.response.map(r => resolveFieldValue(r, field, form))
+                    : resolveFieldValue(response.response, field, form),
+                fieldRules: await evaluateFields(response, form)
+            };
+        })
     );
 
     const categoryRules = evaluateCategories(

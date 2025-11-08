@@ -1,5 +1,5 @@
 import 'server-only';
-import { Form } from '@packages/db/schemas/form/form';
+import { Form, FormSchema } from '@packages/db/schemas/form/form';
 import { RootState } from './store';
 import { verifyUser } from '@/auth';
 import { prisma } from '@packages/db';
@@ -67,4 +67,10 @@ export async function saveForm(state: RootState, formId?: string) {
     return formId
         ? await prisma.form.update({ data, where: { id: formId } })
         : await prisma.form.create({ data });
+}
+
+export async function findFirstFormById(id: string): Promise<Form> {
+    await verifyUser();
+    const form = await prisma.form.findFirstOrThrow({ where: { id } });
+    return FormSchema.parse(form);
 }

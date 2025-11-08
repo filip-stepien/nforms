@@ -1,5 +1,6 @@
 import { Form } from '@/features/form-display/components/Form';
-import { findFirstFormById, parseForm } from '@/features/form-display/lib/data';
+import { parseForm } from '@/features/form-display/lib/data';
+import { findFirstFormById } from '@/lib/data';
 import { notFound } from 'next/navigation';
 
 type Props = {

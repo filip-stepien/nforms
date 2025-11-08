@@ -12,13 +12,7 @@ import {
 } from '@/lib/pagination';
 import { debug_wait } from '@/lib/debug';
 
-export async function getFormById(id: string): Promise<Form> {
-    await verifyUser();
-    const form = await prisma.form.findFirstOrThrow({ where: { id } });
-    return FormSchema.parse(form);
-}
-
-export async function getResponsesByFormIdPaginated(
+export async function findAllResponsesByFormIdPaginated(
     formId: string,
     pagination: PaginationParams = defaultPaginationParams
 ): Promise<Paginated<FormResponse[]>> {

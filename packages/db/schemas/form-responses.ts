@@ -77,6 +77,7 @@ export const EvaluatedResponseSchema = z.object({
 
 export const FormResponseSchema = z.object({
     id: z.string(),
+    formId: z.string(),
     email: z.string().nullable(),
     submission: z.date(),
     responses: z.array(EvaluatedResponseSchema),

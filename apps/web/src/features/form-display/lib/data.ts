@@ -1,12 +1,12 @@
 import 'server-only';
-import { createJob, FieldResponse } from '@packages/queue';
+import { createJob, FieldRawResponse } from '@packages/queue';
 import { Field, FieldType } from '@packages/db/schemas/form/form-fields';
 import { uniqueArray, enumValues } from './utils';
 import { LanguageProcessing } from '@packages/db/schemas/nlp';
-import { Form, FormSchema, FormSettings } from '@packages/db/schemas/form/form';
-import { prisma } from '@packages/db';
+import { Form, FormSettings } from '@packages/db/schemas/form/form';
 import { FieldOption } from '@packages/db/schemas/form/field-options';
 import { FieldSettingsMap } from '@packages/db/schemas/form/field-settings';
+import { findFirstFormById } from '@/lib/data';
 
 export type ParsedField =
     | {
@@ -42,21 +42,6 @@ export type RawFieldResponse =
           fieldType: FieldType.SELECTION;
           response: string | string[];
       };
-
-export async function findFirstFormById(formId: string): Promise<Form> {
-    const form = await prisma.form.findFirstOrThrow({ where: { id: formId } });
-    const parseResult = FormSchema.safeParse(form);
-
-    if (!parseResult.success) {
-        console.error(
-            `Form parse error. Issues: \n${JSON.stringify(parseResult.error.issues, null, 2)}`
-        );
-
-        throw new Error('Invalid form data');
-    }
-
-    return parseResult.data;
-}
 
 export function parseFormField(form: Form, field: Field): ParsedField {
     const fieldSettings = form.fieldSettings.find(s => s.fieldId === field.id);
@@ -103,7 +88,7 @@ export async function parseForm(form: Form): Promise<ParsedForm> {
     };
 }
 
-function parseFieldConditions(form: Form, raw: RawFieldResponse): FieldResponse {
+function parseFieldConditions(form: Form, raw: RawFieldResponse): FieldRawResponse {
     const { fieldType, fieldId } = raw;
 
     switch (fieldType) {
