@@ -27,7 +27,7 @@
     --spacing-xl: calc(2rem * var(--mantine-scale));
     --spacing-2xl: calc(3rem * var(--mantine-scale));
 
-    --font-sans: var(--font-roboto-sans);
+    --font-roboto: var(--font-roboto);
 }
 
 body {

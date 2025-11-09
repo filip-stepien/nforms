@@ -1,9 +1,15 @@
 import '@/styles/globals.css';
 import '@mantine/charts/styles.css';
 import '@mantine/dates/styles.css';
+import { Roboto } from 'next/font/google';
 
 import { ColorSchemeScript, mantineHtmlProps, MantineProvider } from '@mantine/core';
 import { Toaster } from 'react-hot-toast';
+
+const roboto = Roboto({
+    subsets: ['latin'],
+    variable: '--font-roboto'
+});
 
 export const metadata = {
     title: 'Next.js',
@@ -12,7 +18,7 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
-        <html lang='en' {...mantineHtmlProps}>
+        <html lang='en' {...mantineHtmlProps} className={roboto.className}>
             <head>
                 <ColorSchemeScript />
             </head>

@@ -46,7 +46,7 @@ export const FormField = memo(function FormField({ index, fieldId }: Props) {
                 <Stack
                     ref={provided.innerRef}
                     {...provided.draggableProps}
-                    className='mb-sm border-outline p-lg flex-2 rounded-md border-1 bg-neutral-100'
+                    className='mb-sm border-outline pl-md py-lg pr-lg flex-2 rounded-md border-1 bg-neutral-100'
                 >
                     <Flex align='end' gap='sm'>
                         <DragButton
