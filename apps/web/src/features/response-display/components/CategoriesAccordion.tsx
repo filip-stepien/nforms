@@ -3,6 +3,8 @@ import { Accordion, Badge, Group, Stack } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { FormResponse } from '@packages/db/schemas/form-responses';
 import { IconChevronUp, IconChevronDown } from '@tabler/icons-react';
+import { CategoryAssignment } from './CategoryAssignment';
+import { CategoryResultsTable } from './CategoryResultsTable';
 
 type Props = {
     formResponse: FormResponse;
@@ -40,9 +42,13 @@ export function CategoriesAccordion({ formResponse }: Props) {
                         <div className='px-sm py-sm w-[180px] bg-neutral-50 font-bold'>
                             Assigned categories
                         </div>
-                        <div className='px-sm w-full flex-1 py-2'>
-                            {assignedCategories.length > 0 ? assignedCategories : '<None>'}
-                        </div>
+                        <Group gap='sm' className='px-sm w-full flex-1 py-2'>
+                            {assignedCategories.length > 0 ? (
+                                assignedCategories
+                            ) : (
+                                <span className='italic'>{'<None>'}</span>
+                            )}
+                        </Group>
                         <ActionButton
                             variant='transparent'
                             icon={opened ? IconChevronUp : IconChevronDown}
@@ -53,8 +59,19 @@ export function CategoriesAccordion({ formResponse }: Props) {
                     </Group>
                 </Accordion.Control>
                 <Accordion.Panel>
-                    <Stack>
+                    <Stack className='p-sm pt-2'>
+                        <span className='text-xs font-bold'>Total category scores</span>
+                        <CategoryResultsTable formResponse={formResponse} />
                         <span className='text-xs font-bold'>Category assignment breakdown</span>
+                        {formResponse.categoryRules.length > 0 ? (
+                            formResponse.categoryRules.map((rule, i) => (
+                                <CategoryAssignment key={i} rule={rule} />
+                            ))
+                        ) : (
+                            <span className='text-font-tertiary text-xs'>
+                                This question does not contain any category assignment rules.
+                            </span>
+                        )}
                     </Stack>
                 </Accordion.Panel>
             </Accordion.Item>

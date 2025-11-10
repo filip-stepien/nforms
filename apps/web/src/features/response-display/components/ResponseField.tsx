@@ -53,9 +53,15 @@ export function ResponseField({ index, response, formResponse }: Props) {
                         <ScoringResultsTable formResponse={formResponse} response={response} />
                         <span className='text-xs font-bold'>Category scoring breakdown</span>
                         <Stack gap='md'>
-                            {response.fieldRules.map((rule, i) => (
-                                <ScoringAction rule={rule} key={i} />
-                            ))}
+                            {response.fieldRules.length > 0 ? (
+                                response.fieldRules.map((rule, i) => (
+                                    <ScoringAction rule={rule} key={i} />
+                                ))
+                            ) : (
+                                <span className='text-font-tertiary text-xs'>
+                                    This question does not contain any category scoring rules.
+                                </span>
+                            )}
                         </Stack>
                     </Stack>
                 </Accordion.Panel>

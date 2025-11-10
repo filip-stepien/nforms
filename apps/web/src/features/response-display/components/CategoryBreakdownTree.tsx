@@ -1,14 +1,14 @@
 import { cn } from '@/lib/utils';
 import { Stack, Badge, Group, Notification } from '@mantine/core';
-import { FieldRuleLog, FieldRuleGroupLog } from '@packages/db/schemas/form-responses';
+import { CategoryRuleGroupLog, CategoryRuleLog } from '@packages/db/schemas/form-responses';
 import { IconCircleCheckFilled, IconCircleXFilled } from '@tabler/icons-react';
 
 type Props = {
-    log: FieldRuleLog | FieldRuleGroupLog;
+    log: CategoryRuleLog | CategoryRuleGroupLog;
     hasBackground?: boolean;
 };
 
-export function ScoringBreakdownTree({ log, hasBackground = false }: Props) {
+export function CategoryBreakdownTree({ log, hasBackground = false }: Props) {
     if (log.type === 'group') {
         return (
             <Notification
@@ -27,11 +27,7 @@ export function ScoringBreakdownTree({ log, hasBackground = false }: Props) {
                         })
                         .map((child, i) => (
                             <Stack key={i} gap='sm'>
-                                <ScoringBreakdownTree
-                                    key={i}
-                                    log={child}
-                                    hasBackground={!hasBackground}
-                                />
+                                <CategoryBreakdownTree log={child} hasBackground={!hasBackground} />
                                 {i < log.logs.length - 1 && (
                                     <Badge
                                         className='rounded-sm'
@@ -56,11 +52,8 @@ export function ScoringBreakdownTree({ log, hasBackground = false }: Props) {
                 <IconCircleXFilled color='var(--mantine-color-red-filled)' size={18} />
             )}
             <Group gap='sm'>
-                <Badge className='rounded-sm' variant='light' color='dark'>
-                    {log.targetFieldTitle}
-                </Badge>
-                <Badge className='rounded-sm' variant='default'>
-                    {log.condition}
+                <Badge className='rounded-sm' variant='default' color='dark'>
+                    SCORE
                 </Badge>
                 <Badge className='rounded-sm' variant='default'>
                     {log.operator}
