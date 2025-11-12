@@ -1,5 +1,3 @@
-'use client';
-
 import { use } from 'react';
 import { FormsTablePagination } from './FormsTablePagination';
 import { Flex, Table } from '@mantine/core';

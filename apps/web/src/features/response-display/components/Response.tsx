@@ -6,6 +6,7 @@ import { ActionButton } from '@/features/form-editor/components/ui/ActionButton'
 import { ResponseDetails } from './ResponseDetails';
 import { IconMessageCircleSearch, IconTrash } from '@tabler/icons-react';
 import { ResponseField } from './ResponseField';
+import { SectionTitle } from '@/components/SectionTitle';
 
 type Props = {
     formResponse: FormResponse;
@@ -15,10 +16,9 @@ export function Response({ formResponse }: Props) {
     return (
         <Stack>
             <Group justify='space-between'>
-                <Group gap='sm'>
-                    <IconMessageCircleSearch stroke={1.5} />
-                    <h1 className='text-2xl font-bold'>Response details</h1>
-                </Group>
+                <SectionTitle icon={IconMessageCircleSearch} withBackButton bottom={0}>
+                    Response details
+                </SectionTitle>
                 <ActionButton icon={IconTrash} label='Delete' color='red' variant='light' />
             </Group>
             <ResponseDetails formResponse={formResponse} />

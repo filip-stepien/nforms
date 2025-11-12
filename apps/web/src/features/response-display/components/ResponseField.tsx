@@ -21,7 +21,7 @@ export function ResponseField({ index, response, formResponse }: Props) {
         <Accordion
             variant='separated'
             classNames={{
-                item: 'bg-neutral-50 border-outline p-xxs hover:bg-neutral-100',
+                item: 'bg-neutral-50 border-outline p-xxs',
                 chevron: 'hidden',
                 control: 'cursor-default'
             }}

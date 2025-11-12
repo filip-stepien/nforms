@@ -12,6 +12,8 @@ import { useFormSaveAction } from '../hooks/useFormSaveAction';
 import { FormTabs } from './layout/FormTabs';
 import { FormResponse } from '@packages/db/schemas/form-responses';
 import { Paginated } from '@/lib/pagination';
+import { SectionTitle } from '@/components/SectionTitle';
+import { IconFileDescription } from '@tabler/icons-react';
 
 type Props = {
     formId: string;
@@ -26,6 +28,9 @@ export function FormEditor({ formId, baseUrl, createdAt, responses, suspenseKey 
 
     return (
         <form action={action}>
+            <SectionTitle icon={IconFileDescription} withBackButton>
+                Form details
+            </SectionTitle>
             <Flex gap={100} className='pb-xs bg-white'>
                 <Stack flex={1}>
                     <FormTimestamp createdAt={createdAt} />
