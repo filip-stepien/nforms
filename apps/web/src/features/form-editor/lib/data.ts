@@ -75,6 +75,10 @@ export async function getCategoriesChartData(formId: string): Promise<Categories
         }
     }
 
+    if (categoriesMap.get('none')!.count === 0) {
+        categoriesMap.delete('none');
+    }
+
     return Array.from(categoriesMap).map(entry => entry[1]);
 }
 
