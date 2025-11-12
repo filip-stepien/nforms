@@ -1,9 +1,10 @@
-import { Flex, Menu, UnstyledButton } from '@mantine/core';
+import { Divider, Menu, Stack, UnstyledButton } from '@mantine/core';
 import Avatar from 'react-avatar';
 import { ReactNode } from 'react';
 import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { Icon, IconChevronRight, IconLogout, IconSettings } from '@tabler/icons-react';
+import { Icon, IconLogout, IconSettings } from '@tabler/icons-react';
+import { cn } from '@/lib/utils';
 
 const USER_MENU_ENTRIES: UserMenuEntry[] = [
     {
@@ -61,13 +62,7 @@ function UserMenuItemElement({ item }: { item: UserMenuItem }) {
 
 function UserMenu({ children }: { children: ReactNode }) {
     return (
-        <Menu
-            position='right-start'
-            offset={12}
-            width={300}
-            classNames={{ dropdown: 'mt-sm' }}
-            withArrow
-        >
+        <Menu position='bottom-end' width={220} withArrow classNames={{ dropdown: 'shadow-sm' }}>
             <Menu.Target>{children}</Menu.Target>
             <Menu.Dropdown>
                 {USER_MENU_ENTRIES.map(({ label, items }) => (
@@ -83,21 +78,29 @@ function UserMenu({ children }: { children: ReactNode }) {
     );
 }
 
-export function UserButton() {
+type Props = {
+    withDivider?: boolean;
+    withMenu?: boolean;
+};
+
+export function UserButton({ withDivider = false, withMenu = false }: Props) {
     const { data } = useSession();
 
-    return (
-        <UserMenu>
-            <UnstyledButton className='p-sm hover:bg-hover flex gap-sm items-center'>
-                <Avatar name={data?.user?.name ?? ''} size='40px' round />
-                <Flex direction='column' flex={1}>
-                    <div className='text-sm font-medium'>{data?.user?.name}</div>
-                    <div className='text-sm font-lighter text-font-secondary'>
-                        {data?.user?.email}
-                    </div>
-                </Flex>
-                <IconChevronRight size={14} stroke={1.5} className='justify-self-end' />
-            </UnstyledButton>
-        </UserMenu>
+    const button = (
+        <UnstyledButton
+            className={cn(
+                'gap-sm p-xs flex items-center',
+                !withMenu && 'pointer-none cursor-default'
+            )}
+        >
+            {withDivider && <Divider orientation='vertical' />}
+            <Avatar name={data?.user?.name ?? ''} size='32px' round />
+            <Stack gap={0}>
+                <div className='text-xs font-medium'>{data?.user?.name}</div>
+                <div className='font-lighter text-font-secondary text-xs'>{data?.user?.email}</div>
+            </Stack>
+        </UnstyledButton>
     );
+
+    return withMenu ? <UserMenu>{button}</UserMenu> : button;
 }
