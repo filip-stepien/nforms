@@ -14,16 +14,19 @@ import { FormResponse } from '@packages/db/schemas/form-responses';
 import { Paginated } from '@/lib/pagination';
 import { SectionTitle } from '@/components/SectionTitle';
 import { IconFileDescription } from '@tabler/icons-react';
+import { CategoriesChartData } from '../lib/data';
 
 type Props = {
     formId: string;
     baseUrl: string;
     createdAt: Date;
     responses: Promise<Paginated<FormResponse[]>>;
+    categoriesChartData: Promise<CategoriesChartData[]>;
     suspenseKey: string;
 };
 
-export function FormEditor({ formId, baseUrl, createdAt, responses, suspenseKey }: Props) {
+export function FormEditor(props: Props) {
+    const { formId, baseUrl, createdAt, responses, suspenseKey, categoriesChartData } = props;
     const { isLoading, action } = useFormSaveAction(formId);
 
     return (
@@ -51,7 +54,11 @@ export function FormEditor({ formId, baseUrl, createdAt, responses, suspenseKey 
                     <FormTabs.CategoriesTab />
                     <FormTabs.SettingsTab />
                 </FormTabs.Tabs>
-                <FormTabs.ResponsesPanel responses={responses} suspenseKey={suspenseKey} />
+                <FormTabs.ResponsesPanel
+                    responses={responses}
+                    suspenseKey={suspenseKey}
+                    categoriesChartData={categoriesChartData}
+                />
                 <FormTabs.QuestionsPanel />
                 <FormTabs.CategoriesPanel />
                 <FormTabs.SettingsPanel />

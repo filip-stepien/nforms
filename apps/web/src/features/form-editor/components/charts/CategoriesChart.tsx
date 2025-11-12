@@ -1,34 +1,38 @@
-import React from 'react';
-import { Pie } from 'react-chartjs-2';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend, ChartOptions } from 'chart.js';
+import React, { use } from 'react';
+import {
+    Chart as ChartJS,
+    BarElement,
+    CategoryScale,
+    LinearScale,
+    Tooltip,
+    Legend,
+    ChartOptions,
+    ChartData
+} from 'chart.js';
+import { Bar } from 'react-chartjs-2';
+import { CategoriesChartData } from '../../lib/data';
 
-ChartJS.register(ArcElement, Tooltip, Legend);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
-const data = {
-    labels: ['Red', 'Blue', 'Yellow'],
-    datasets: [
-        {
-            label: 'Przykładowe dane',
-            data: [300, 50, 100],
-            backgroundColor: [
-                'rgba(255, 99, 132, 0.8)',
-                'rgba(54, 162, 235, 0.8)',
-                'rgba(255, 206, 86, 0.8)'
-            ],
-            borderWidth: 1
-        }
-    ]
-};
-
-const options: ChartOptions<'pie'> = {
+const options: ChartOptions<'bar'> = {
     responsive: true,
     maintainAspectRatio: false,
+    scales: {
+        x: {
+            grid: {
+                display: false
+            }
+        },
+        y: {
+            beginAtZero: true,
+            ticks: {
+                precision: 0
+            }
+        }
+    },
     plugins: {
         legend: {
-            position: 'left',
-            labels: {
-                padding: 20
-            }
+            display: false
         },
         tooltip: {
             enabled: true
@@ -36,10 +40,29 @@ const options: ChartOptions<'pie'> = {
     }
 };
 
-export function CategoriesChart() {
+type Props = {
+    categoriesChartData: Promise<CategoriesChartData[]>;
+};
+
+export function CategoriesChart({ categoriesChartData }: Props) {
+    const dataRaw = use(categoriesChartData).toSorted(ctg => (ctg.categoryName === 'None' ? 1 : 0));
+
+    const data: ChartData<'bar', number[], string> = {
+        labels: dataRaw.map(item => item.categoryName),
+        datasets: [
+            {
+                label: 'Number of respondents',
+                data: dataRaw.map(item => item.count),
+                backgroundColor: dataRaw.map(item => item.categoryColor),
+                borderRadius: 5,
+                maxBarThickness: 40
+            }
+        ]
+    };
+
     return (
-        <div className='h-[250px] max-w-[500px]'>
-            <Pie data={data} options={options} />
+        <div className='h-[250px]'>
+            <Bar data={data} options={options} />
         </div>
     );
 }

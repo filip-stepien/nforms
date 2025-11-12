@@ -6,13 +6,15 @@ import { FormResponse } from '@packages/db/schemas/form-responses';
 import { Paginated } from '@/lib/pagination';
 import { Suspense } from 'react';
 import { Loading } from '@/components/Loading';
+import { CategoriesChartData } from '../../lib/data';
 
 type Props = {
     responses: Promise<Paginated<FormResponse[]>>;
+    categoriesChartData: Promise<CategoriesChartData[]>;
     suspenseKey: string;
 };
 
-export function FormResponsesTab({ responses, suspenseKey }: Props) {
+export function FormResponsesTab({ responses, suspenseKey, categoriesChartData }: Props) {
     return (
         <Stack gap={50}>
             <Stack gap='lg'>
@@ -34,7 +36,9 @@ export function FormResponsesTab({ responses, suspenseKey }: Props) {
                     <div className='flex-1'>
                         <div className='pb-md font-bold'>Category distribution</div>
                         <Flex justify='center'>
-                            <CategoriesChart />
+                            <Suspense fallback={<Loading />}>
+                                <CategoriesChart categoriesChartData={categoriesChartData} />
+                            </Suspense>
                         </Flex>
                     </div>
                 </Flex>

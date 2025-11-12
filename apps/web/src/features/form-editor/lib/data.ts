@@ -1,7 +1,6 @@
 import 'server-only';
 import { verifyUser } from '@/auth';
 import { prisma } from '@packages/db';
-import { Form, FormSchema } from '@packages/db/schemas/form/form';
 import { FormResponse, FormResponseSchema } from '@packages/db/schemas/form-responses';
 import {
     defaultPaginationParams,
@@ -11,6 +10,7 @@ import {
     PaginationParams
 } from '@/lib/pagination';
 import { debug_wait } from '@/lib/debug';
+import { capitalizeFirstLetter } from './utils';
 
 export async function findAllResponsesByFormIdPaginated(
     formId: string,
@@ -32,6 +32,50 @@ export async function findAllResponsesByFormIdPaginated(
         data,
         pagination: getPaginationMeta({ ...pagination, totalCount })
     };
+}
+
+export type CategoriesChartData = {
+    categoryName: string;
+    categoryColor: string;
+    count: number;
+};
+
+export async function getCategoriesChartData(formId: string): Promise<CategoriesChartData[]> {
+    await verifyUser();
+
+    const responsesRaw = await prisma.formResponse.findMany({
+        where: { formId }
+    });
+
+    const responses = responsesRaw.map(response => FormResponseSchema.parse(response));
+    const categoriesMap = new Map<string, CategoriesChartData>([
+        ['none', { categoryName: 'None', categoryColor: 'gray', count: 0 }]
+    ]);
+
+    for (const response of responses) {
+        if (response.categoryRules.every(category => !category.assigned)) {
+            categoriesMap.get('none')!.count++;
+            continue;
+        }
+
+        for (const { category, assigned } of response.categoryRules) {
+            if (!assigned) {
+                continue;
+            }
+
+            if (categoriesMap.has(category.name)) {
+                categoriesMap.get(category.name)!.count++;
+            } else {
+                categoriesMap.set(category.name, {
+                    categoryName: capitalizeFirstLetter(category.name),
+                    categoryColor: category.color,
+                    count: 1
+                });
+            }
+        }
+    }
+
+    return Array.from(categoriesMap).map(entry => entry[1]);
 }
 
 export async function deleteFormById(formId: string) {
