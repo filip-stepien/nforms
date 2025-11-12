@@ -27,7 +27,7 @@ export function FormHeader() {
             />
             <Textarea
                 label='Description'
-                placeholder={form.description ? undefined : 'No description provided.'}
+                placeholder={form.description ? undefined : 'No description provided'}
                 value={form.description ?? ''}
                 onChange={handleDescriptionChange}
                 variant='unstyled'

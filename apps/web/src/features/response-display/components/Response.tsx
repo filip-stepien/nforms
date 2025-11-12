@@ -16,8 +16,10 @@ export function Response({ formResponse }: Props) {
     return (
         <Stack>
             <Group justify='space-between'>
-                <SectionTitle icon={IconMessageCircleSearch} withBackButton bottom={0}>
-                    Response details
+                <SectionTitle>
+                    <SectionTitle.BackButton />
+                    <SectionTitle.Icon icon={IconMessageCircleSearch} />
+                    <SectionTitle.Title>Response details</SectionTitle.Title>
                 </SectionTitle>
                 <ActionButton icon={IconTrash} label='Delete' color='red' variant='light' />
             </Group>

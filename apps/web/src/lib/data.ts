@@ -43,13 +43,13 @@ export function deserializeState(state: SerializedState): RootState {
             settings: state.settings
         },
         formFields: toEntityState(state.fields),
-        fieldSettings: state.fieldSettings,
         fieldRules: {
             categoryActions: toEntityState(state.fieldRules.categoryActions),
             rules: toEntityState(state.fieldRules.rules),
             groups: toEntityState(state.fieldRules.groups)
         },
         fieldOptions: toEntityState(state.fieldOptions),
+        fieldSettings: state.fieldSettings,
         respondentCategories: toEntityState(state.respondentCategories),
         respondentCategoryRules: {
             relations: state.respondentCategoryRules.relations,

@@ -5,14 +5,27 @@ import { useFormSaveAction } from '../hooks/useFormSaveAction';
 import { FormTabs } from './layout/FormTabs';
 import { SectionTitle } from '@/components/SectionTitle';
 import { IconFilePlus } from '@tabler/icons-react';
+import { useDisclosure } from '@mantine/hooks';
+import { useRouter } from 'next/navigation';
+import { ConfirmationModal } from '@/components/ConfirmationModal';
 
 export function FormCreator() {
     const { isLoading, action } = useFormSaveAction();
+    const { back } = useRouter();
+    const [confirmOpened, { close: closeConfirm, open: openConfirm }] = useDisclosure();
 
     return (
         <form action={action}>
-            <SectionTitle icon={IconFilePlus} withBackButton>
-                Create new form
+            <ConfirmationModal
+                opened={confirmOpened}
+                onClose={closeConfirm}
+                onConfirm={back}
+                message='You have unsaved changes. If you leave now, your changes will be lost.'
+            />
+            <SectionTitle>
+                <SectionTitle.BackButton onClick={openConfirm} />
+                <SectionTitle.Icon icon={IconFilePlus} />
+                <SectionTitle.Title>Create new form</SectionTitle.Title>
             </SectionTitle>
             <Flex gap={100} className='pb-xs' justify='space-between' align='flex-end'>
                 <FormHeader />

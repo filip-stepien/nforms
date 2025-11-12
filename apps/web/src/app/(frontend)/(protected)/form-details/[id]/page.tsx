@@ -33,6 +33,7 @@ export default async function FormDetailsPage({ params, searchParams }: Props) {
                     responses={responses}
                     categoriesChartData={categoriesChartData}
                     suspenseKey={pagination.suspenseKey}
+                    initialState={preloadedState}
                 />
             </StoreProvider>
         );

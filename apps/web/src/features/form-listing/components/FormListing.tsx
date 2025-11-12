@@ -17,7 +17,10 @@ type Props = {
 export function FormListing({ suspenseKey, formData }: Props) {
     return (
         <Stack className='h-full'>
-            <SectionTitle icon={IconListDetails}>Your forms</SectionTitle>
+            <SectionTitle>
+                <SectionTitle.Icon icon={IconListDetails} />
+                <SectionTitle.Title>Your forms</SectionTitle.Title>
+            </SectionTitle>
             <Suspense key={suspenseKey} fallback={<Loading />}>
                 <FormsTable formData={formData} />
             </Suspense>

@@ -7,11 +7,11 @@ import { useDisclosure } from '@mantine/hooks';
 import { MenuDrawer } from './MenuDrawer';
 
 export function Header() {
-    const [opened, { toggle, close }] = useDisclosure();
+    const [menuOpened, { toggle: toggleMenu, close: closeMenu }] = useDisclosure();
 
     return (
         <>
-            <MenuDrawer opened={opened} onClose={close} />
+            <MenuDrawer opened={menuOpened} onClose={closeMenu} />
             <Group gap={0} justify='space-between' className='w-full flex-row-reverse'>
                 <Group className='px-sm hidden flex-row-reverse md:flex'>
                     <UserButton withDivider withMenu />
@@ -35,8 +35,8 @@ export function Header() {
                     </Link>
                 </Group>
                 <Burger
-                    opened={opened}
-                    onClick={toggle}
+                    opened={menuOpened}
+                    onClick={toggleMenu}
                     hiddenFrom='md'
                     className='pl-md flex-1 justify-self-start'
                 />
