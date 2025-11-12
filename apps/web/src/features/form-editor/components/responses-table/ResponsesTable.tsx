@@ -92,15 +92,20 @@ const columns: ColumnDef<ResponseRow>[] = [
             const categoryNames = categories.map(c => c.name);
             return filterValue.every(f => categoryNames.includes(f));
         },
-        cell: ctx => (
-            <Group>
-                {ctx.getValue<CategoryRow[]>().map((v, i) => (
-                    <Badge key={i} color={v.color}>
-                        {v.name}
-                    </Badge>
-                ))}
-            </Group>
-        )
+        cell: ctx => {
+            const categories = ctx.getValue<CategoryRow[]>();
+            return categories.length > 0 ? (
+                <Group>
+                    {categories.map((v, i) => (
+                        <Badge key={i} color={v.color}>
+                            {v.name}
+                        </Badge>
+                    ))}
+                </Group>
+            ) : (
+                <span className='italic'>{'<None>'}</span>
+            );
+        }
     },
     {
         accessorKey: 'actionHref',
@@ -110,7 +115,7 @@ const columns: ColumnDef<ResponseRow>[] = [
         cell: ctx => (
             <Link href={ctx.getValue<string>()}>
                 <ActionButton
-                    label='Open'
+                    label='Details'
                     icon={IconExternalLink}
                     iconSize={18}
                     variant='transparent'

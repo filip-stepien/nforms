@@ -13,7 +13,7 @@ export function Header() {
         <>
             <MenuDrawer opened={opened} onClose={close} />
             <Group gap={0} justify='space-between' className='w-full flex-row-reverse'>
-                <Group className='hidden flex-row-reverse md:flex'>
+                <Group className='px-sm hidden flex-row-reverse md:flex'>
                     <UserButton withDivider withMenu />
                     <Link href='/your-forms'>
                         <ActionButton
