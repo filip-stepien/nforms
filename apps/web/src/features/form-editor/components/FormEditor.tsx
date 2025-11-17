@@ -26,6 +26,8 @@ type Props = {
     createdAt: Date;
     responses: Promise<Paginated<FormResponse[]>>;
     categoriesChartData: Promise<CategoriesChartData[]>;
+    totalResponses: Promise<number>;
+    thisWeekResponses: Promise<number>;
     suspenseKey: string;
     initialState: RootState;
 };
@@ -38,6 +40,8 @@ export function FormEditor(props: Props) {
         responses,
         suspenseKey,
         categoriesChartData,
+        totalResponses,
+        thisWeekResponses,
         initialState
     } = props;
 
@@ -90,6 +94,8 @@ export function FormEditor(props: Props) {
                 </FormTabs.Tabs>
                 <FormTabs.ResponsesPanel
                     responses={responses}
+                    totalResponses={totalResponses}
+                    thisWeekResponses={thisWeekResponses}
                     suspenseKey={suspenseKey}
                     categoriesChartData={categoriesChartData}
                 />

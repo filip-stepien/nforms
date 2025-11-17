@@ -9,7 +9,7 @@ import {
     SortingState,
     ColumnFiltersState
 } from '@tanstack/react-table';
-import { Table, Group, Stack, Pagination, Badge, Select } from '@mantine/core';
+import { Table, Group, Stack, Pagination, Badge, Select, Skeleton } from '@mantine/core';
 import { FilterButton } from './header-buttons/FilterButton';
 import { SortButton } from './header-buttons/SortButton';
 import dayjs, { Dayjs } from 'dayjs';
@@ -214,3 +214,13 @@ export function ResponsesTable({ responses }: Props) {
         </Stack>
     );
 }
+
+ResponsesTable.Skeleton = function ResponsesTableSkeleton() {
+    return (
+        <Stack>
+            <Skeleton className='h-[45px] w-full' />
+            <Skeleton className='h-[420px]' />
+            <Skeleton className='ml-auto h-[36px] w-1/3' />
+        </Stack>
+    );
+};

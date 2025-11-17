@@ -1,5 +1,6 @@
 import { FormEditor } from '@/features/form-editor/components/FormEditor';
 import {
+    countResponsesByFormId,
     findAllResponsesByFormIdPaginated,
     getCategoriesChartData
 } from '@/features/form-editor/lib/data';
@@ -8,6 +9,10 @@ import { getPaginationSearchParams } from '@/lib/pagination';
 import StoreProvider from '@/providers/StoreProvider';
 import { env } from '@packages/env';
 import { notFound } from 'next/navigation';
+import dayjs from 'dayjs';
+import isoWeek from 'dayjs/plugin/isoWeek';
+
+dayjs.extend(isoWeek);
 
 type Props = {
     params: Promise<{ id: string }>;
@@ -23,6 +28,11 @@ export default async function FormDetailsPage({ params, searchParams }: Props) {
         const responses = findAllResponsesByFormIdPaginated(id);
         const categoriesChartData = getCategoriesChartData(id);
         const preloadedState = deserializeState(form);
+        const totalResponses = countResponsesByFormId(id);
+        const thisWeekResponses = countResponsesByFormId(id, {
+            from: dayjs().startOf('isoWeek').toDate(),
+            to: dayjs().toDate()
+        });
 
         return (
             <StoreProvider preloadedState={preloadedState}>
@@ -32,6 +42,8 @@ export default async function FormDetailsPage({ params, searchParams }: Props) {
                     baseUrl={env.BASE_URL}
                     responses={responses}
                     categoriesChartData={categoriesChartData}
+                    totalResponses={totalResponses}
+                    thisWeekResponses={thisWeekResponses}
                     suspenseKey={pagination.suspenseKey}
                     initialState={preloadedState}
                 />

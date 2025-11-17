@@ -89,6 +89,8 @@ FormTabs.ResponsesTab = function ResponsesTab() {
 FormTabs.ResponsesPanel = function ResponsesPanel(props: {
     responses: Promise<Paginated<FormResponse[]>>;
     categoriesChartData: Promise<CategoriesChartData[]>;
+    totalResponses: Promise<number>;
+    thisWeekResponses: Promise<number>;
     suspenseKey: string;
 }) {
     return (

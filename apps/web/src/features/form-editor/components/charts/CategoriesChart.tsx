@@ -12,6 +12,7 @@ import {
 import { Bar } from 'react-chartjs-2';
 import { CategoriesChartData } from '../../lib/data';
 import { Empty } from '@/components/Empty';
+import { Skeleton } from '@mantine/core';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
@@ -67,3 +68,7 @@ export function CategoriesChart({ categoriesChartData }: Props) {
         </div>
     );
 }
+
+CategoriesChart.Skeleton = function CategoriesChartSkeleton() {
+    return <Skeleton className='h-[250px] w-full' />;
+};

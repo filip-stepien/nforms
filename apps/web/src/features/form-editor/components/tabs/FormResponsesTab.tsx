@@ -1,33 +1,36 @@
-import { Flex, Stack } from '@mantine/core';
+import { Flex, Group, Stack } from '@mantine/core';
 import { ResponsesChart } from '../charts/ResponsesChart';
 import { CategoriesChart } from '../charts/CategoriesChart';
 import { ResponsesTable } from '../responses-table/ResponsesTable';
 import { FormResponse } from '@packages/db/schemas/form-responses';
 import { Paginated } from '@/lib/pagination';
 import { Suspense } from 'react';
-import { Loading } from '@/components/Loading';
 import { CategoriesChartData } from '../../lib/data';
+import { Statistic } from '../ui/Statistic';
 
 type Props = {
     responses: Promise<Paginated<FormResponse[]>>;
     categoriesChartData: Promise<CategoriesChartData[]>;
+    totalResponses: Promise<number>;
+    thisWeekResponses: Promise<number>;
     suspenseKey: string;
 };
 
-export function FormResponsesTab({ responses, suspenseKey, categoriesChartData }: Props) {
+export function FormResponsesTab(props: Props) {
+    const { responses, suspenseKey, categoriesChartData, totalResponses, thisWeekResponses } =
+        props;
+
     return (
         <Stack gap={50}>
             <Stack gap='lg'>
-                <Flex>
-                    <Stack gap={4} className='py-md w-[200px] bg-white'>
-                        <span className='text-5xl'>123</span>
-                        <span className='text-sm'>Total responses</span>
-                    </Stack>
-                    <Stack gap={4} className='py-md w-[200px] bg-white'>
-                        <span className='text-5xl'>10</span>
-                        <span className='text-sm'>Responses this week</span>
-                    </Stack>
-                </Flex>
+                <Group gap='sm'>
+                    <Suspense fallback={<Statistic.Skeleton />}>
+                        <Statistic value={totalResponses} description='Total responses' />
+                    </Suspense>
+                    <Suspense fallback={<Statistic.Skeleton />}>
+                        <Statistic value={thisWeekResponses} description='Responses this week' />
+                    </Suspense>
+                </Group>
                 <Flex gap='xl'>
                     <Stack flex={1}>
                         <div className='font-bold'>Responses over time</div>
@@ -36,14 +39,14 @@ export function FormResponsesTab({ responses, suspenseKey, categoriesChartData }
                     <div className='flex-1'>
                         <div className='pb-md font-bold'>Category distribution</div>
                         <Flex justify='center'>
-                            <Suspense fallback={<Loading />}>
+                            <Suspense fallback={<CategoriesChart.Skeleton />}>
                                 <CategoriesChart categoriesChartData={categoriesChartData} />
                             </Suspense>
                         </Flex>
                     </div>
                 </Flex>
             </Stack>
-            <Suspense key={suspenseKey} fallback={<Loading />}>
+            <Suspense key={suspenseKey} fallback={<ResponsesTable.Skeleton />}>
                 <ResponsesTable responses={responses} />
             </Suspense>
         </Stack>

@@ -89,3 +89,19 @@ export async function deleteFormById(formId: string) {
         prisma.form.delete({ where: { id: formId } })
     ]);
 }
+
+export async function countResponsesByFormId(formId: string, dateRange?: { from: Date; to: Date }) {
+    await verifyUser();
+
+    return prisma.formResponse.count({
+        where: {
+            formId,
+            ...(dateRange && {
+                submission: {
+                    gte: dateRange.from,
+                    lte: dateRange.to
+                }
+            })
+        }
+    });
+}
