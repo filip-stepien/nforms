@@ -1,6 +1,5 @@
 'use client';
 
-import { Loading } from '@/components/Loading';
 import { Stack } from '@mantine/core';
 import { Suspense } from 'react';
 import { FormsTable } from './table/FormsTable';
@@ -21,7 +20,7 @@ export function FormListing({ suspenseKey, formData }: Props) {
                 <SectionTitle.Icon icon={IconListDetails} />
                 <SectionTitle.Title>Your forms</SectionTitle.Title>
             </SectionTitle>
-            <Suspense key={suspenseKey} fallback={<Loading />}>
+            <Suspense key={suspenseKey} fallback={<FormsTable.Skeleton />}>
                 <FormsTable formData={formData} />
             </Suspense>
         </Stack>

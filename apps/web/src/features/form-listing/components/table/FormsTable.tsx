@@ -1,10 +1,11 @@
 import { use } from 'react';
 import { FormsTablePagination } from './FormsTablePagination';
-import { Flex, Table } from '@mantine/core';
+import { Flex, Skeleton, Stack, Table } from '@mantine/core';
 import { FormTableData } from '../../lib/data';
 import { FormsTableBody } from './FormsTableBody';
 import { FormsTableHeader } from './FormsTableHeader';
 import { Paginated } from '@/lib/pagination';
+import { Empty } from '@/components/Empty';
 
 type Props = {
     formData: Promise<Paginated<FormTableData[]>>;
@@ -24,6 +25,15 @@ export function FormsTable({ formData }: Props) {
             </Flex>
         </Flex>
     ) : (
-        'No forms found.'
+        <Empty />
     );
 }
+
+FormsTable.Skeleton = function FormTableSkeleton() {
+    return (
+        <Stack>
+            <Skeleton className='h-[450px]' />
+            <Skeleton className='ml-auto h-[36px] w-1/3' />
+        </Stack>
+    );
+};
