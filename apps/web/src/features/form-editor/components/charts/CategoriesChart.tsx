@@ -11,6 +11,7 @@ import {
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import { CategoriesChartData } from '../../lib/data';
+import { Empty } from '@/components/Empty';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
@@ -61,8 +62,8 @@ export function CategoriesChart({ categoriesChartData }: Props) {
     };
 
     return (
-        <div className='h-[250px]'>
-            <Bar data={data} options={options} />
+        <div className='h-[250px] w-full'>
+            {dataRaw.length > 0 ? <Bar data={data} options={options} /> : <Empty />}
         </div>
     );
 }

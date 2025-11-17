@@ -19,6 +19,7 @@ import { ActionButton } from '../ui/ActionButton';
 import { Paginated } from '@/lib/pagination';
 import { FormResponse } from '@packages/db/schemas/form-responses';
 import { usePaginationParamSetter } from '@/hooks/usePaginationParamSetter';
+import { Empty } from '@/components/Empty';
 
 export type CategoryRow = { name: string; color: string };
 
@@ -130,12 +131,13 @@ const columns: ColumnDef<ResponseRow>[] = [
 export function ResponsesTable({ responses }: Props) {
     const { setPage, setPageSize } = usePaginationParamSetter();
     const { data, pagination } = use(responses);
+    const rows = getRowsFromData(data);
 
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
     const table = useReactTable({
-        data: getRowsFromData(data),
+        data: rows,
         columns,
         pageCount: pagination.totalPages,
         manualPagination: true,
@@ -186,25 +188,28 @@ export function ResponsesTable({ responses }: Props) {
                     ))}
                 </Table.Tbody>
             </Table>
+            {rows.length === 0 && <Empty />}
             <Group>
                 <Pagination
                     total={pagination.totalPages}
                     value={pagination.currentPage}
                     onChange={setPage}
                 />
-                <Select
-                    data={[
-                        { label: '10 / page', value: '10' },
-                        { label: '20 / page', value: '20' },
-                        { label: '50 / page', value: '50' },
-                        { label: '100 / page', value: '100' }
-                    ]}
-                    defaultValue='10'
-                    value={String(pagination.pageSize)}
-                    onChange={v => setPageSize(Number(v))}
-                    className='w-[120px]'
-                    allowDeselect={false}
-                />
+                {rows.length > 0 && (
+                    <Select
+                        data={[
+                            { label: '10 / page', value: '10' },
+                            { label: '20 / page', value: '20' },
+                            { label: '50 / page', value: '50' },
+                            { label: '100 / page', value: '100' }
+                        ]}
+                        defaultValue='10'
+                        value={String(pagination.pageSize)}
+                        onChange={v => setPageSize(Number(v))}
+                        className='w-[120px]'
+                        allowDeselect={false}
+                    />
+                )}
             </Group>
         </Stack>
     );
