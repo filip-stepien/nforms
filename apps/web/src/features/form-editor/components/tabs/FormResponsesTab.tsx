@@ -5,20 +5,27 @@ import { ResponsesTable } from '../responses-table/ResponsesTable';
 import { FormResponse } from '@packages/db/schemas/form-responses';
 import { Paginated } from '@/lib/pagination';
 import { Suspense } from 'react';
-import { CategoriesChartData } from '../../lib/data';
+import { CategoriesChartData, ResponsesChartData } from '../../lib/data';
 import { Statistic } from '../ui/Statistic';
 
 type Props = {
     responses: Promise<Paginated<FormResponse[]>>;
     categoriesChartData: Promise<CategoriesChartData[]>;
+    responsesChartData: Promise<ResponsesChartData[]>;
     totalResponses: Promise<number>;
     thisWeekResponses: Promise<number>;
     suspenseKey: string;
 };
 
 export function FormResponsesTab(props: Props) {
-    const { responses, suspenseKey, categoriesChartData, totalResponses, thisWeekResponses } =
-        props;
+    const {
+        responses,
+        suspenseKey,
+        categoriesChartData,
+        responsesChartData,
+        totalResponses,
+        thisWeekResponses
+    } = props;
 
     return (
         <Stack gap={50}>
@@ -34,7 +41,9 @@ export function FormResponsesTab(props: Props) {
                 <Flex gap='xl'>
                     <Stack flex={1}>
                         <div className='font-bold'>Responses over time</div>
-                        <ResponsesChart />
+                        <Suspense fallback={<ResponsesChart.Skeleton />}>
+                            <ResponsesChart responsesChartData={responsesChartData} />
+                        </Suspense>
                     </Stack>
                     <div className='flex-1'>
                         <div className='pb-md font-bold'>Category distribution</div>

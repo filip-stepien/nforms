@@ -13,7 +13,7 @@ import { FormResponse } from '@packages/db/schemas/form-responses';
 import { Paginated } from '@/lib/pagination';
 import { SectionTitle } from '@/components/SectionTitle';
 import { IconFileDescription } from '@tabler/icons-react';
-import { CategoriesChartData } from '../lib/data';
+import { CategoriesChartData, ResponsesChartData } from '../lib/data';
 import { RootState } from '@/lib/store';
 import { useDisclosure } from '@mantine/hooks';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
@@ -26,6 +26,7 @@ type Props = {
     createdAt: Date;
     responses: Promise<Paginated<FormResponse[]>>;
     categoriesChartData: Promise<CategoriesChartData[]>;
+    responsesChartData: Promise<ResponsesChartData[]>;
     totalResponses: Promise<number>;
     thisWeekResponses: Promise<number>;
     suspenseKey: string;
@@ -40,6 +41,7 @@ export function FormEditor(props: Props) {
         responses,
         suspenseKey,
         categoriesChartData,
+        responsesChartData,
         totalResponses,
         thisWeekResponses,
         initialState
@@ -98,6 +100,7 @@ export function FormEditor(props: Props) {
                     thisWeekResponses={thisWeekResponses}
                     suspenseKey={suspenseKey}
                     categoriesChartData={categoriesChartData}
+                    responsesChartData={responsesChartData}
                 />
                 <FormTabs.QuestionsPanel />
                 <FormTabs.CategoriesPanel />

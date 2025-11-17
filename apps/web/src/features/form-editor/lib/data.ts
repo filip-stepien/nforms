@@ -11,6 +11,7 @@ import {
 } from '@/lib/pagination';
 import { debug_wait } from '@/lib/debug';
 import { capitalizeFirstLetter } from './utils';
+import dayjs from 'dayjs';
 
 export async function findAllResponsesByFormIdPaginated(
     formId: string,
@@ -38,6 +39,11 @@ export type CategoriesChartData = {
     categoryName: string;
     categoryColor: string;
     count: number;
+};
+
+export type ResponsesChartData = {
+    label: string;
+    value: number;
 };
 
 export async function getCategoriesChartData(formId: string): Promise<CategoriesChartData[]> {
@@ -82,6 +88,22 @@ export async function getCategoriesChartData(formId: string): Promise<Categories
     return Array.from(categoriesMap).map(entry => entry[1]);
 }
 
+export async function getResponsesChartData(formId: string): Promise<ResponsesChartData[]> {
+    const today = dayjs().endOf('day');
+    const sevenDaysAgo = dayjs().subtract(6, 'day').startOf('day');
+
+    const counts = await countResponsesByFormId(formId, {
+        from: sevenDaysAgo.toDate(),
+        to: today.toDate(),
+        perDay: true
+    });
+
+    return counts.map((value, i) => ({
+        label: sevenDaysAgo.add(i, 'day').format('DD.MM'),
+        value
+    }));
+}
+
 export async function deleteFormById(formId: string) {
     await verifyUser();
     await prisma.$transaction([
@@ -90,18 +112,54 @@ export async function deleteFormById(formId: string) {
     ]);
 }
 
-export async function countResponsesByFormId(formId: string, dateRange?: { from: Date; to: Date }) {
+export function countResponsesByFormId(
+    formId: string,
+    dateRange: { from: Date; to: Date; perDay: true }
+): Promise<number[]>;
+
+export function countResponsesByFormId(
+    formId: string,
+    dateRange?: { from: Date; to: Date; perDay?: false }
+): Promise<number>;
+
+export async function countResponsesByFormId(
+    formId: string,
+    dateRange?: { from: Date; to: Date; perDay?: boolean }
+) {
     await verifyUser();
 
-    return prisma.formResponse.count({
-        where: {
-            formId,
-            ...(dateRange && {
+    if (!dateRange || !dateRange.perDay) {
+        return prisma.formResponse.count({
+            where: {
+                formId,
+                ...(dateRange && {
+                    submission: {
+                        gte: dateRange.from,
+                        lte: dateRange.to
+                    }
+                })
+            }
+        });
+    }
+
+    const days: number[] = [];
+
+    for (let i = 0; i < 7; i++) {
+        const dayStart = dayjs(dateRange.from).add(i, 'day').startOf('day').toDate();
+        const dayEnd = dayjs(dateRange.from).add(i, 'day').endOf('day').toDate();
+
+        const count = await prisma.formResponse.count({
+            where: {
+                formId,
                 submission: {
-                    gte: dateRange.from,
-                    lte: dateRange.to
+                    gte: dayStart,
+                    lte: dayEnd
                 }
-            })
-        }
-    });
+            }
+        });
+
+        days.push(count);
+    }
+
+    return days;
 }

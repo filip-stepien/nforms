@@ -2,7 +2,8 @@ import { FormEditor } from '@/features/form-editor/components/FormEditor';
 import {
     countResponsesByFormId,
     findAllResponsesByFormIdPaginated,
-    getCategoriesChartData
+    getCategoriesChartData,
+    getResponsesChartData
 } from '@/features/form-editor/lib/data';
 import { deserializeState, findFirstFormById } from '@/lib/data';
 import { getPaginationSearchParams } from '@/lib/pagination';
@@ -27,6 +28,7 @@ export default async function FormDetailsPage({ params, searchParams }: Props) {
         const form = await findFirstFormById(id);
         const responses = findAllResponsesByFormIdPaginated(id);
         const categoriesChartData = getCategoriesChartData(id);
+        const responsesChartData = getResponsesChartData(id);
         const preloadedState = deserializeState(form);
         const totalResponses = countResponsesByFormId(id);
         const thisWeekResponses = countResponsesByFormId(id, {
@@ -42,6 +44,7 @@ export default async function FormDetailsPage({ params, searchParams }: Props) {
                     baseUrl={env.BASE_URL}
                     responses={responses}
                     categoriesChartData={categoriesChartData}
+                    responsesChartData={responsesChartData}
                     totalResponses={totalResponses}
                     thisWeekResponses={thisWeekResponses}
                     suspenseKey={pagination.suspenseKey}

@@ -9,7 +9,7 @@ import { FormQuestionsTab } from '../tabs/FormQuestionsTab';
 import { FormCategoriesTab } from '../tabs/FormCategoriesTab';
 import { FormResponse } from '@packages/db/schemas/form-responses';
 import { Paginated } from '@/lib/pagination';
-import { CategoriesChartData } from '../../lib/data';
+import { CategoriesChartData, ResponsesChartData } from '../../lib/data';
 
 type FormTab = 'questions' | 'settings' | 'responses' | 'categories';
 
@@ -88,6 +88,7 @@ FormTabs.ResponsesTab = function ResponsesTab() {
 
 FormTabs.ResponsesPanel = function ResponsesPanel(props: {
     responses: Promise<Paginated<FormResponse[]>>;
+    responsesChartData: Promise<ResponsesChartData[]>;
     categoriesChartData: Promise<CategoriesChartData[]>;
     totalResponses: Promise<number>;
     thisWeekResponses: Promise<number>;
