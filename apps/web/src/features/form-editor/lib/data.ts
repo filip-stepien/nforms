@@ -12,6 +12,7 @@ import {
 import { debug_wait } from '@/lib/debug';
 import { capitalizeFirstLetter } from './utils';
 import dayjs from 'dayjs';
+import { countResponsesByFormId } from '@/features/form-listing/lib/data';
 
 export async function findAllResponsesByFormIdPaginated(
     formId: string,
@@ -110,56 +111,4 @@ export async function deleteFormById(formId: string) {
         prisma.formResponse.deleteMany({ where: { formId } }),
         prisma.form.delete({ where: { id: formId } })
     ]);
-}
-
-export function countResponsesByFormId(
-    formId: string,
-    dateRange: { from: Date; to: Date; perDay: true }
-): Promise<number[]>;
-
-export function countResponsesByFormId(
-    formId: string,
-    dateRange?: { from: Date; to: Date; perDay?: false }
-): Promise<number>;
-
-export async function countResponsesByFormId(
-    formId: string,
-    dateRange?: { from: Date; to: Date; perDay?: boolean }
-) {
-    await verifyUser();
-
-    if (!dateRange || !dateRange.perDay) {
-        return prisma.formResponse.count({
-            where: {
-                formId,
-                ...(dateRange && {
-                    submission: {
-                        gte: dateRange.from,
-                        lte: dateRange.to
-                    }
-                })
-            }
-        });
-    }
-
-    const days: number[] = [];
-
-    for (let i = 0; i < 7; i++) {
-        const dayStart = dayjs(dateRange.from).add(i, 'day').startOf('day').toDate();
-        const dayEnd = dayjs(dateRange.from).add(i, 'day').endOf('day').toDate();
-
-        const count = await prisma.formResponse.count({
-            where: {
-                formId,
-                submission: {
-                    gte: dayStart,
-                    lte: dayEnd
-                }
-            }
-        });
-
-        days.push(count);
-    }
-
-    return days;
 }

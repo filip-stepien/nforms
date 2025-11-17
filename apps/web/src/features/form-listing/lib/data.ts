@@ -10,7 +10,7 @@ import {
 import { verifyUser } from '@/auth';
 import { prisma } from '@packages/db';
 import { debug_wait } from '@/lib/debug';
-import { env } from '@packages/env';
+import { FormSchema } from '@packages/db/schemas/form/form';
 
 export type FormTableData = {
     id: string;
@@ -18,11 +18,6 @@ export type FormTableData = {
     createdOn: string;
     responses: number;
     status: 'active' | 'inactive';
-    actions: {
-        editHref: string;
-        shareHref: string;
-        embedding: string;
-    };
 };
 
 export async function getFormsTableDataPaginated(
@@ -35,23 +30,71 @@ export async function getFormsTableDataPaginated(
         ...getPaginationQueryParams(pagination)
     });
 
+    const formsParsed = forms.map(f => FormSchema.parse(f));
     await debug_wait();
 
     return {
-        data: forms.map(form => ({
-            id: form.id,
-            title: form.title,
-
-            /* debug values */
-            responses: 123,
-            createdOn: dayjs().format('DD.MM.YYYY'),
-            status: 'active' as const,
-            actions: {
-                shareHref: env.BASE_URL + 'form/' + form.id,
-                editHref: '/',
-                embedding: 'embedding'
-            }
-        })),
+        data: await Promise.all(
+            formsParsed.map(async form => ({
+                id: form.id,
+                title: form.title,
+                responses: await countResponsesByFormId(form.id),
+                createdOn: dayjs(form.createdAt).format('DD.MM.YYYY'),
+                status: form.settings.active ? 'active' : 'inactive'
+            }))
+        ),
         pagination: getPaginationMeta({ ...pagination, totalCount })
     };
+}
+
+export function countResponsesByFormId(
+    formId: string,
+    dateRange: { from: Date; to: Date; perDay: true }
+): Promise<number[]>;
+
+export function countResponsesByFormId(
+    formId: string,
+    dateRange?: { from: Date; to: Date; perDay?: false }
+): Promise<number>;
+
+export async function countResponsesByFormId(
+    formId: string,
+    dateRange?: { from: Date; to: Date; perDay?: boolean }
+) {
+    await verifyUser();
+
+    if (!dateRange || !dateRange.perDay) {
+        return prisma.formResponse.count({
+            where: {
+                formId,
+                ...(dateRange && {
+                    submission: {
+                        gte: dateRange.from,
+                        lte: dateRange.to
+                    }
+                })
+            }
+        });
+    }
+
+    const days: number[] = [];
+
+    for (let i = 0; i < 7; i++) {
+        const dayStart = dayjs(dateRange.from).add(i, 'day').startOf('day').toDate();
+        const dayEnd = dayjs(dateRange.from).add(i, 'day').endOf('day').toDate();
+
+        const count = await prisma.formResponse.count({
+            where: {
+                formId,
+                submission: {
+                    gte: dayStart,
+                    lte: dayEnd
+                }
+            }
+        });
+
+        days.push(count);
+    }
+
+    return days;
 }
