@@ -97,7 +97,7 @@ const columns: ColumnDef<ResponseRow>[] = [
             return categories.length > 0 ? (
                 <Group>
                     {categories.map((v, i) => (
-                        <Badge key={i} color={v.color}>
+                        <Badge key={i} color={v.color} variant='light'>
                             {v.name}
                         </Badge>
                     ))}

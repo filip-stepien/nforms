@@ -11,7 +11,6 @@ export default async function ResponseDetailsPage({ params }: Props) {
 
     try {
         const formResponse = await findFirstResponseById(id);
-        // const form = await findFirstFormById(formResponse.formId);
         return <Response formResponse={formResponse} />;
     } catch {
         notFound();
