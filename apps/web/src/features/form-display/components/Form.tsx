@@ -21,8 +21,10 @@ export function Form({ form }: Props) {
     const [submitted, setSubmitted] = useState(false);
     const [error, setError] = useState(false);
     const [isPending, startTransition] = useTransition();
-    const { getInputProps, getInputKey, emailKey, emailProps, onSubmit } =
-        useDynamicFieldsForm(fields);
+    const { getInputProps, getInputKey, emailKey, emailProps, onSubmit } = useDynamicFieldsForm(
+        fields,
+        settings.anonymous
+    );
 
     const handleSubmit = onSubmit(async values => {
         const { email, ...restValues } = values;
