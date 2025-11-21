@@ -4,7 +4,7 @@ import { evaluateResponses, saveFormResponse } from './lib/responses';
 const workerHandler: WorkerHandler = async ({ data }) => {
     const { email, form, responses } = data;
     const evaluatedResponses = await evaluateResponses(responses, form);
-    await saveFormResponse(form.id, { email, ...evaluatedResponses });
+    await saveFormResponse(form.id, { formId: form.id, email, ...evaluatedResponses });
 };
 
 const worker = createWorker(workerHandler);

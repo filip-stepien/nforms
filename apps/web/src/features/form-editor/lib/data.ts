@@ -107,6 +107,7 @@ export async function getResponsesChartData(formId: string): Promise<ResponsesCh
 
 export async function deleteFormById(formId: string) {
     await verifyUser();
+
     await prisma.$transaction([
         prisma.formResponse.deleteMany({ where: { formId } }),
         prisma.form.delete({ where: { id: formId } })

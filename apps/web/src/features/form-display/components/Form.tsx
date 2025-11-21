@@ -5,9 +5,12 @@ import { ParsedForm, RawFieldResponse } from '../lib/data';
 import { FormQuestion } from './FormQuestion';
 import { useDynamicFieldsForm } from '../hooks/useDynamicFieldsForm';
 import { useState, useTransition } from 'react';
-import { SubmitCheck } from './SubmitCheck';
 import { TextInput as MantineTextInput } from '@mantine/core';
 import { saveFormResponseAction } from '../lib/actions';
+import radioButton from 'react-useanimations/lib/radioButton';
+import plusToX from 'react-useanimations/lib/plusToX';
+import visibility from 'react-useanimations/lib/visibility';
+import { SubmitInfo } from './SubmitInfo';
 
 type Props = {
     form: ParsedForm;
@@ -42,12 +45,37 @@ export function Form({ form }: Props) {
         });
     });
 
+    if (!settings.active) {
+        return (
+            <SubmitInfo
+                animation={visibility}
+                title='Form unavailable'
+                subtitle='This form is currently inactive or closed.'
+                description='Please try again later.'
+            />
+        );
+    }
+
     if (error) {
-        return 'err';
+        return (
+            <SubmitInfo
+                animation={plusToX}
+                title='Error'
+                subtitle='Something went wrong.'
+                description='Try again later.'
+            />
+        );
     }
 
     if (submitted) {
-        return <SubmitCheck />;
+        return (
+            <SubmitInfo
+                animation={radioButton}
+                title='All done!'
+                subtitle='We’ve got your response.'
+                description='Feel free to close this page.'
+            />
+        );
     }
 
     return (
