@@ -7,6 +7,7 @@ import { Form, FormSettings } from '@packages/db/schemas/form/form';
 import { FieldOption } from '@packages/db/schemas/form/field-options';
 import { FieldSettingsMap } from '@packages/db/schemas/form/field-settings';
 import { findFirstFormById } from '@/lib/data';
+import { prisma } from '@packages/db';
 
 export type ParsedField =
     | {
@@ -116,16 +117,32 @@ function parseFieldConditions(form: Form, raw: RawFieldResponse): FieldRawRespon
     }
 }
 
+export async function responseExistsByEmail(email: string) {
+    const count = await prisma.formResponse.count({ where: { email } });
+    return count > 0;
+}
+
 export async function saveFormResponse(
     formId: string,
     responses: RawFieldResponse[],
-    email?: string
+    email?: string,
+    singleResponse?: boolean
 ) {
     const form = await findFirstFormById(formId);
+
+    if (singleResponse) {
+        const exists = email !== undefined && (await responseExistsByEmail(email));
+
+        if (exists) {
+            return false;
+        }
+    }
 
     await createJob('response_processing', {
         email: email ?? null,
         form,
         responses: responses.map(raw => parseFieldConditions(form, raw))
     });
+
+    return true;
 }

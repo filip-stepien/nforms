@@ -3,7 +3,7 @@ import { useAppSelector } from '@/hooks/useAppSelector';
 import { Stack, Switch } from '@mantine/core';
 import { ChangeEventHandler } from 'react';
 import { setFormSettings } from '../../state/form';
-import { FormSettings as FormSettingsType } from '@packages/db/schemas/form';
+import { FormSettings as FormSettingsType } from '@packages/db/schemas/form/form';
 
 export function FormSettingsTab() {
     const settings = useAppSelector(state => state.form.settings);
@@ -14,6 +14,17 @@ export function FormSettingsTab() {
         event => {
             dispatch(setFormSettings({ [setting]: event.target.checked }));
         };
+
+    const handleSingleResponseChange: ChangeEventHandler<HTMLInputElement> = event => {
+        const value = event.target.checked;
+
+        dispatch(
+            setFormSettings({
+                singleResponse: value,
+                ...(value && { anonymous: false })
+            })
+        );
+    };
 
     return (
         <Stack gap='md'>
@@ -26,9 +37,10 @@ export function FormSettingsTab() {
             <Switch
                 label='Single response'
                 description='Prevent users from submitting more than once.'
-                onChange={handleSettingChange('singleResponse')}
+                onChange={handleSingleResponseChange}
                 checked={settings.singleResponse}
             />
+
             <Switch
                 label='Anonymous'
                 description={

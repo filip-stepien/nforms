@@ -5,7 +5,8 @@ import { RawFieldResponse, saveFormResponse } from './data';
 export async function saveFormResponseAction(
     formId: string,
     fieldResponses: RawFieldResponse[],
-    email?: string
+    email?: string,
+    singleResponse?: boolean
 ) {
-    return await saveFormResponse(formId, fieldResponses, email);
+    return await saveFormResponse(formId, fieldResponses, email, singleResponse);
 }

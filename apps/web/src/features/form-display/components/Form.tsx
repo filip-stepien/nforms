@@ -8,7 +8,7 @@ import { useState, useTransition } from 'react';
 import { TextInput as MantineTextInput } from '@mantine/core';
 import { saveFormResponseAction } from '../lib/actions';
 import radioButton from 'react-useanimations/lib/radioButton';
-import plusToX from 'react-useanimations/lib/plusToX';
+import menu3 from 'react-useanimations/lib/menu3';
 import visibility from 'react-useanimations/lib/visibility';
 import { SubmitInfo } from './SubmitInfo';
 
@@ -19,7 +19,7 @@ type Props = {
 export function Form({ form }: Props) {
     const { id, fields, title, settings, description } = form;
     const [submitted, setSubmitted] = useState(false);
-    const [error, setError] = useState(false);
+    const [error, setError] = useState('');
     const [isPending, startTransition] = useTransition();
     const { getInputProps, getInputKey, emailKey, emailProps, onSubmit } = useDynamicFieldsForm(
         fields,
@@ -39,10 +39,20 @@ export function Form({ form }: Props) {
 
         startTransition(async () => {
             try {
-                await saveFormResponseAction(id, responses, email as string | undefined);
-                setSubmitted(true);
+                const result = await saveFormResponseAction(
+                    id,
+                    responses,
+                    email as string | undefined,
+                    settings.singleResponse
+                );
+
+                if (result) {
+                    setSubmitted(true);
+                } else {
+                    setError('A response is already associated with this email address.');
+                }
             } catch {
-                setError(true);
+                setError('Something went wrong.');
             }
         });
     });
@@ -59,14 +69,7 @@ export function Form({ form }: Props) {
     }
 
     if (error) {
-        return (
-            <SubmitInfo
-                animation={plusToX}
-                title='Error'
-                subtitle='Something went wrong.'
-                description='Try again later.'
-            />
-        );
+        return <SubmitInfo animation={menu3} title='Oops!' subtitle={error} />;
     }
 
     if (submitted) {

@@ -4,9 +4,9 @@ import { Animation } from 'react-useanimations/utils';
 
 type Props = {
     animation: Animation;
-    title: string;
-    subtitle: string;
-    description: string;
+    title?: string;
+    subtitle?: string;
+    description?: string;
 };
 
 export function SubmitInfo({ animation, title, subtitle, description }: Props) {
