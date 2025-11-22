@@ -1,12 +1,5 @@
 import { Table, Flex } from '@mantine/core';
-import {
-    IconLabel,
-    IconCalendarPlus,
-    IconUsers,
-    IconProgress,
-    IconSettings,
-    Icon
-} from '@tabler/icons-react';
+import { IconLabel, IconCalendarPlus, IconUsers, IconProgress, Icon } from '@tabler/icons-react';
 
 type FormTableHeading = {
     icon: Icon;
@@ -38,7 +31,7 @@ export function FormsTableHeader() {
             <Table.Tr>
                 {HEADINGS.map(({ icon: Icon, label }) => (
                     <Table.Th key={label}>
-                        <Flex gap={6} align='center'>
+                        <Flex gap={6} align='center' className='w-[120px]'>
                             <Icon size={16} className='text-icon' />
                             <span>{label}</span>
                         </Flex>

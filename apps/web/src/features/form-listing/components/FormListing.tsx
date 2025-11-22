@@ -15,7 +15,7 @@ type Props = {
 
 export function FormListing({ suspenseKey, formData }: Props) {
     return (
-        <Stack className='h-full'>
+        <Stack className='gap-xs md:gap-md h-full'>
             <SectionTitle>
                 <SectionTitle.Icon icon={IconListDetails} />
                 <SectionTitle.Title>Your forms</SectionTitle.Title>

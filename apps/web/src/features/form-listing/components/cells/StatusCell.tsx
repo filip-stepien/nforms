@@ -7,7 +7,11 @@ type Props = {
 export function StatusCell({ status }: Props) {
     return (
         <Table.Td>
-            <Badge color='green' variant='dot' className='cursor-pointer rounded-sm'>
+            <Badge
+                color={status === 'active' ? 'green' : 'red'}
+                variant='dot'
+                className='cursor-pointer rounded-sm'
+            >
                 {status}
             </Badge>
         </Table.Td>

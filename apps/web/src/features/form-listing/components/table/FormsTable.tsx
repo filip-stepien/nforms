@@ -16,10 +16,12 @@ export function FormsTable({ formData }: Props) {
 
     return data.length > 0 ? (
         <Flex direction='column'>
-            <Table verticalSpacing='sm'>
-                <FormsTableHeader />
-                <FormsTableBody data={data} />
-            </Table>
+            <div className='overflow-x-auto'>
+                <Table verticalSpacing='md'>
+                    <FormsTableHeader />
+                    <FormsTableBody data={data} />
+                </Table>
+            </div>
             <Flex justify='flex-end' className='pt-sm'>
                 <FormsTablePagination pagination={pagination} />
             </Flex>

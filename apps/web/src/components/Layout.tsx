@@ -22,7 +22,7 @@ export function Layout({ children }: Props) {
                 <Header />
             </AppShell.Header>
             <AppShell.Main>
-                <div className='p-xl min-h-[calc(100dvh-60px-2*var(--spacing-xl))] bg-white shadow-md md:rounded-md'>
+                <div className='p-md md:p-xl min-h-[calc(100dvh-60px-2*var(--spacing-xl))] bg-white shadow-md md:rounded-md'>
                     {children}
                 </div>
             </AppShell.Main>

@@ -12,7 +12,7 @@ type Props = {
 export function SectionTitle(props: Props) {
     const { children, bottom = 'md', gap = 'sm' } = props;
     return (
-        <Group gap={gap} className={`pb-${bottom}`}>
+        <Group gap={gap} className={`md:pb-${bottom}`}>
             {children}
         </Group>
     );
