@@ -5,19 +5,29 @@ import { debug_wait } from '@/lib/debug';
 import { deleteFormAction } from '@/features/form-listing/lib/actions';
 import { useDisclosure } from '@mantine/hooks';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
+import toast from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 
 type Props = {
     formId: string;
 };
 
 export function DeleteButton({ formId }: Props) {
+    const router = useRouter();
     const [isPending, startTransition] = useTransition();
     const [confirmOpened, { close: closeConfirm, open: openConfirm }] = useDisclosure();
 
     const handleConfirm = async () => {
         startTransition(async () => {
             await debug_wait();
-            await deleteFormAction(formId);
+            try {
+                await deleteFormAction(formId);
+                router.replace('/your-forms');
+                toast.success('Form deleted successfuly.');
+            } catch {
+                toast.error('Could not delete form.');
+                closeConfirm();
+            }
         });
     };
 
@@ -28,6 +38,7 @@ export function DeleteButton({ formId }: Props) {
                 onClose={closeConfirm}
                 onConfirm={handleConfirm}
                 message='Are you sure you want to delete this form? This action cannot be undone.'
+                loading={isPending}
             />
             <Button
                 size='sm'
@@ -35,7 +46,6 @@ export function DeleteButton({ formId }: Props) {
                 color='red'
                 variant='light'
                 onClick={openConfirm}
-                loading={isPending}
             >
                 <Flex align='center' gap='xs'>
                     <IconTrash size={18} stroke={1.5} />

@@ -1,4 +1,6 @@
-import { Button, Group, Modal, Stack } from '@mantine/core';
+import { ActionButton } from '@/features/form-editor/components/ui/ActionButton';
+import { Button, Group, LoadingOverlay, Modal, Stack } from '@mantine/core';
+import { IconTrash } from '@tabler/icons-react';
 
 type Props = {
     title?: string;
@@ -6,6 +8,7 @@ type Props = {
     opened?: boolean;
     onClose?: () => void;
     onConfirm?: () => void;
+    loading?: boolean;
 };
 
 export function ConfirmationModal(props: Props) {
@@ -14,7 +17,8 @@ export function ConfirmationModal(props: Props) {
         message = 'Are you sure you want to perform this action?',
         opened = false,
         onClose = () => null,
-        onConfirm = () => null
+        onConfirm = () => null,
+        loading = false
     } = props;
     return (
         <Modal
@@ -23,13 +27,24 @@ export function ConfirmationModal(props: Props) {
             title={<span className='font-bold'>{title}</span>}
             classNames={{ header: 'pt-lg px-lg min-h-fit', body: 'px-lg' }}
         >
-            <Stack gap='lg'>
+            <Stack gap='lg' className='relative'>
+                <LoadingOverlay
+                    visible={loading}
+                    zIndex={1000}
+                    overlayProps={{ radius: 'sm', blur: 2 }}
+                />
                 <span>{message}</span>
                 <Group className='flex-row-reverse'>
-                    <Button onClick={onClose} variant='light'>
+                    <Button onClick={onClose} variant='default'>
                         Cancel
                     </Button>
-                    <Button onClick={onConfirm}>Confirm</Button>
+                    <ActionButton
+                        onClick={onConfirm}
+                        color='red'
+                        label='Delete'
+                        icon={IconTrash}
+                        variant='light'
+                    />
                 </Group>
             </Stack>
         </Modal>

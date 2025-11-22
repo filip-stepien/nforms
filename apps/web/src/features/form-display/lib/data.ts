@@ -117,8 +117,8 @@ function parseFieldConditions(form: Form, raw: RawFieldResponse): FieldRawRespon
     }
 }
 
-export async function responseExistsByEmail(email: string) {
-    const count = await prisma.formResponse.count({ where: { email } });
+export async function responseExistsByFormIdAndEmail(formId: string, email: string) {
+    const count = await prisma.formResponse.count({ where: { email, formId } });
     return count > 0;
 }
 
@@ -131,7 +131,7 @@ export async function saveFormResponse(
     const form = await findFirstFormById(formId);
 
     if (singleResponse) {
-        const exists = email !== undefined && (await responseExistsByEmail(email));
+        const exists = email !== undefined && (await responseExistsByFormIdAndEmail(formId, email));
 
         if (exists) {
             return false;
