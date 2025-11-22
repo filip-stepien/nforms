@@ -19,6 +19,7 @@ import { useDisclosure } from '@mantine/hooks';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
 import { useRouter } from 'next/navigation';
 import { useAppStore } from '@/hooks/useAppStore';
+import { FormEventHandler } from 'react';
 
 type Props = {
     formId: string;
@@ -62,8 +63,16 @@ export function FormEditor(props: Props) {
         }
     };
 
+    const handleSubmit: FormEventHandler<HTMLFormElement> = event => {
+        event.preventDefault();
+        action();
+    };
+
     return (
-        <form action={action}>
+        <form
+            // https://github.com/vercel/next.js/issues/72949
+            onSubmit={handleSubmit}
+        >
             <ConfirmationModal
                 opened={confirmOpened}
                 onClose={closeConfirm}

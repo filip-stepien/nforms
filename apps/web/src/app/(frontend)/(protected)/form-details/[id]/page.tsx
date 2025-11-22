@@ -15,6 +15,8 @@ import { countResponsesByFormId } from '@/features/form-listing/lib/data';
 
 dayjs.extend(isoWeek);
 
+export const dynamic = 'force-dynamic';
+
 type Props = {
     params: Promise<{ id: string }>;
     searchParams?: Promise<unknown>;
