@@ -7,7 +7,7 @@ import { ShareButton } from './action-buttons/CopyURLButton';
 import { DeleteButton } from './action-buttons/DeleteButton';
 import { OpenButton } from './action-buttons/OpenButton';
 import { SaveButton } from './action-buttons/SaveButton';
-import { useFormSaveAction } from '../hooks/useFormSaveAction';
+import { useFormSaveSubmit } from '../hooks/useFormSaveSubmit';
 import { FormTabs } from './layout/FormTabs';
 import { FormResponse } from '@packages/db/schemas/form-responses';
 import { Paginated } from '@/lib/pagination';
@@ -19,7 +19,6 @@ import { useDisclosure } from '@mantine/hooks';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
 import { useRouter } from 'next/navigation';
 import { useAppStore } from '@/hooks/useAppStore';
-import { FormEventHandler } from 'react';
 
 type Props = {
     formId: string;
@@ -48,7 +47,7 @@ export function FormEditor(props: Props) {
         initialState
     } = props;
 
-    const { isLoading, action } = useFormSaveAction(formId);
+    const { isLoading, submit } = useFormSaveSubmit(formId);
     const store = useAppStore();
     const { back } = useRouter();
     const [confirmOpened, { close: closeConfirm, open: openConfirm }] = useDisclosure();
@@ -63,16 +62,8 @@ export function FormEditor(props: Props) {
         }
     };
 
-    const handleSubmit: FormEventHandler<HTMLFormElement> = event => {
-        event.preventDefault();
-        action();
-    };
-
     return (
-        <form
-            // https://github.com/vercel/next.js/issues/72949
-            onSubmit={handleSubmit}
-        >
+        <form onSubmit={submit}>
             <ConfirmationModal
                 opened={confirmOpened}
                 onClose={closeConfirm}

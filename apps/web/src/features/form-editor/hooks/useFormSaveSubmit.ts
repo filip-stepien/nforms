@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useState, useTransition } from 'react';
+import { FormEventHandler, useEffect, useState, useTransition } from 'react';
 import { useAppStore } from '@/hooks/useAppStore';
 import toast from 'react-hot-toast';
 import { saveFormAction } from '../lib/actions';
+import { useRouter } from 'next/navigation';
 
 export type FormCreateActionStatus =
     | {
@@ -16,11 +17,22 @@ export type FormCreateActionStatus =
           message: string;
       };
 
-export function useFormSaveAction(formId?: string) {
+export function useFormSaveSubmit(formId?: string) {
     const store = useAppStore();
-
+    const router = useRouter();
     const [status, setStatus] = useState<FormCreateActionStatus | null>(null);
     const [isPending, startTransition] = useTransition();
+
+    useEffect(() => {
+        if (!status) return;
+
+        if (status.success) {
+            toast.success(status.message);
+            router.push(status.redirectHref);
+        } else {
+            toast.error(status.message);
+        }
+    }, [status, formId, router]);
 
     const action = () => {
         startTransition(async () => {
@@ -41,15 +53,10 @@ export function useFormSaveAction(formId?: string) {
         });
     };
 
-    useEffect(() => {
-        if (!status) return;
+    const submit: FormEventHandler<HTMLFormElement> = event => {
+        event.preventDefault();
+        action();
+    };
 
-        if (status.success) {
-            toast.success(status.message);
-        } else {
-            toast.error(status.message);
-        }
-    }, [status]);
-
-    return { action, isLoading: isPending };
+    return { submit, isLoading: isPending };
 }

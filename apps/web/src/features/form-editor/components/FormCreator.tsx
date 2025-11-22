@@ -1,7 +1,7 @@
 import { Flex } from '@mantine/core';
 import { SaveButton } from './action-buttons/SaveButton';
 import { FormHeader } from './layout/FormHeader';
-import { useFormSaveAction } from '../hooks/useFormSaveAction';
+import { useFormSaveSubmit } from '../hooks/useFormSaveSubmit';
 import { FormTabs } from './layout/FormTabs';
 import { SectionTitle } from '@/components/SectionTitle';
 import { IconFilePlus } from '@tabler/icons-react';
@@ -10,12 +10,12 @@ import { useRouter } from 'next/navigation';
 import { ConfirmationModal } from '@/components/ConfirmationModal';
 
 export function FormCreator() {
-    const { isLoading, action } = useFormSaveAction();
+    const { isLoading, submit } = useFormSaveSubmit();
     const { back } = useRouter();
     const [confirmOpened, { close: closeConfirm, open: openConfirm }] = useDisclosure();
 
     return (
-        <form action={action}>
+        <form onSubmit={submit}>
             <ConfirmationModal
                 opened={confirmOpened}
                 onClose={closeConfirm}
