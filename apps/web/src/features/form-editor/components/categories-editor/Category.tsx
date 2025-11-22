@@ -23,7 +23,7 @@ export function Category({ categoryId }: Props) {
     };
 
     return (
-        <Flex align='flex-start' gap='md'>
+        <Flex align='flex-end' gap='md' wrap='wrap-reverse'>
             <Accordion
                 className='flex-1'
                 classNames={{ control: 'bg-neutral-100', panel: 'bg-neutral-100' }}

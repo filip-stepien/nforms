@@ -31,7 +31,7 @@ export function DeleteButton({ formId }: Props) {
             />
             <Button
                 size='sm'
-                className='px-sm text-xs'
+                className='px-sm w-[100px] text-xs'
                 color='red'
                 variant='light'
                 onClick={openConfirm}

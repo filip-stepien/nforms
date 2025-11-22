@@ -28,7 +28,7 @@ export function FormResponsesTab(props: Props) {
     } = props;
 
     return (
-        <Stack gap={50}>
+        <Stack>
             <Stack gap='lg'>
                 <Group gap='sm'>
                     <Suspense fallback={<Statistic.Skeleton />}>
@@ -38,25 +38,26 @@ export function FormResponsesTab(props: Props) {
                         <Statistic value={thisWeekResponses} description='Responses this week' />
                     </Suspense>
                 </Group>
-                <Flex gap='xl'>
-                    <Stack flex={1}>
+                <Flex gap='xl' className='min-w-0 flex-col lg:flex-row'>
+                    <Stack flex={1} className='min-w-0'>
                         <div className='font-bold'>Responses over time</div>
                         <Suspense fallback={<ResponsesChart.Skeleton />}>
                             <ResponsesChart responsesChartData={responsesChartData} />
                         </Suspense>
                     </Stack>
-                    <div className='flex-1'>
+                    <div className='min-w-0 flex-1'>
                         <div className='pb-md font-bold'>Category distribution</div>
-                        <Flex justify='center'>
-                            <Suspense fallback={<CategoriesChart.Skeleton />}>
-                                <CategoriesChart categoriesChartData={categoriesChartData} />
-                            </Suspense>
-                        </Flex>
+                        <Suspense fallback={<CategoriesChart.Skeleton />}>
+                            <CategoriesChart categoriesChartData={categoriesChartData} />
+                        </Suspense>
                     </div>
                 </Flex>
             </Stack>
             <Suspense key={suspenseKey} fallback={<ResponsesTable.Skeleton />}>
-                <ResponsesTable responses={responses} />
+                <Stack>
+                    <div className='font-bold'>Responses</div>
+                    <ResponsesTable responses={responses} />
+                </Stack>
             </Suspense>
         </Stack>
     );

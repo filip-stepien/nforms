@@ -84,18 +84,18 @@ export function FormEditor(props: Props) {
                 <SectionTitle.Icon icon={IconFileDescription} />
                 <SectionTitle.Title>Form details</SectionTitle.Title>
             </SectionTitle>
-            <Flex gap={100} className='pb-xs bg-white'>
-                <Stack flex={1}>
+            <div className='pb-md gap-2xl bg-white md:flex'>
+                <Stack flex={1} className='pb-sm md:pb-0'>
                     <FormTimestamp createdAt={createdAt} />
                     <FormHeader />
                 </Stack>
-                <Flex gap='xs' align='flex-end' justify='flex-end'>
+                <Flex gap='sm' align='flex-end' wrap='wrap' className='md:justify-end'>
                     <SaveButton isLoading={isLoading} />
                     <OpenButton url={`/form/${formId}`} />
                     <ShareButton url={`${baseUrl}form/${formId}`} />
                     <DeleteButton formId={formId} />
                 </Flex>
-            </Flex>
+            </div>
             <FormTabs defaultTab='responses'>
                 <FormTabs.Tabs>
                     <FormTabs.ResponsesTab />

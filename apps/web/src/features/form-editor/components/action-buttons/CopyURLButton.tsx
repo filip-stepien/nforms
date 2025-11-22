@@ -13,7 +13,7 @@ export function ShareButton({ url }: Props) {
     return (
         <>
             <ShareModal opened={opened} onClose={close} url={url} />
-            <Button size='sm' className='px-sm text-xs' variant='light' onClick={open}>
+            <Button size='sm' className='px-sm w-[100px] text-xs' variant='light' onClick={open}>
                 <Flex align='center' gap='xs'>
                     <IconShare size={18} stroke={1.5} />
                     <span>Share</span>

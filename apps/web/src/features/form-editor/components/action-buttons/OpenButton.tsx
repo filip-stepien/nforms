@@ -9,7 +9,7 @@ type Props = {
 export function OpenButton({ url }: Props) {
     return (
         <Link href={url} target='_blank'>
-            <Button size='sm' className='px-sm text-xs' variant='light'>
+            <Button size='sm' className='px-sm w-[100px] text-xs' variant='light'>
                 <Flex align='center' gap='xs'>
                     <IconExternalLink size={18} stroke={1.5} />
                     <span>Open</span>

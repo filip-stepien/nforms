@@ -10,7 +10,7 @@ export function Statistic({ value: valuePromise, description }: Props) {
     const value = use(valuePromise);
 
     return (
-        <Stack gap={4} className='py-sm w-[200px] bg-white'>
+        <Stack gap={4} className='py-sm w-[160px] bg-white'>
             <span className='text-4xl'>{value}</span>
             <span className='text-sm'>{description}</span>
         </Stack>
@@ -19,7 +19,7 @@ export function Statistic({ value: valuePromise, description }: Props) {
 
 Statistic.Skeleton = function StatisticSkeleton() {
     return (
-        <Stack gap={4} className='py-sm w-[200px]'>
+        <Stack gap={4} className='py-sm w-[160px]'>
             <Skeleton className='h-[40px] w-1/2' />
             <Skeleton className='h-[20px] w-full' />
         </Stack>

@@ -6,5 +6,13 @@ type Props = {
 };
 
 export function SaveButton({ isLoading }: Props) {
-    return <ActionButton label='Save' type='submit' icon={IconDeviceFloppy} loading={isLoading} />;
+    return (
+        <ActionButton
+            label='Save'
+            type='submit'
+            icon={IconDeviceFloppy}
+            loading={isLoading}
+            className='w-[100px]'
+        />
+    );
 }

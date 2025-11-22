@@ -15,7 +15,7 @@ export function FormsTable({ formData }: Props) {
     const { data, pagination } = use(formData);
 
     return data.length > 0 ? (
-        <Flex direction='column'>
+        <Flex direction='column' className='-mt-sm md:mt-0'>
             <div className='overflow-x-auto'>
                 <Table verticalSpacing='md'>
                     <FormsTableHeader />

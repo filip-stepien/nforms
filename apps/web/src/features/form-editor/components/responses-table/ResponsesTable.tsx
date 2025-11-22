@@ -60,6 +60,8 @@ function getRowsFromData(data: FormResponse[]): ResponseRow[] {
 const columns: ColumnDef<ResponseRow>[] = [
     {
         accessorKey: 'email',
+        enableColumnFilter: false,
+        enableSorting: false,
         header: 'Email',
         filterFn: 'includesString',
         meta: { filterType: 'email' }
@@ -68,6 +70,8 @@ const columns: ColumnDef<ResponseRow>[] = [
         accessorKey: 'submission',
         header: 'Submission',
         meta: { filterType: 'dateRange' },
+        enableColumnFilter: false,
+        enableSorting: false,
         cell: ctx => dayjs.unix(ctx.getValue<number>()).format('HH:mm DD.MM.YYYY'),
         filterFn: (row, columnId, { from, to }: ResponseColumnFilterValues['dateRange']) => {
             const timestampSec = row.getValue<number>(columnId);
@@ -87,6 +91,8 @@ const columns: ColumnDef<ResponseRow>[] = [
         accessorKey: 'category',
         header: 'Category',
         meta: { filterType: 'category' },
+        enableColumnFilter: false,
+        enableSorting: false,
         filterFn: (row, columnId, filterValue: string[]) => {
             if (!filterValue?.length) return true;
             const categories = row.getValue<CategoryRow[]>(columnId);
@@ -151,45 +157,47 @@ export function ResponsesTable({ responses }: Props) {
 
     return (
         <Stack align='flex-end'>
-            <Table striped highlightOnHover withTableBorder withColumnBorders>
-                <Table.Thead>
-                    {table.getHeaderGroups().map(headerGroup => (
-                        <Table.Tr key={headerGroup.id}>
-                            {headerGroup.headers.map(header => (
-                                <Table.Th key={header.id}>
-                                    <Group gap={6} align='center' justify='space-between'>
-                                        {flexRender(
-                                            header.column.columnDef.header,
-                                            header.getContext()
-                                        )}
-                                        <Group gap={0}>
-                                            {header.column.getCanFilter() && (
-                                                <FilterButton header={header} />
+            <div className='w-full overflow-x-auto'>
+                <Table striped highlightOnHover withTableBorder withColumnBorders>
+                    <Table.Thead>
+                        {table.getHeaderGroups().map(headerGroup => (
+                            <Table.Tr key={headerGroup.id}>
+                                {headerGroup.headers.map(header => (
+                                    <Table.Th key={header.id} className='min-w-[110px]'>
+                                        <Group gap={6} align='center' justify='space-between'>
+                                            {flexRender(
+                                                header.column.columnDef.header,
+                                                header.getContext()
                                             )}
-                                            {header.column.getCanSort() && (
-                                                <SortButton header={header} />
-                                            )}
+                                            <Group gap={0}>
+                                                {header.column.getCanFilter() && (
+                                                    <FilterButton header={header} />
+                                                )}
+                                                {header.column.getCanSort() && (
+                                                    <SortButton header={header} />
+                                                )}
+                                            </Group>
                                         </Group>
-                                    </Group>
-                                </Table.Th>
-                            ))}
-                        </Table.Tr>
-                    ))}
-                </Table.Thead>
-                <Table.Tbody>
-                    {table.getRowModel().rows.map(row => (
-                        <Table.Tr key={row.id}>
-                            {row.getVisibleCells().map(cell => (
-                                <Table.Td key={cell.id}>
-                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                </Table.Td>
-                            ))}
-                        </Table.Tr>
-                    ))}
-                </Table.Tbody>
-            </Table>
+                                    </Table.Th>
+                                ))}
+                            </Table.Tr>
+                        ))}
+                    </Table.Thead>
+                    <Table.Tbody>
+                        {table.getRowModel().rows.map(row => (
+                            <Table.Tr key={row.id}>
+                                {row.getVisibleCells().map(cell => (
+                                    <Table.Td key={cell.id}>
+                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                    </Table.Td>
+                                ))}
+                            </Table.Tr>
+                        ))}
+                    </Table.Tbody>
+                </Table>
+            </div>
             {rows.length === 0 && <Empty />}
-            <Group>
+            <Group className='flex-row-reverse'>
                 <Pagination
                     total={pagination.totalPages}
                     value={pagination.currentPage}
@@ -203,7 +211,6 @@ export function ResponsesTable({ responses }: Props) {
                             { label: '50 / page', value: '50' },
                             { label: '100 / page', value: '100' }
                         ]}
-                        defaultValue='10'
                         value={String(pagination.pageSize)}
                         onChange={v => setPageSize(Number(v))}
                         className='w-[120px]'

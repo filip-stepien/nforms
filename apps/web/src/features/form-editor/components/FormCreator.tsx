@@ -27,7 +27,10 @@ export function FormCreator() {
                 <SectionTitle.Icon icon={IconFilePlus} />
                 <SectionTitle.Title>Create new form</SectionTitle.Title>
             </SectionTitle>
-            <Flex gap={100} className='pb-xs' justify='space-between' align='flex-end'>
+            <Flex
+                className='pb-md gap-md md:gap-2xl flex-col align-baseline md:flex-row md:items-end'
+                justify='space-between'
+            >
                 <FormHeader />
                 <SaveButton isLoading={isLoading} />
             </Flex>
