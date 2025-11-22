@@ -1,6 +1,6 @@
 import { Checkbox, Radio, Stack } from '@mantine/core';
 import { GetInputPropsReturnType } from '@mantine/form';
-import { FieldOption } from '@packages/db/schemas/form';
+import { FieldOption } from '@packages/db/schemas/form/field-options';
 
 type Props = {
     required: boolean;

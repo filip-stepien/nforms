@@ -11,7 +11,7 @@ type Props = {
 
 export function FormQuestion({ index, field, inputProps, formKey }: Props) {
     return (
-        <div className='bg-background shadow-card sm:p-xl p-lg h-fit w-full rounded-md'>
+        <div className='bg-background shadow-card p-xl h-fit w-full rounded-md'>
             <FormInput
                 question={`${index + 1}. ${field.title}`}
                 field={field}

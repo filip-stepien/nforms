@@ -92,7 +92,7 @@ export function Form({ form }: Props) {
                 className='bg-neutral-background min-h-dvh'
             >
                 <Stack className='sm:p-xl p-sm sm:gap-md gap-sm w-full sm:w-3/4 xl:w-1/2'>
-                    <Stack className='bg-background shadow-card sm:p-xl p-lg sm:gap-lg h-fit w-full gap-1 rounded-md'>
+                    <Stack className='bg-background shadow-card p-xl gap-lg h-fit w-full rounded-md'>
                         <h1 className='text-xl font-medium sm:text-3xl'>{title}</h1>
                         {description && (
                             <p className='sm:text-md text-justify text-sm break-words whitespace-pre-line'>
