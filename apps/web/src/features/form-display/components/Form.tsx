@@ -95,7 +95,9 @@ export function Form({ form }: Props) {
                     <Stack className='bg-background shadow-card sm:p-xl p-lg sm:gap-lg h-fit w-full gap-1 rounded-md'>
                         <h1 className='text-xl font-medium sm:text-3xl'>{title}</h1>
                         {description && (
-                            <p className='sm:text-md text-justify text-sm'>{description}</p>
+                            <p className='sm:text-md text-justify text-sm break-words whitespace-pre-line'>
+                                {description}
+                            </p>
                         )}
                         {settings.anonymous ? (
                             <span className='text-font-tertiary text-md'>
