@@ -1,7 +1,13 @@
 'use client';
 
 import { Tabs } from '@mantine/core';
-import { IconMessageCircle, IconSettings, IconCategory } from '@tabler/icons-react';
+import {
+    IconSettings,
+    IconCategory,
+    IconMessage2Question,
+    IconMessage2Share,
+    IconShieldCheck
+} from '@tabler/icons-react';
 import { ReactNode } from 'react';
 import { FormResponsesTab } from '../tabs/FormResponsesTab';
 import { FormSettingsTab } from '../tabs/FormSettingsTab';
@@ -10,8 +16,9 @@ import { FormCategoriesTab } from '../tabs/FormCategoriesTab';
 import { FormResponse } from '@packages/db/schemas/form-responses';
 import { Paginated } from '@/lib/pagination';
 import { CategoriesChartData, ResponsesChartData } from '../../lib/data';
+import { FormAttentionChecksTab } from '../tabs/FormAttentionChecksTab';
 
-type FormTab = 'questions' | 'settings' | 'responses' | 'categories';
+type FormTab = 'questions' | 'settings' | 'responses' | 'categories' | 'attention-checks';
 
 type Props = {
     defaultTab: FormTab;
@@ -30,9 +37,25 @@ FormTabs.Tabs = function FormTabs({ children }: { children: ReactNode | ReactNod
     return <Tabs.List>{children}</Tabs.List>;
 };
 
+FormTabs.AttentionChecksTab = function AttentionChecksTab() {
+    return (
+        <Tabs.Tab value='attention-checks' leftSection={<IconShieldCheck stroke={1.5} size={18} />}>
+            Attention checks
+        </Tabs.Tab>
+    );
+};
+
+FormTabs.AttentionChecksPanel = function AttentionChecksPanel() {
+    return (
+        <Tabs.Panel value='attention-checks'>
+            <FormAttentionChecksTab />
+        </Tabs.Panel>
+    );
+};
+
 FormTabs.QuestionsTab = function QuestionsTab() {
     return (
-        <Tabs.Tab value='questions' leftSection={<IconMessageCircle stroke={1.5} size={18} />}>
+        <Tabs.Tab value='questions' leftSection={<IconMessage2Question stroke={1.5} size={18} />}>
             Questions
         </Tabs.Tab>
     );
@@ -80,7 +103,7 @@ FormTabs.CategoriesPanel = function CategoriesPanel() {
 
 FormTabs.ResponsesTab = function ResponsesTab() {
     return (
-        <Tabs.Tab value='responses' leftSection={<IconMessageCircle stroke={1.5} size={18} />}>
+        <Tabs.Tab value='responses' leftSection={<IconMessage2Share stroke={1.5} size={18} />}>
             Responses
         </Tabs.Tab>
     );
