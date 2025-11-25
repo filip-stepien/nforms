@@ -1,15 +1,16 @@
 services:
   keycloak-db:
-    image: postgres
+    image: postgres:18
     container_name: keycloak-db
     environment:
       POSTGRES_DB: keycloak
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
+      PGDATA: /var/lib/postgresql/18/docker   # nowy domyślny katalog danych
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+        - postgres-data:/var/lib/postgresql     # nowy VOLUME w obrazie
     networks:
-      - keycloak-network
+        - keycloak-network
 
   keycloak:
     image: keycloak/keycloak
@@ -76,14 +77,6 @@ services:
     volumes:
       - redis-data:/data
     command: ["redis-server", "--appendonly", "yes"]
-
-  ollama:
-    build: ./docker/ollama
-    container_name: ollama
-    ports:
-      - "11434:11434"
-    volumes:
-      - ollama-data:/root/.ollama
 
 volumes:
   postgres-data:
