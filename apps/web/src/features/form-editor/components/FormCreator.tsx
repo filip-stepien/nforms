@@ -37,12 +37,12 @@ export function FormCreator() {
             <FormTabs defaultTab='questions'>
                 <FormTabs.Tabs>
                     <FormTabs.QuestionsTab />
-                    <FormTabs.AttentionChecksTab />
+                    {/* <FormTabs.AttentionChecksTab /> */}
                     <FormTabs.CategoriesTab />
                     <FormTabs.SettingsTab />
                 </FormTabs.Tabs>
                 <FormTabs.QuestionsPanel />
-                <FormTabs.AttentionChecksPanel />
+                {/* <FormTabs.AttentionChecksPanel /> */}
                 <FormTabs.CategoriesPanel />
                 <FormTabs.SettingsPanel />
             </FormTabs>

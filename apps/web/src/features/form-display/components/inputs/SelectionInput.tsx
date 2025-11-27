@@ -24,14 +24,13 @@ export function SelectionInput(props: Props) {
         >
             <Stack className='pt-md'>
                 {options.map(opt => (
-                    <Checkbox key={opt.id} label={opt.content} value={opt.id} />
+                    <Checkbox key={opt.id} label={opt.content} defaultValue={opt.id} />
                 ))}
             </Stack>
         </Checkbox.Group>
     ) : (
         <Radio.Group
             key={formKey}
-            name={formKey}
             label={question}
             withAsterisk={required}
             classNames={{ error: 'pt-md' }}
@@ -39,7 +38,7 @@ export function SelectionInput(props: Props) {
         >
             <Stack className='pt-md'>
                 {options.map(opt => (
-                    <Radio key={opt.id} label={opt.content} value={opt.id} />
+                    <Radio key={opt.id} label={opt.content} defaultValue={opt.id} />
                 ))}
             </Stack>
         </Radio.Group>
