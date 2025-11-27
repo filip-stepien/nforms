@@ -10,7 +10,7 @@ type Props = {
 
 export function CategoryAssignment({ rule }: Props) {
     const firstRule = rule.logs.at(0);
-    const ruleIsEmpty = firstRule && firstRule.logs.length === 0;
+    const ruleIsEmpty = firstRule === undefined || (firstRule && firstRule.logs.length === 0);
 
     return (
         <Stack gap={0}>

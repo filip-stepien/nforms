@@ -88,6 +88,16 @@ export function evaluateCategoryRuleGroup(
     };
 }
 
+function categoryRulesExist(groupId: string, form: Form): boolean {
+    const { childrenGroups, childrenRules } = findFirstCategoryRuleGroupById(groupId, form);
+
+    if (childrenRules.length > 0) {
+        return true;
+    }
+
+    return childrenGroups.some(childGroupId => categoryRulesExist(childGroupId, form));
+}
+
 export function evaluateCategories(
     evaluatedFields: EvaluatedField[],
     form: Form
@@ -118,6 +128,21 @@ export function evaluateCategories(
 
     return scoredCategories.map(scoredCategory => {
         const relation = findFirstCategoryRuleRelationByCategoryId(scoredCategory.categoryId, form);
+        const rootGroup = findFirstCategoryRuleGroupById(relation.rootGroupId, form);
+        const hasRules = categoryRulesExist(rootGroup.id, form);
+
+        if (!hasRules) {
+            return {
+                category: {
+                    name: scoredCategory.categoryName,
+                    color: scoredCategory.categoryColor
+                },
+                points: scoredCategory.points,
+                assigned: false,
+                logs: []
+            };
+        }
+
         const rootGroupLog = evaluateCategoryRuleGroup(
             relation.rootGroupId,
             form,
