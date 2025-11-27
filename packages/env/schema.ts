@@ -13,7 +13,6 @@ const EnvSchema = z.object({
 
     KEYCLOAK_ISSUER: z.string().min(1),
     KEYCLOAK_CLIENT_ID: z.string().min(1),
-    KEYCLOAK_CLIENT_SECRET: z.string().min(1),
 
     NEXTAUTH_SECRET: z.string().min(1),
     NEXTAUTH_URL: z.string().min(1),
