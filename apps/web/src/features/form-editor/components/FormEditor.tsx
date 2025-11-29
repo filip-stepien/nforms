@@ -91,7 +91,7 @@ export function FormEditor(props: Props) {
                 <FormTabs.Tabs>
                     <FormTabs.ResponsesTab />
                     <FormTabs.QuestionsTab />
-                    {/* <FormTabs.AttentionChecksTab /> */}
+                    <FormTabs.AttentionChecksTab />
                     <FormTabs.CategoriesTab />
                     <FormTabs.SettingsTab />
                 </FormTabs.Tabs>
@@ -104,7 +104,7 @@ export function FormEditor(props: Props) {
                     responsesChartData={responsesChartData}
                 />
                 <FormTabs.QuestionsPanel />
-                {/* <FormTabs.AttentionChecksPanel /> */}
+                <FormTabs.AttentionChecksPanel />
                 <FormTabs.CategoriesPanel />
                 <FormTabs.SettingsPanel />
             </FormTabs>

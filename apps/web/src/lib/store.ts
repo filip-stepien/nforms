@@ -6,6 +6,7 @@ import { formReducer } from '@/features/form-editor/state/form';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { respondentCategoriesReducer } from '@/features/form-editor/state/respondent-categories';
 import { respondentCategoryRulesReducer } from '@/features/form-editor/state/respondent-category-rules';
+import { attentionChecksReducer } from '@/features/form-editor/state/attention-checks';
 
 const reducer = combineReducers({
     form: formReducer,
@@ -14,7 +15,8 @@ const reducer = combineReducers({
     fieldOptions: fieldOptionsReducer,
     fieldSettings: fieldSettingsReducer,
     respondentCategories: respondentCategoriesReducer,
-    respondentCategoryRules: respondentCategoryRulesReducer
+    respondentCategoryRules: respondentCategoryRulesReducer,
+    attentionChecks: attentionChecksReducer
 });
 
 export const makeStore = (preloadedState?: Partial<RootState>) =>
