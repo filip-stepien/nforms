@@ -1,6 +1,8 @@
-import { Table, Badge } from '@mantine/core';
+import { Table, Badge, Group } from '@mantine/core';
 import { FormResponse } from '@packages/db/schemas/form-responses';
 import { getFieldScoring } from '../lib/score';
+import { IconAlertSquare, IconAlertTriangle, IconAlertTriangleFilled } from '@tabler/icons-react';
+import { cn } from '@/lib/utils';
 
 type Props = {
     formResponse: FormResponse;
@@ -41,15 +43,42 @@ export function CategoryResultsTable({ formResponse }: Props) {
                                                 {category.category.name}
                                             </Badge>
                                         </Table.Th>
-                                        <Table.Td rowSpan={formResponse.responses.length}>
-                                            {category.points}
+                                        <Table.Td
+                                            rowSpan={formResponse.responses.length}
+                                            className='px-sm'
+                                        >
+                                            <Group gap='sm'>
+                                                <div>{category.points}</div>
+                                                {category.attentionCheckApplied && (
+                                                    <Badge
+                                                        className='py-sm align-center flex rounded-sm'
+                                                        size='sm'
+                                                        leftSection={
+                                                            <IconAlertTriangle size={16} />
+                                                        }
+                                                        variant='light'
+                                                        color='orange'
+                                                    >
+                                                        Attention check applied
+                                                    </Badge>
+                                                )}
+                                            </Group>
                                         </Table.Td>
                                     </>
                                 )}
 
                                 <Table.Td>{response.fieldTitle}</Table.Td>
                                 <Table.Td>
-                                    {getFieldScoring(response.fieldRules, category.category.name)}
+                                    <span
+                                        className={cn(
+                                            category.attentionCheckApplied && 'line-through'
+                                        )}
+                                    >
+                                        {getFieldScoring(
+                                            response.fieldRules,
+                                            category.category.name
+                                        )}
+                                    </span>
                                 </Table.Td>
                             </Table.Tr>
                         ))

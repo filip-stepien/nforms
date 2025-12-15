@@ -5,6 +5,7 @@ import { FormResponse } from '@packages/db/schemas/form-responses';
 import { IconChevronUp, IconChevronDown } from '@tabler/icons-react';
 import { CategoryAssignment } from './CategoryAssignment';
 import { CategoryResultsTable } from './CategoryResultsTable';
+import { AttentionChecksBreakdown } from './AttentionChecksBreakdown';
 
 type Props = {
     formResponse: FormResponse;
@@ -62,6 +63,8 @@ export function CategoriesAccordion({ formResponse }: Props) {
                     <Stack className='p-sm pt-2'>
                         <span className='text-xs font-bold'>Total category scores</span>
                         <CategoryResultsTable formResponse={formResponse} />
+                        <span className='text-xs font-bold'>Attention checks breakdown</span>
+                        <AttentionChecksBreakdown attentionChecks={formResponse.attentionChecks} />
                         <span className='text-xs font-bold'>Category assignment breakdown</span>
                         {formResponse.categoryRules.length > 0 ? (
                             formResponse.categoryRules.map((rule, i) => (

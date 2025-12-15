@@ -66,6 +66,7 @@ export const EvaluatedCategorySchema = z.object({
     }),
     points: z.number(),
     assigned: z.boolean(),
+    attentionCheckApplied: z.boolean(),
     logs: z.array(CategoryRuleGroupLogSchema)
 });
 

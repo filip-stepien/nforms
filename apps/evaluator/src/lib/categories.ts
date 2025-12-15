@@ -4,7 +4,11 @@ import {
     findFirstCategoryRuleById,
     findFirstCategoryRuleRelationByCategoryId
 } from './query';
-import { EvaluatedCategory, EvaluatedField } from '@packages/db/schemas/form-responses';
+import {
+    EvaluatedAttentionCheck,
+    EvaluatedCategory,
+    EvaluatedField
+} from '@packages/db/schemas/form-responses';
 
 export type CategoryContext = {
     categoryId: string;
@@ -100,6 +104,7 @@ function categoryRulesExist(groupId: string, form: Form): boolean {
 
 export function evaluateCategories(
     evaluatedFields: EvaluatedField[],
+    evaluatedAttentionChecks: EvaluatedAttentionCheck[],
     form: Form
 ): EvaluatedCategory[] {
     const categoriesMap = new Map(
@@ -111,6 +116,7 @@ export function evaluateCategories(
                 categoryColor: category.color,
                 points: 0,
                 assigned: false,
+                attentionCheckApplied: false,
                 logs: []
             }
         ])
@@ -119,6 +125,16 @@ export function evaluateCategories(
     for (const evaluatedField of evaluatedFields) {
         const categoryName = evaluatedField.score.category.name;
         const categoryEntry = categoriesMap.get(categoryName);
+        const attentionCheck = evaluatedAttentionChecks.find(
+            check => check.category.name === categoryName
+        );
+
+        if (attentionCheck && attentionCheck.applied) {
+            categoryEntry.points = attentionCheck.score;
+            categoryEntry.attentionCheckApplied = true;
+            continue;
+        }
+
         if (evaluatedField.score.result) {
             categoryEntry.points += evaluatedField.score.points;
         }
@@ -138,6 +154,7 @@ export function evaluateCategories(
                     color: scoredCategory.categoryColor
                 },
                 points: scoredCategory.points,
+                attentionCheckApplied: scoredCategory.attentionCheckApplied,
                 assigned: false,
                 logs: []
             };
@@ -156,6 +173,7 @@ export function evaluateCategories(
             },
             points: scoredCategory.points,
             assigned: rootGroupLog.result,
+            attentionCheckApplied: scoredCategory.attentionCheckApplied,
             logs: [rootGroupLog]
         };
     });

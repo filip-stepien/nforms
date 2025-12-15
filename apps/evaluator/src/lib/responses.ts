@@ -34,12 +34,13 @@ export async function evaluateResponses(
         })
     );
 
+    const attentionChecks = await evaluateAttentionChecks(rawResponses, form);
+
     const categoryRules = evaluateCategories(
         responses.flatMap(r => r.fieldRules),
+        attentionChecks,
         form
     );
-
-    const attentionChecks = await evaluateAttentionChecks(rawResponses, form);
 
     return { responses, categoryRules, attentionChecks };
 }
