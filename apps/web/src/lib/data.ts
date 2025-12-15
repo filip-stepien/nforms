@@ -24,7 +24,8 @@ export function serializeState(state: RootState): SerializedState {
             relations: state.respondentCategoryRules.relations,
             groups: Object.values(state.respondentCategoryRules.groups.entities),
             rules: Object.values(state.respondentCategoryRules.rules.entities)
-        }
+        },
+        attentionChecks: Object.values(state.attentionChecks.entities)
     };
 }
 
@@ -55,7 +56,8 @@ export function deserializeState(state: SerializedState): RootState {
             relations: state.respondentCategoryRules.relations,
             groups: toEntityState(state.respondentCategoryRules.groups),
             rules: toEntityState(state.respondentCategoryRules.rules)
-        }
+        },
+        attentionChecks: toEntityState(state.attentionChecks)
     };
 }
 

@@ -8,6 +8,6 @@ const __dirname = path.dirname(__filename);
 
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
-const nextConfig: NextConfig = { reactStrictMode: false };
+const nextConfig: NextConfig = { reactStrictMode: false, devIndicators: false };
 
 export default nextConfig;

@@ -5,6 +5,7 @@ import { RespondentCategorySchema } from './respondent-categories';
 import { RespondentCategoryRulesSchema } from './respondent-category-rules';
 import { FieldRulesSchema } from './field-rules';
 import { FieldOptionSchema } from './field-options';
+import { AttentionCheckSchema } from './attention-checks';
 
 export const FormSettingsSchema = z.object({
     active: z.boolean(),
@@ -23,6 +24,7 @@ export const FormSchema = z.object({
     fieldOptions: z.array(FieldOptionSchema),
     respondentCategories: z.array(RespondentCategorySchema),
     respondentCategoryRules: RespondentCategoryRulesSchema,
+    attentionChecks: z.array(AttentionCheckSchema),
     createdAt: z.date(),
     userId: z.string()
 });
