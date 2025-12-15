@@ -15,8 +15,8 @@ import { getSentiment } from 'src/pipelines/sentiment';
 import { EvaluatedField } from '@packages/db/schemas/form-responses';
 
 export type FieldContext =
-    | { condition: 'sentiment' | 'emotion'; value: string }
-    | { condition: 'answer'; value: string | string[] };
+    | { fieldId: string; condition: 'sentiment' | 'emotion'; value: string }
+    | { fieldId: string; condition: 'answer'; value: string | string[] };
 
 export type FieldRuleLog = {
     type: 'rule';
@@ -125,22 +125,22 @@ function evaluateFieldRuleGroup(
 }
 
 async function resolveFieldContext<T extends FieldRawResponse>(
-    { response, fieldType }: T,
+    { fieldId, response, fieldType }: T,
     condition: T['conditions'][number]
 ): Promise<FieldContext> {
     switch (fieldType) {
         case FieldType.TEXT:
             switch (condition) {
                 case 'sentiment':
-                    return { condition, value: await getSentiment(response) };
+                    return { fieldId, condition, value: await getSentiment(response) };
                 case 'emotion':
-                    return { condition, value: await getEmotion(response) };
+                    return { fieldId, condition, value: await getEmotion(response) };
             }
             break;
         case FieldType.SELECTION:
             switch (condition) {
                 case 'answer':
-                    return { condition, value: response };
+                    return { fieldId, condition, value: response };
             }
     }
 }

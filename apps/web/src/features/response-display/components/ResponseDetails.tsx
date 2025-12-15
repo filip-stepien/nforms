@@ -18,7 +18,7 @@ export function ResponseDetails({ formResponse }: Props) {
                     <Table.Tbody>
                         <Table.Tr>
                             <Table.Th>Respondent</Table.Th>
-                            <Table.Td>{formResponse.email}</Table.Td>
+                            <Table.Td>{formResponse.email ?? 'Anonymous'}</Table.Td>
                         </Table.Tr>
                         <Table.Tr>
                             <Table.Th>Submission</Table.Th>

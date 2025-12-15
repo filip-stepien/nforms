@@ -69,6 +69,25 @@ export const EvaluatedCategorySchema = z.object({
     logs: z.array(CategoryRuleGroupLogSchema)
 });
 
+export const EvaluatedAttentionCheckValueSchema = z.object({
+    fieldTitle: z.string(),
+    actualValue: z.union([z.string(), z.array(z.string())]),
+    valueMatches: z.boolean()
+});
+
+export const EvaluatedAttentionCheckSchema = z.object({
+    applied: z.boolean(),
+    category: z.object({
+        color: z.string(),
+        name: z.string()
+    }),
+    score: z.number(),
+    condition: z.string(),
+    operator: z.string(),
+    ruleValue: z.string(),
+    actualValues: z.array(EvaluatedAttentionCheckValueSchema)
+});
+
 export const EvaluatedResponseSchema = z.object({
     fieldTitle: z.string(),
     response: z.union([z.string(), z.array(z.string())]),
@@ -81,7 +100,8 @@ export const FormResponseSchema = z.object({
     email: z.string().nullable(),
     submission: z.date(),
     responses: z.array(EvaluatedResponseSchema),
-    categoryRules: z.array(EvaluatedCategorySchema)
+    categoryRules: z.array(EvaluatedCategorySchema),
+    attentionChecks: z.array(EvaluatedAttentionCheckSchema)
 });
 
 export type FieldRuleLog = z.infer<typeof FieldRuleLogSchema>;
@@ -95,6 +115,10 @@ export type CategoryRuleGroupLog = z.infer<typeof CategoryRuleGroupLogSchema>;
 export type EvaluatedField = z.infer<typeof EvaluatedFieldSchema>;
 
 export type EvaluatedCategory = z.infer<typeof EvaluatedCategorySchema>;
+
+export type AttentionCheckValue = z.infer<typeof EvaluatedAttentionCheckValueSchema>;
+
+export type EvaluatedAttentionCheck = z.infer<typeof EvaluatedAttentionCheckSchema>;
 
 export type EvaluatedResponse = z.infer<typeof EvaluatedResponseSchema>;
 

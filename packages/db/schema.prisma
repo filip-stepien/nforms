@@ -30,7 +30,7 @@ model Form {
     fieldOptions                Json
     respondentCategories        Json
     respondentCategoryRules     Json
-    attentionChecks Json
+    attentionChecks             Json
     createdAt                   DateTime        @default(now())
 
     responses                   FormResponse[]  @relation("FormResponses")
@@ -45,6 +45,7 @@ model FormResponse {
     submission      DateTime        @default(now())
     responses       Json
     categoryRules   Json
+    attentionChecks Json
 
     formId          String          @db.ObjectId
     form            Form            @relation("FormResponses", fields: [formId], references: [id])

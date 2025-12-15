@@ -4,16 +4,22 @@ import { findFirstFieldById } from './query';
 import { evaluateFields, resolveFieldValue } from './fields';
 import { evaluateCategories } from './categories';
 import {
+    EvaluatedAttentionCheck,
     EvaluatedCategory,
     EvaluatedResponse,
     FormResponse
 } from '@packages/db/schemas/form-responses';
 import { prisma } from '@packages/db';
+import { evaluateAttentionChecks } from './attention-checks';
 
 export async function evaluateResponses(
     rawResponses: FieldRawResponse[],
     form: Form
-): Promise<{ responses: EvaluatedResponse[]; categoryRules: EvaluatedCategory[] }> {
+): Promise<{
+    responses: EvaluatedResponse[];
+    categoryRules: EvaluatedCategory[];
+    attentionChecks: EvaluatedAttentionCheck[];
+}> {
     const responses = await Promise.all(
         rawResponses.map(async response => {
             const field = findFirstFieldById(response.fieldId, form);
@@ -33,7 +39,9 @@ export async function evaluateResponses(
         form
     );
 
-    return { responses, categoryRules };
+    const attentionChecks = await evaluateAttentionChecks(rawResponses, form);
+
+    return { responses, categoryRules, attentionChecks };
 }
 
 export async function saveFormResponse(

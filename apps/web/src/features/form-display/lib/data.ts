@@ -94,14 +94,18 @@ function parseFieldConditions(form: Form, raw: RawFieldResponse): FieldRawRespon
 
     switch (fieldType) {
         case FieldType.TEXT: {
+            const fieldRuleConditions = form.fieldRules.rules
+                .filter(r => r.targetFieldId === fieldId)
+                .filter(r => enumValues(LanguageProcessing).includes(r.condition))
+                .map(r => r.condition as LanguageProcessing);
+
+            const attentionCheckConditions = form.attentionChecks
+                .filter(c => c.fields.includes(fieldId))
+                .map(c => c.condition as LanguageProcessing);
+
             return {
                 ...raw,
-                conditions: uniqueArray(
-                    form.fieldRules.rules
-                        .filter(r => r.targetFieldId === fieldId)
-                        .filter(r => enumValues(LanguageProcessing).includes(r.condition))
-                        .map(r => r.condition as LanguageProcessing)
-                )
+                conditions: uniqueArray([...fieldRuleConditions, ...attentionCheckConditions])
             };
         }
 

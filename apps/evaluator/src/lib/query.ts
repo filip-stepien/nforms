@@ -60,7 +60,9 @@ export function findFirstFieldContextByFieldIdAndCondition(
     condition: string,
     contexts: FieldContext[]
 ) {
-    const fieldContext = contexts?.find(ctx => ctx.condition === condition);
+    const fieldContext = contexts?.find(
+        ctx => ctx.fieldId === fieldId && ctx.condition === condition
+    );
 
     if (!fieldContext) {
         throw new Error(`Cannot resolve context for field ${fieldId}`);
